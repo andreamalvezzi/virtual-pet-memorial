@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
-  const auth = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,7 +17,11 @@ export default function LoginPage() {
 
     try {
       const data = await loginApi(email, password);
-      auth.login(data.user, data.token);
+
+      // ✅ ORDINE CORRETTO
+      login(data.token, data.user);
+
+      // puoi anche usare /dashboard se preferisci
       navigate("/dashboard/memorials/new");
     } catch (err) {
       setError("Credenziali non valide");
