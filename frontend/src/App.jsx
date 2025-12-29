@@ -28,11 +28,11 @@ function App() {
       {!hideNavbar && <Navbar />}
 
       <Routes>
-        {/* HOME */}
-        <Route
-          index
-          element={<h1>Cimitero Virtuale per Animali</h1>}
-        />
+      {/* HOME */}
+      <Route
+        index
+        element={<Navigate to="/welcome" replace />}
+      />
 
         {/* WELCOME */}
         <Route
