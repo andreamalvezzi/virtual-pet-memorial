@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
 import EditMemorialPage from "./pages/EditMemorialPage";
+import WelcomePage from "./pages/WelcomePage.jsx";
 
 function App() {
   const location = useLocation();
@@ -24,6 +25,13 @@ function App() {
           index
           element={<h1>Cimitero Virtuale per Animali</h1>}
         />
+
+        {/* WELCOME */}
+        <Route
+          path="/welcome"
+          element={<WelcomePage />
+          }
+        />  
 
         {/* DASHBOARD UTENTE */}
         <Route
