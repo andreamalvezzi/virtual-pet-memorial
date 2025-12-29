@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { login as loginApi } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -8,7 +8,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
 
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -17,16 +17,18 @@ export default function LoginPage() {
 
     try {
       const data = await loginApi(email, password);
-
-      // ✅ ORDINE CORRETTO
-      login(data.token, data.user);
-
-      // puoi anche usare /dashboard se preferisci
-      navigate("/dashboard/memorials/new");
+      login(data.token, data.user); // SOLO stato
     } catch (err) {
       setError("Credenziali non valide");
     }
   };
+
+  // 🔑 redirect quando lo stato auth è pronto
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard/memorials/new");
+    }
+  }, [isAuthenticated, navigate]);
 
   return (
     <div>
