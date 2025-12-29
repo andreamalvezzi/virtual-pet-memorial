@@ -19,8 +19,9 @@ function App() {
       {!hideNavbar && <Navbar />}
 
       <Routes>
+        {/* HOME */}
         <Route
-          path="/"
+          index
           element={<h1>Cimitero Virtuale per Animali</h1>}
         />
 
