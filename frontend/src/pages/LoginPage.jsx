@@ -14,10 +14,11 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
+    
     try {
       const data = await loginApi(email, password);
-      login(data.token, data.user); // SOLO stato
+      console.log("LOGIN RESPONSE:", data); // 👈 AGGIUNGI QUESTA RIGA
+      login(data.token, data.user);
     } catch (err) {
       setError("Credenziali non valide");
     }
