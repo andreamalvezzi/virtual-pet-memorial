@@ -11,9 +11,16 @@ import { authenticateToken } from "./middleware/authMiddleware.js";
 dotenv.config();
 
 const app = express();
+app.disable("etag");
 
 app.use(cors());
 app.use(express.json());
+
+// 🔴 DISABILITA CACHE PER LE API
+app.use("/api", (req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 app.get("/", (req, res) => {
   res.json({ status: "backend ok" });
