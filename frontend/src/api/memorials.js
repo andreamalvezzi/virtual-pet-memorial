@@ -19,12 +19,10 @@ export async function createMemorial(data, token) {
 
   if (!res.ok) {
     let errorMessage = "Errore creazione memoriale";
-
     try {
       const error = await res.json();
       if (error?.error) errorMessage = error.error;
     } catch (_) {}
-
     throw new Error(errorMessage);
   }
 
@@ -51,6 +49,7 @@ export async function getMemorialBySlug(slug) {
 
   return res.json();
 }
+
 /**
  * Recupera i memoriali dell'utente loggato
  */
@@ -61,7 +60,7 @@ export async function getMyMemorials() {
     throw new Error("Utente non autenticato");
   }
 
-  const res = await fetch("/api/memorials/my", {
+  const res = await fetch(`${API_URL}/memorials/my`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
@@ -73,6 +72,7 @@ export async function getMyMemorials() {
 
   return res.json();
 }
+
 /**
  * Elimina un memoriale dell'utente
  */
@@ -83,7 +83,7 @@ export async function deleteMemorial(id) {
     throw new Error("Utente non autenticato");
   }
 
-  const res = await fetch(`/api/memorials/${id}`, {
+  const res = await fetch(`${API_URL}/memorials/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -92,17 +92,16 @@ export async function deleteMemorial(id) {
 
   if (!res.ok) {
     let errorMessage = "Errore eliminazione memoriale";
-
     try {
       const error = await res.json();
       if (error?.error) errorMessage = error.error;
     } catch (_) {}
-
     throw new Error(errorMessage);
   }
 
   return res.json();
 }
+
 /**
  * Aggiorna un memoriale
  */
@@ -113,7 +112,7 @@ export async function updateMemorial(id, data) {
     throw new Error("Utente non autenticato");
   }
 
-  const res = await fetch(`/api/memorials/${id}`, {
+  const res = await fetch(`${API_URL}/memorials/${id}`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
