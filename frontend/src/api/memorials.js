@@ -33,7 +33,9 @@ export async function createMemorial(data, token) {
  * Recupera memoriale pubblico tramite slug
  */
 export async function getMemorialBySlug(slug) {
-  const res = await fetch(`${API_URL}/memorials/${slug}`);
+  const res = await fetch(`${API_URL}/memorials/${slug}`, {
+  cache: "no-store",
+  });
 
   if (res.status === 404) {
     throw new Error("Memoriale non trovato");
