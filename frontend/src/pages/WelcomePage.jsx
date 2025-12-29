@@ -5,7 +5,7 @@ export default function WelcomePage() {
 
   const handleEnter = () => {
     localStorage.setItem("hasSeenWelcome", "true");
-    navigate("/", { replace: true });
+    navigate("/login", { replace: true });
   };
 
   return (
