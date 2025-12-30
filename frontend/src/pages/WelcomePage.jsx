@@ -139,11 +139,12 @@ const styles = {
     margin: "0 auto",
   },
   hero: {
-    textAlign: "center",
     display: "flex",
     flexDirection: "column",
-    alignItems: "center",   // 🔑
+    alignItems: "center",
+    textAlign: "center",
     gap: "1.5rem",
+    width: "100%",
   },
   title: {
     fontSize: "2.4rem",
@@ -186,9 +187,9 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: "2.5rem",
     textAlign: "center",
-     width: "100%",
+    gap: "2.5rem",
+    width: "100%",
   },
   sectionTitle: {
     fontSize: "1.7rem",
@@ -202,6 +203,7 @@ const styles = {
     width: "100%",
     maxWidth: "900px",
     margin: "0 auto",
+    justifyItems: "center",   // 🔑 QUESTO
   },
   stepCard: {
     padding: "2rem",
@@ -209,9 +211,9 @@ const styles = {
     backgroundColor: "#fafafa",
     border: "1px solid #e5e7eb",
     display: "flex",
-    alignItems: "center",   // 🔑
-    textAlign: "center",    // 🔑
     flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
     gap: "0.75rem",
   },
   icon: {
