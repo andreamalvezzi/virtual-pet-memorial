@@ -125,13 +125,12 @@ const styles = {
     flexDirection: "column",
     gap: "4rem",
     padding: "3.5rem 1.5rem",
-    maxWidth: "900px",
+    maxWidth: "1100px",
     margin: "0 auto",
     fontFamily:
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif",
     color: "#1f2937",
   },
-
   hero: {
     textAlign: "center",
     display: "flex",
@@ -177,7 +176,8 @@ const styles = {
   howItWorks: {
     display: "flex",
     flexDirection: "column",
-    gap: "2rem",
+    alignItems: "center",
+    gap: "2.5rem",
     textAlign: "center",
   },
   sectionTitle: {
@@ -185,12 +185,15 @@ const styles = {
   },
   steps: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-    gap: "1.5rem",
+    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    gap: "2rem",
+    width: "100%",
+    maxWidth: "900px",
+    margin: "0 auto",
   },
   stepCard: {
-    padding: "1.75rem",
-    borderRadius: "16px",
+    padding: "2rem",
+    borderRadius: "18px",
     backgroundColor: "#fafafa",
     border: "1px solid #e5e7eb",
     display: "flex",
@@ -198,7 +201,8 @@ const styles = {
     gap: "0.75rem",
   },
   icon: {
-    fontSize: "2rem",
+    fontSize: "2.2rem",
+    marginBottom: "0.25rem",
   },
   footer: {
     textAlign: "center",
