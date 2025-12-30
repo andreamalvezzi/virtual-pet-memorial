@@ -7,6 +7,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false); // ✅ AGGIUNTO
 
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
@@ -14,13 +15,15 @@ export default function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    
+    setLoading(true); // ✅ inizio loading
+
     try {
       const data = await loginApi(email, password);
-      console.log("LOGIN RESPONSE:", data); // 👈 AGGIUNGI QUESTA RIGA
       login(data.token, data.user);
     } catch (err) {
       setError("Credenziali non valide");
+    } finally {
+      setLoading(false); // ✅ fine loading (success o errore)
     }
   };
 
@@ -43,6 +46,7 @@ export default function LoginPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}   // ✅ blocca input
           required
         />
 
@@ -51,10 +55,13 @@ export default function LoginPage() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}   // ✅ blocca input
           required
         />
 
-        <button type="submit">Accedi</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Accesso in corso…" : "Accedi"}
+        </button>
       </form>
     </div>
   );
