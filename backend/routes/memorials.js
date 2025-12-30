@@ -10,12 +10,20 @@ function generateSlug(petName, deathDate) {
   const random = Math.random().toString(36).substring(2, 6);
   return `${slugify(petName, { lower: true })}-${year}-${random}`;
 }
+
 /* ======================================================
    POST /api/memorials (creazione)
    ====================================================== */
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const { petName, species, deathDate, epitaph, isPublic = false } = req.body;
+    const {
+      petName,
+      species,
+      deathDate,
+      epitaph,
+      isPublic = false,
+      imageUrl, // 👈 AGGIUNTO
+    } = req.body;
 
     if (!petName || !species || !deathDate || !epitaph) {
       return res.status(400).json({ error: "Missing required fields" });
@@ -30,6 +38,7 @@ router.post("/", authenticateToken, async (req, res) => {
         deathDate: new Date(deathDate),
         epitaph,
         isPublic,
+        imageUrl: imageUrl || null, // 👈 AGGIUNTO
         slug,
         userId: req.user.userId,
       },
@@ -41,8 +50,9 @@ router.post("/", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 /* ======================================================
-   GET /api/memorials/my  (DASHBOARD UTENTE) ✅
+   GET /api/memorials/my  (DASHBOARD UTENTE)
    ====================================================== */
 router.get("/my", authenticateToken, async (req, res) => {
   try {
@@ -59,6 +69,7 @@ router.get("/my", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Errore nel recupero memoriali" });
   }
 });
+
 /* ======================================================
    DELETE /api/memorials/:id
    ====================================================== */
@@ -93,6 +104,7 @@ router.delete("/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Errore eliminazione memoriale" });
   }
 });
+
 /* ======================================================
    PATCH /api/memorials/:id
    ====================================================== */
@@ -117,7 +129,14 @@ router.patch("/:id", authenticateToken, async (req, res) => {
       return res.status(403).json({ error: "Accesso negato" });
     }
 
-    const { petName, species, deathDate, epitaph, isPublic } = req.body;
+    const {
+      petName,
+      species,
+      deathDate,
+      epitaph,
+      isPublic,
+      imageUrl, // 👈 AGGIUNTO
+    } = req.body;
 
     const updated = await prisma.memorial.update({
       where: { id: memorialId },
@@ -127,6 +146,7 @@ router.patch("/:id", authenticateToken, async (req, res) => {
         deathDate: deathDate ? new Date(deathDate) : undefined,
         epitaph,
         isPublic,
+        imageUrl, // 👈 AGGIUNTO (undefined = non modifica)
       },
     });
 
@@ -136,6 +156,7 @@ router.patch("/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Errore aggiornamento memoriale" });
   }
 });
+
 /* ======================================================
    GET /api/memorials/:slug  (PUBBLICO)
    ====================================================== */
@@ -151,6 +172,7 @@ router.get("/:slug", async (req, res) => {
         species: true,
         deathDate: true,
         epitaph: true,
+        imageUrl: true, // 👈 AGGIUNTO
         isPublic: true,
         slug: true,
         createdAt: true,

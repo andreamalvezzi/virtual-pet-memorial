@@ -14,10 +14,10 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  password  String
-  role      String   @default("free")
+  id       Int    @id @default(autoincrement())
+  email    String @unique
+  password String
+  role     String @default("free")
 
   createdAt DateTime @default(now())
 
@@ -25,26 +25,28 @@ model User {
 }
 
 model Memorial {
-  id        Int      @id @default(autoincrement())
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
+  id     Int  @id @default(autoincrement())
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
 
   // Dati del pet
-  petName   String
-  species   String
+  petName String
+  species String
 
   // Momento del ricordo
   deathDate DateTime
 
   // Testo memoriale
-  epitaph   String
+  epitaph String
+
+  // Immagine del pet (opzionale)
+  imageUrl String?
 
   // Visibilità
-  isPublic  Boolean  @default(false)
+  isPublic Boolean @default(false)
 
   // URL pubblico
-  slug      String   @unique
+  slug String @unique
 
   createdAt DateTime @default(now())
 }
-
