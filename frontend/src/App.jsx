@@ -21,7 +21,10 @@ function App() {
 
 
   // Nasconde la navbar nei memoriali pubblici
-  const hideNavbar = location.pathname.startsWith("/memorials/");
+  const hideNavbar =
+    location.pathname.startsWith("/memorials/") ||
+    location.pathname === "/welcome";
+
 
   return (
     <>
