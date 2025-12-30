@@ -7,6 +7,7 @@ import authRouter from "./routes/auth.js";
 import memorialsRouter from "./routes/memorials.js";
 
 import { authenticateToken } from "./middleware/authMiddleware.js";
+import cloudinaryRoutes from "./routes/cloudinary.js";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get("/", (req, res) => {
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/memorials", memorialsRouter);
+app.use("/api/cloudinary", cloudinaryRoutes);
 
 app.get("/api/protected", authenticateToken, (req, res) => {
   res.json({

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createMemorial } from "../api/memorials";
+import PetImageUpload from "../components/PetImageUpload"; // 👈 AGGIUNTO
 
 export default function NewMemorialPage() {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function NewMemorialPage() {
     isPublic: true,
   });
 
+  const [imageUrl, setImageUrl] = useState(null); // 👈 AGGIUNTO
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -36,7 +38,15 @@ export default function NewMemorialPage() {
 
     try {
       setLoading(true);
-      const memorial = await createMemorial(form, token);
+
+      const memorial = await createMemorial(
+        {
+          ...form,
+          imageUrl, // 👈 AGGIUNTO
+        },
+        token
+      );
+
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
       setError(err.message);
@@ -50,6 +60,9 @@ export default function NewMemorialPage() {
       <h1>Crea un memoriale</h1>
 
       <form onSubmit={handleSubmit}>
+        {/* UPLOAD IMMAGINE */}
+        <PetImageUpload onUpload={setImageUrl} />
+
         <div>
           <label>Nome del pet</label>
           <input
