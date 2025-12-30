@@ -29,19 +29,20 @@ export default function WelcomePage() {
   useEffect(() => {
     const timers = [];
 
-    timers.push(setTimeout(() => setVisibleSteps(1), 1000));
-    timers.push(setTimeout(() => setVisibleSteps(2), 3000));
-    timers.push(setTimeout(() => setVisibleSteps(3), 5000));
+    timers.push(setTimeout(() => setVisibleSteps(1), 600));
+    timers.push(setTimeout(() => setVisibleSteps(2), 1400));
+    timers.push(setTimeout(() => setVisibleSteps(3), 2200));
 
     return () => timers.forEach(clearTimeout);
   }, []);
-  
+
+  /* ---------------- ANIMATION STYLE ---------------- */
   const getStepStyle = (stepIndex) => ({
     opacity: visibleSteps >= stepIndex ? 1 : 0,
     transform: visibleSteps >= stepIndex
       ? "translateY(0)"
       : "translateY(20px)",
-    transition: "opacity 0.6s ease, transform 0.6s ease",
+    transition: "opacity 600ms ease, transform 600ms ease",
   });
 
   /* ---------------- RENDER ---------------- */
@@ -75,38 +76,32 @@ export default function WelcomePage() {
         <h2 style={styles.sectionTitle}>Come funziona</h2>
 
         <div style={styles.steps}>
-          {visibleSteps >= 1 && (
-            <div style={animatedStepStyle(true)}>
-              <div style={styles.icon}>🕯️</div>
-              <h3>Crea un memoriale</h3>
-              <p>
-                Inserisci il nome del tuo animale e una breve frase per
-                ricordarlo.
-              </p>
-            </div>
-          )}
+          <div style={{ ...styles.stepCard, ...getStepStyle(1) }}>
+            <div style={styles.icon}>🕯️</div>
+            <h3>Crea un memoriale</h3>
+            <p>
+              Inserisci il nome del tuo animale e una breve frase per
+              ricordarlo.
+            </p>
+          </div>
 
-          {visibleSteps >= 2 && (
-            <div style={animatedStepStyle(true)}>
-              <div style={styles.icon}>🐾</div>
-              <h3>Custodisci il ricordo</h3>
-              <p>
-                Puoi modificare o aggiornare il memoriale ogni volta che lo
-                desideri.
-              </p>
-            </div>
-          )}
+          <div style={{ ...styles.stepCard, ...getStepStyle(2) }}>
+            <div style={styles.icon}>🐾</div>
+            <h3>Custodisci il ricordo</h3>
+            <p>
+              Puoi modificare o aggiornare il memoriale ogni volta che lo
+              desideri.
+            </p>
+          </div>
 
-          {visibleSteps >= 3 && (
-            <div style={animatedStepStyle(true)}>
-              <div style={styles.icon}>💙</div>
-              <h3>Condividi, se vuoi</h3>
-              <p>
-                Decidi se tenere il memoriale privato o renderlo visibile a chi
-                ha il link.
-              </p>
-            </div>
-          )}
+          <div style={{ ...styles.stepCard, ...getStepStyle(3) }}>
+            <div style={styles.icon}>💙</div>
+            <h3>Condividi, se vuoi</h3>
+            <p>
+              Decidi se tenere il memoriale privato o renderlo visibile a chi ha
+              il link.
+            </p>
+          </div>
         </div>
       </section>
 
