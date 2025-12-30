@@ -107,7 +107,7 @@ const styles = {
     padding: "4rem 1.5rem",
   },
   heroInner: {
-    maxWidth: "900px",
+    maxWidth: "1200px",//era 900
     margin: "0 auto",
     textAlign: "center",
   },
@@ -148,6 +148,8 @@ const styles = {
   howItWorks: {
     padding: "4rem 1.5rem",
     textAlign: "center",
+    maxWidth: "1200px",//aggiunto
+    margin: "0 auto",//aggiunto
   },
   sectionTitle: {
     fontSize: "1.7rem",
@@ -159,14 +161,14 @@ const styles = {
     justifyContent: "center",
     gap: "2rem",
     flexWrap: "wrap",
-    maxWidth: "1100px",
+    maxWidth: "1200px",//era 1100
     margin: "0 auto",
   },
   stepCard: {
     backgroundColor: "#fafafa",
     borderRadius: "18px",
     padding: "2rem",
-    maxWidth: "320px",
+    maxWidth: "360px",//era 320
     textAlign: "center",
     color: "#1f2937",
   },
