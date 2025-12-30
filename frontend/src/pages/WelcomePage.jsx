@@ -132,6 +132,7 @@ const styles = {
     flexDirection: "column",
     gap: "4rem",
     alignItems: "center",   // 🔑 QUESTO
+    outline: "2px dashed red",   // 🔴 SOLO PER TEST
   },
   content: {
     width: "100%",
