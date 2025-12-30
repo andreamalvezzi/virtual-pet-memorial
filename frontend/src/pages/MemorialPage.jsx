@@ -54,6 +54,17 @@ export default function MemorialPage() {
         color: "#222",
       }}
     >
+      {memorial.imageUrl && (
+      <img
+        src={memorial.imageUrl}
+          alt={memorial.petName}
+            style={{
+              maxWidth: "100%",
+              borderRadius: "12px",
+              marginBottom: "1.5rem",
+            }}
+        />
+      )}
       <h1 style={{ fontSize: "2.2rem", marginBottom: "0.5rem" }}>
         🪦 {memorial.petName}
       </h1>
