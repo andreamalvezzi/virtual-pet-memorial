@@ -29,9 +29,9 @@ export default function WelcomePage() {
   useEffect(() => {
     const timers = [];
 
-    timers.push(setTimeout(() => setVisibleSteps(1), 200));
-    timers.push(setTimeout(() => setVisibleSteps(2), 600));
-    timers.push(setTimeout(() => setVisibleSteps(3), 1000));
+    timers.push(setTimeout(() => setVisibleSteps(1), 1000));
+    timers.push(setTimeout(() => setVisibleSteps(2), 3000));
+    timers.push(setTimeout(() => setVisibleSteps(3), 5000));
 
     return () => timers.forEach(clearTimeout);
   }, []);
