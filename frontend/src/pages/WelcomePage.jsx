@@ -79,15 +79,15 @@ export default function WelcomePage() {
         <div style={styles.steps}>
           <div style={{ ...styles.stepCard, ...getStepStyle(1) }}>
             <div style={styles.icon}>🕯️</div>
-            <h3>Crea un memoriale</h3>
-            <p>
+            <h3 style={styles.stepTitle}>Crea un memoriale</h3>
+            <p style={styles.stepText}>
               Inserisci il nome del tuo animale e una breve frase per ricordarlo.
             </p>
           </div>
 
           <div style={{ ...styles.stepCard, ...getStepStyle(2) }}>
             <div style={styles.icon}>🐾</div>
-            <h3>Custodisci il ricordo</h3>
+            <h3 style={styles.stepTitle}>Custodisci il ricordo</h3>
             <p>
               Puoi modificare o aggiornare il memoriale ogni volta che lo desideri.
             </p>
@@ -95,7 +95,7 @@ export default function WelcomePage() {
 
           <div style={{ ...styles.stepCard, ...getStepStyle(3) }}>
             <div style={styles.icon}>💙</div>
-            <h3>Condividi, se vuoi</h3>
+            <h3 style={styles.stepTitle}>Condividi, se vuoi</h3>
             <p>
               Decidi se tenere il memoriale privato o renderlo visibile a chi ha il
               link.
@@ -132,6 +132,7 @@ const styles = {
     flexDirection: "column",
     gap: "4rem",
     alignItems: "center",   // 🔑 QUESTO
+    
     outline: "2px dashed red",   // 🔴 SOLO PER TEST
   },
   content: {
@@ -198,13 +199,11 @@ const styles = {
     color: "#c7d2fe",
   },
   steps: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+    display: "flex",
     gap: "2rem",
+    justifyContent: "center",
+    flexWrap: "wrap",
     width: "100%",
-    maxWidth: "900px",
-    margin: "0 auto",
-    justifyItems: "center",   // 🔑 QUESTO
   },
   stepCard: {
     padding: "2rem",
@@ -216,6 +215,17 @@ const styles = {
     alignItems: "center",
     textAlign: "center",
     gap: "0.75rem",
+    color: "#1f2937",
+  },
+  stepTitle: {
+    fontSize: "1.05rem",
+    fontWeight: 600,
+    color: "#111827",
+  },
+  stepText: {
+    fontSize: "0.95rem",
+    lineHeight: 1.5,
+    color: "#4b5563",
   },
   icon: {
     fontSize: "2.2rem",
