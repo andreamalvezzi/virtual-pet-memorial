@@ -3,10 +3,23 @@ import { useNavigate } from "react-router-dom";
 export default function WelcomePage() {
   const navigate = useNavigate();
 
-  const handleEnter = () => {
+  const handleStart = () => {
     localStorage.setItem("hasSeenWelcome", "true");
-    navigate("/login", { replace: true });
+
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      navigate("/dashboard", { replace: true });
+    } else {
+      navigate("/login", { replace: true });
+    }
   };
+
+const handleSkip = () => {
+  localStorage.setItem("hasSeenWelcome", "true");
+  navigate("/login", { replace: true });
+};
+
 
   return (
     <main style={styles.page}>
@@ -23,11 +36,11 @@ export default function WelcomePage() {
         </p>
 
         <div style={styles.heroActions}>
-          <button style={styles.primaryButton} onClick={handleEnter}>
+          <button style={styles.primaryButton} onClick={handleStart}>
             ✨ Inizia
           </button>
 
-          <button style={styles.secondaryButton} onClick={handleEnter}>
+          <button style={styles.secondaryButton} onClick={handleSkip}>
             Salta
           </button>
         </div>
@@ -71,7 +84,7 @@ export default function WelcomePage() {
       <section style={styles.footer}>
         <p style={styles.footerText}>Ogni ricordo merita uno spazio.</p>
 
-        <button style={styles.primaryButton} onClick={handleEnter}>
+        <button style={styles.primaryButton} onClick={handleStart}>
           ✨ Entra in Virtual Pet Memorial
         </button>
       </section>
