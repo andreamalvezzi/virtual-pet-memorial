@@ -12,14 +12,7 @@ import { Navigate } from "react-router-dom";
 
 function App() {
   const location = useLocation();
-  const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
-
-  // se non ha visto la welcome e NON è già sulla welcome
-  if (!hasSeenWelcome && location.pathname !== "/welcome") {
-    return <Navigate to="/welcome" replace />;
-  }
-
-
+  
   // Nasconde la navbar nei memoriali pubblici
   const hideNavbar =
     location.pathname.startsWith("/memorials/") ||
