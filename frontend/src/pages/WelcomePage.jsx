@@ -49,7 +49,7 @@ export default function WelcomePage() {
   return (
     <main style={styles.page}>
       {/* HERO */}
-      <section style={styles.hero}>
+      <section style={{ ...styles.hero, ...styles.content }}>
         <h1 style={styles.title}>
           Un luogo per ricordare chi ci ha accompagnato
         </h1>
@@ -72,9 +72,8 @@ export default function WelcomePage() {
       </section>
 
       {/* COME FUNZIONA */}
-      <section style={styles.howItWorks}>
+      <section style={{ ...styles.howItWorks, ...styles.content }}>
         <h2 style={styles.sectionTitle}>Come funziona</h2>
-
         <div style={styles.steps}>
           <div style={{ ...styles.stepCard, ...getStepStyle(1) }}>
             <div style={styles.icon}>🕯️</div>
@@ -131,6 +130,11 @@ const styles = {
       "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif",
     color: "#1f2937",
   },
+  content: {
+    width: "100%",
+    maxWidth: "900px",
+    margin: "0 auto",
+  },
   hero: {
     textAlign: "center",
     display: "flex",
@@ -140,12 +144,13 @@ const styles = {
   title: {
     fontSize: "2.4rem",
     lineHeight: 1.25,
-    fontWeight: 500,
+    fontWeight: 600,
     letterSpacing: "-0.02em",
+    color: "#e5e7eb",
   },
   subtitle: {
     fontSize: "1.05rem",
-    color: "#6b7280",
+    color: "#9ca3af",
     maxWidth: "620px",
     margin: "0 auto",
     lineHeight: 1.6,
@@ -181,7 +186,9 @@ const styles = {
     textAlign: "center",
   },
   sectionTitle: {
-    fontSize: "1.6rem",
+    fontSize: "1.7rem",
+    fontWeight: 600,
+    color: "#c7d2fe",
   },
   steps: {
     display: "grid",
