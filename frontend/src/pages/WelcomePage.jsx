@@ -35,6 +35,14 @@ export default function WelcomePage() {
 
     return () => timers.forEach(clearTimeout);
   }, []);
+  
+  const getStepStyle = (stepIndex) => ({
+    opacity: visibleSteps >= stepIndex ? 1 : 0,
+    transform: visibleSteps >= stepIndex
+      ? "translateY(0)"
+      : "translateY(20px)",
+    transition: "opacity 0.6s ease, transform 0.6s ease",
+  });
 
   /* ---------------- RENDER ---------------- */
   return (
@@ -68,7 +76,7 @@ export default function WelcomePage() {
 
         <div style={styles.steps}>
           {visibleSteps >= 1 && (
-            <div style={styles.stepCard}>
+            <div style={animatedStepStyle(true)}>
               <div style={styles.icon}>🕯️</div>
               <h3>Crea un memoriale</h3>
               <p>
@@ -79,7 +87,7 @@ export default function WelcomePage() {
           )}
 
           {visibleSteps >= 2 && (
-            <div style={styles.stepCard}>
+            <div style={animatedStepStyle(true)}>
               <div style={styles.icon}>🐾</div>
               <h3>Custodisci il ricordo</h3>
               <p>
@@ -90,7 +98,7 @@ export default function WelcomePage() {
           )}
 
           {visibleSteps >= 3 && (
-            <div style={styles.stepCard}>
+            <div style={animatedStepStyle(true)}>
               <div style={styles.icon}>💙</div>
               <h3>Condividi, se vuoi</h3>
               <p>
