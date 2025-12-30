@@ -3,21 +3,12 @@ import { useState, useEffect } from "react";
 
 export default function WelcomePage() {
   const navigate = useNavigate();
-
-  /* ---------------- STATE ---------------- */
   const [visibleSteps, setVisibleSteps] = useState(0);
 
-  /* ---------------- HANDLERS ---------------- */
   const handleStart = () => {
     localStorage.setItem("hasSeenWelcome", "true");
-
     const token = localStorage.getItem("token");
-
-    if (token) {
-      navigate("/dashboard", { replace: true });
-    } else {
-      navigate("/login", { replace: true });
-    }
+    navigate(token ? "/dashboard" : "/login", { replace: true });
   };
 
   const handleSkip = () => {
@@ -25,50 +16,44 @@ export default function WelcomePage() {
     navigate("/login", { replace: true });
   };
 
-  /* ---------------- EFFECTS ---------------- */
   useEffect(() => {
-    const timers = [];
-
-    timers.push(setTimeout(() => setVisibleSteps(1), 600));
-    timers.push(setTimeout(() => setVisibleSteps(2), 1400));
-    timers.push(setTimeout(() => setVisibleSteps(3), 2200));
-
+    const timers = [
+      setTimeout(() => setVisibleSteps(1), 600),
+      setTimeout(() => setVisibleSteps(2), 1400),
+      setTimeout(() => setVisibleSteps(3), 2200),
+    ];
     return () => timers.forEach(clearTimeout);
   }, []);
 
-  /* ---------------- ANIMATION STYLE ---------------- */
-  const getStepStyle = (stepIndex) => ({
-    opacity: visibleSteps >= stepIndex ? 1 : 0,
-    transform: visibleSteps >= stepIndex
-      ? "translateY(0)"
-      : "translateY(20px)",
+  const getStepStyle = (step) => ({
+    opacity: visibleSteps >= step ? 1 : 0,
+    transform: visibleSteps >= step ? "translateY(0)" : "translateY(20px)",
     transition: "opacity 600ms ease, transform 600ms ease",
   });
 
-  /* ---------------- RENDER ---------------- */
   return (
-    <main style={styles.outer}>
-    <div style={styles.container}>
-      {/* HERO */}
+    <main>
+      {/* HERO FULL WIDTH */}
       <section style={styles.hero}>
-        <h1 style={styles.title}>
-          Un luogo per ricordare chi ci ha accompagnato
-        </h1>
+        <div style={styles.heroInner}>
+          <h1 style={styles.title}>
+            Un luogo per ricordare chi ci ha accompagnato
+          </h1>
 
-        <p style={styles.subtitle}>
-          Virtual Pet Memorial è uno spazio digitale dedicato agli animali che
-          hanno fatto parte della nostra vita. Qui puoi custodire il loro
-          ricordo, con semplicità e rispetto.
-        </p>
+          <p style={styles.subtitle}>
+            Virtual Pet Memorial è uno spazio digitale dedicato agli animali che
+            hanno fatto parte della nostra vita. Qui puoi custodire il loro
+            ricordo, con semplicità e rispetto.
+          </p>
 
-        <div style={styles.heroActions}>
-          <button style={styles.primaryButton} onClick={handleStart}>
-            ✨ Inizia
-          </button>
-
-          <button style={styles.secondaryButton} onClick={handleSkip}>
-            Salta
-          </button>
+          <div style={styles.heroActions}>
+            <button style={styles.primaryButton} onClick={handleStart}>
+              ✨ Inizia
+            </button>
+            <button style={styles.secondaryButton} onClick={handleSkip}>
+              Salta
+            </button>
+          </div>
         </div>
       </section>
 
@@ -88,7 +73,7 @@ export default function WelcomePage() {
           <div style={{ ...styles.stepCard, ...getStepStyle(2) }}>
             <div style={styles.icon}>🐾</div>
             <h3 style={styles.stepTitle}>Custodisci il ricordo</h3>
-            <p>
+            <p style={styles.stepText}>
               Puoi modificare o aggiornare il memoriale ogni volta che lo desideri.
             </p>
           </div>
@@ -96,9 +81,8 @@ export default function WelcomePage() {
           <div style={{ ...styles.stepCard, ...getStepStyle(3) }}>
             <div style={styles.icon}>💙</div>
             <h3 style={styles.stepTitle}>Condividi, se vuoi</h3>
-            <p>
-              Decidi se tenere il memoriale privato o renderlo visibile a chi ha il
-              link.
+            <p style={styles.stepText}>
+              Decidi se tenere il memoriale privato o renderlo visibile a chi ha il link.
             </p>
           </div>
         </div>
@@ -107,68 +91,46 @@ export default function WelcomePage() {
       {/* FOOTER CTA */}
       <section style={styles.footer}>
         <p style={styles.footerText}>Ogni ricordo merita uno spazio.</p>
-
         <button style={styles.primaryButton} onClick={handleStart}>
           ✨ Entra in Virtual Pet Memorial
         </button>
       </section>
-    </div>
     </main>
   );
 }
 
 /* ---------------- STYLES ---------------- */
 const styles = {
-  outer: {
+  hero: {
     width: "100%",
-    display: "flex",
-    justifyContent: "center",
+    background: "linear-gradient(180deg, #1f2937 0%, #111827 100%)",
+    padding: "4rem 1.5rem",
   },
-  container: {
-    width: "100%",
-    maxWidth: "1100px",
-    padding: "3.5rem 1.5rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: "4rem",
-    alignItems: "center",   // 🔑 QUESTO
-  },
-  content: {
-    width: "100%",
+  heroInner: {
     maxWidth: "900px",
     margin: "0 auto",
-  },
-  hero: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
     textAlign: "center",
-    gap: "1.5rem",
-    width: "100%",
   },
   title: {
     fontSize: "2.4rem",
-    lineHeight: 1.25,
     fontWeight: 600,
-    letterSpacing: "-0.02em",
     color: "#e5e7eb",
+    marginBottom: "1rem",
   },
   subtitle: {
     fontSize: "1.05rem",
     color: "#9ca3af",
     maxWidth: "620px",
-    margin: "0 auto",
+    margin: "0 auto 2rem",
     lineHeight: 1.6,
   },
   heroActions: {
     display: "flex",
     justifyContent: "center",
     gap: "1rem",
-    marginTop: "1rem",
   },
   primaryButton: {
     padding: "0.85rem 1.75rem",
-    fontSize: "0.95rem",
     borderRadius: "999px",
     border: "none",
     backgroundColor: "#334155",
@@ -177,65 +139,56 @@ const styles = {
   },
   secondaryButton: {
     padding: "0.75rem 1.5rem",
-    fontSize: "1rem",
     borderRadius: "999px",
-    border: "1px solid #ccc",
-    backgroundColor: "transparent",
+    border: "1px solid #9ca3af",
+    background: "transparent",
+    color: "#e5e7eb",
     cursor: "pointer",
   },
   howItWorks: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    padding: "4rem 1.5rem",
     textAlign: "center",
-    gap: "2.5rem",
-    width: "100%",
   },
   sectionTitle: {
     fontSize: "1.7rem",
     fontWeight: 600,
-    color: "#c7d2fe",
+    marginBottom: "3rem",
   },
   steps: {
     display: "flex",
-    gap: "2rem",
     justifyContent: "center",
+    gap: "2rem",
     flexWrap: "wrap",
-    width: "100%",
+    maxWidth: "1100px",
+    margin: "0 auto",
   },
   stepCard: {
-    padding: "2rem",
-    borderRadius: "18px",
     backgroundColor: "#fafafa",
-    border: "1px solid #e5e7eb",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
+    borderRadius: "18px",
+    padding: "2rem",
+    maxWidth: "320px",
     textAlign: "center",
-    gap: "0.75rem",
     color: "#1f2937",
   },
   stepTitle: {
-    fontSize: "1.05rem",
     fontWeight: 600,
-    color: "#111827",
+    marginBottom: "0.5rem",
   },
   stepText: {
     fontSize: "0.95rem",
-    lineHeight: 1.5,
     color: "#4b5563",
+    lineHeight: 1.5,
   },
   icon: {
     fontSize: "2.2rem",
-    marginBottom: "0.25rem",
+    marginBottom: "0.75rem",
   },
   footer: {
     textAlign: "center",
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
+    padding: "3rem 1.5rem",
   },
   footerText: {
     fontSize: "1.2rem",
+    marginBottom: "1rem",
   },
 };
