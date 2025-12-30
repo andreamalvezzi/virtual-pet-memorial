@@ -1,8 +1,13 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 
 export default function WelcomePage() {
   const navigate = useNavigate();
 
+  /* ---------------- STATE ---------------- */
+  const [visibleSteps, setVisibleSteps] = useState(0);
+
+  /* ---------------- HANDLERS ---------------- */
   const handleStart = () => {
     localStorage.setItem("hasSeenWelcome", "true");
 
@@ -15,12 +20,23 @@ export default function WelcomePage() {
     }
   };
 
-const handleSkip = () => {
-  localStorage.setItem("hasSeenWelcome", "true");
-  navigate("/login", { replace: true });
-};
+  const handleSkip = () => {
+    localStorage.setItem("hasSeenWelcome", "true");
+    navigate("/login", { replace: true });
+  };
 
+  /* ---------------- EFFECTS ---------------- */
+  useEffect(() => {
+    const timers = [];
 
+    timers.push(setTimeout(() => setVisibleSteps(1), 200));
+    timers.push(setTimeout(() => setVisibleSteps(2), 600));
+    timers.push(setTimeout(() => setVisibleSteps(3), 1000));
+
+    return () => timers.forEach(clearTimeout);
+  }, []);
+
+  /* ---------------- RENDER ---------------- */
   return (
     <main style={styles.page}>
       {/* HERO */}
@@ -51,32 +67,38 @@ const handleSkip = () => {
         <h2 style={styles.sectionTitle}>Come funziona</h2>
 
         <div style={styles.steps}>
-          <div style={styles.stepCard}>
-            <div style={styles.icon}>🕯️</div>
-            <h3>Crea un memoriale</h3>
-            <p>
-              Inserisci il nome del tuo animale e una breve frase per
-              ricordarlo.
-            </p>
-          </div>
+          {visibleSteps >= 1 && (
+            <div style={styles.stepCard}>
+              <div style={styles.icon}>🕯️</div>
+              <h3>Crea un memoriale</h3>
+              <p>
+                Inserisci il nome del tuo animale e una breve frase per
+                ricordarlo.
+              </p>
+            </div>
+          )}
 
-          <div style={styles.stepCard}>
-            <div style={styles.icon}>🐾</div>
-            <h3>Custodisci il ricordo</h3>
-            <p>
-              Puoi modificare o aggiornare il memoriale ogni volta che lo
-              desideri.
-            </p>
-          </div>
+          {visibleSteps >= 2 && (
+            <div style={styles.stepCard}>
+              <div style={styles.icon}>🐾</div>
+              <h3>Custodisci il ricordo</h3>
+              <p>
+                Puoi modificare o aggiornare il memoriale ogni volta che lo
+                desideri.
+              </p>
+            </div>
+          )}
 
-          <div style={styles.stepCard}>
-            <div style={styles.icon}>💙</div>
-            <h3>Condividi, se vuoi</h3>
-            <p>
-              Decidi se tenere il memoriale privato o renderlo visibile a chi ha
-              il link.
-            </p>
-          </div>
+          {visibleSteps >= 3 && (
+            <div style={styles.stepCard}>
+              <div style={styles.icon}>💙</div>
+              <h3>Condividi, se vuoi</h3>
+              <p>
+                Decidi se tenere il memoriale privato o renderlo visibile a chi
+                ha il link.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -92,6 +114,7 @@ const handleSkip = () => {
   );
 }
 
+/* ---------------- STYLES ---------------- */
 const styles = {
   page: {
     minHeight: "100vh",
