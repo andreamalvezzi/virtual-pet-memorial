@@ -47,9 +47,10 @@ export default function WelcomePage() {
 
   /* ---------------- RENDER ---------------- */
   return (
-    <main style={styles.page}>
+    <main style={styles.outer}>
+    <div style={styles.container}>
       {/* HERO */}
-      <section style={{ ...styles.hero, ...styles.content }}>
+      <section style={styles.hero}>
         <h1 style={styles.title}>
           Un luogo per ricordare chi ci ha accompagnato
         </h1>
@@ -72,15 +73,15 @@ export default function WelcomePage() {
       </section>
 
       {/* COME FUNZIONA */}
-      <section style={{ ...styles.howItWorks, ...styles.content }}>
+      <section style={styles.howItWorks}>
         <h2 style={styles.sectionTitle}>Come funziona</h2>
+
         <div style={styles.steps}>
           <div style={{ ...styles.stepCard, ...getStepStyle(1) }}>
             <div style={styles.icon}>🕯️</div>
             <h3>Crea un memoriale</h3>
             <p>
-              Inserisci il nome del tuo animale e una breve frase per
-              ricordarlo.
+              Inserisci il nome del tuo animale e una breve frase per ricordarlo.
             </p>
           </div>
 
@@ -88,8 +89,7 @@ export default function WelcomePage() {
             <div style={styles.icon}>🐾</div>
             <h3>Custodisci il ricordo</h3>
             <p>
-              Puoi modificare o aggiornare il memoriale ogni volta che lo
-              desideri.
+              Puoi modificare o aggiornare il memoriale ogni volta che lo desideri.
             </p>
           </div>
 
@@ -97,8 +97,8 @@ export default function WelcomePage() {
             <div style={styles.icon}>💙</div>
             <h3>Condividi, se vuoi</h3>
             <p>
-              Decidi se tenere il memoriale privato o renderlo visibile a chi ha
-              il link.
+              Decidi se tenere il memoriale privato o renderlo visibile a chi ha il
+              link.
             </p>
           </div>
         </div>
@@ -112,24 +112,23 @@ export default function WelcomePage() {
           ✨ Entra in Virtual Pet Memorial
         </button>
       </section>
+    </div>
     </main>
   );
 }
 
 /* ---------------- STYLES ---------------- */
 const styles = {
-  page: {
-    minHeight: "100vh",
+  outer: {
+    width: "100%",
     display: "flex",
-    flexDirection: "column",
-    gap: "4rem",
-    padding: "3.5rem 1.5rem",
-    maxWidth: "1100px",
-    margin: "0 auto",
-    fontFamily:
-      "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif",
-    color: "#1f2937",
+    justifyContent: "center",
   },
+  container: {
+    width: "100%",
+    maxWidth: "1100px",
+    padding: "3.5rem 1.5rem",
+  },  
   content: {
     width: "100%",
     maxWidth: "900px",
