@@ -2,6 +2,7 @@ import express from "express";
 import prisma from "../prisma/client.js";
 import slugify from "slugify";
 import { authenticateToken } from "../middleware/authMiddleware.js";
+import { authenticateTokenOptional } from "../middleware/authOptional.js";
 
 const router = express.Router();
 
@@ -158,40 +159,52 @@ router.patch("/:id", authenticateToken, async (req, res) => {
 });
 
 /* ======================================================
-   GET /api/memorials/:slug  (PUBBLICO)
+   GET /api/memorials/:slug  (PUBBLICO + PRIVATO)
    ====================================================== */
-router.get("/:slug", async (req, res) => {
-  try {
-    const { slug } = req.params;
+router.get(
+  "/:slug",
+  authenticateTokenOptional,
+  async (req, res) => {
+    try {
+      const { slug } = req.params;
 
-    const memorial = await prisma.memorial.findUnique({
-      where: { slug },
-      select: {
-        id: true,
-        petName: true,
-        species: true,
-        deathDate: true,
-        epitaph: true,
-        imageUrl: true, // 👈 AGGIUNTO
-        isPublic: true,
-        slug: true,
-        createdAt: true,
-      },
-    });
+      const memorial = await prisma.memorial.findUnique({
+        where: { slug },
+        select: {
+          id: true,
+          petName: true,
+          species: true,
+          deathDate: true,
+          epitaph: true,
+          imageUrl: true,
+          isPublic: true,
+          slug: true,
+          createdAt: true,
+          userId: true, // 👈 NECESSARIO per verificare il proprietario
+        },
+      });
 
-    if (!memorial) {
+      // 1️⃣ Memoriale inesistente
+      if (!memorial) {
+        return res.status(404).json({ error: "Memoriale non trovato" });
+      }
+
+      // 2️⃣ Memoriale pubblico → OK
+      if (memorial.isPublic) {
+        return res.json(memorial);
+      }
+
+      // 3️⃣ Memoriale privato ma proprietario → OK
+      if (req.user && req.user.userId === memorial.userId) {
+        return res.json(memorial);
+      }
+
+      // 4️⃣ Memoriale privato e NON autorizzato → fingi che non esista
       return res.status(404).json({ error: "Memoriale non trovato" });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal server error" });
     }
-
-    if (!memorial.isPublic) {
-      return res.status(403).json({ error: "Memoriale privato" });
-    }
-
-    res.json(memorial);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Internal server error" });
   }
-});
-
+);
 export default router;
