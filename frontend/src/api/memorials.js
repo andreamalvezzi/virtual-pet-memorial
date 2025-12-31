@@ -33,8 +33,15 @@ export async function createMemorial(data, token) {
  * Recupera memoriale pubblico tramite slug
  */
 export async function getMemorialBySlug(slug) {
+  const token = localStorage.getItem("token");
+
   const res = await fetch(`${API_URL}/memorials/${slug}`, {
-  cache: "no-store",
+    cache: "no-store",
+    headers: token
+      ? {
+          Authorization: `Bearer ${token}`,
+        }
+      : {},
   });
 
   if (res.status === 404) {
@@ -51,6 +58,7 @@ export async function getMemorialBySlug(slug) {
 
   return res.json();
 }
+
 
 /**
  * Recupera i memoriali dell'utente loggato

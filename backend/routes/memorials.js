@@ -4,6 +4,7 @@ import slugify from "slugify";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { authenticateTokenOptional } from "../middleware/authOptional.js";
 
+
 const router = express.Router();
 
 function generateSlug(petName, deathDate) {
