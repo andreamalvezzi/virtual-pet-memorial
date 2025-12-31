@@ -8,6 +8,7 @@ export default function MemorialCard({ memorial }) {
     >
       <div
         style={{
+          position: "relative", // 👈 NECESSARIO PER IL BADGE
           borderRadius: 12,
           overflow: "hidden",
           boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
@@ -15,13 +16,36 @@ export default function MemorialCard({ memorial }) {
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.transform = "scale(1.02)";
-          e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.12)";
+          e.currentTarget.style.boxShadow =
+            "0 8px 20px rgba(0,0,0,0.12)";
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.08)";
+          e.currentTarget.style.boxShadow =
+            "0 4px 12px rgba(0,0,0,0.08)";
         }}
       >
+        {/* BADGE PUBBLICO / PRIVATO */}
+        <div
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            padding: "4px 10px",
+            borderRadius: 999,
+            fontSize: 12,
+            fontWeight: 600,
+            background: memorial.isPublic ? "#e6f7ec" : "#fdecea",
+            color: memorial.isPublic ? "#18794e" : "#b42318",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            zIndex: 2,
+          }}
+        >
+          {memorial.isPublic ? "👁️ Pubblico" : "🔒 Privato"}
+        </div>
+
         {/* IMMAGINE */}
         <div style={{ height: 180, background: "#eee" }}>
           {memorial.imageUrl ? (
