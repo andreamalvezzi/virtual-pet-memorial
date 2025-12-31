@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getMyMemorials, deleteMemorial } from "../api/memorials";
+import MemorialCard from "../components/MemorialCard";
 
 export default function DashboardPage() {
   const [memorials, setMemorials] = useState([]);
@@ -23,7 +24,6 @@ export default function DashboardPage() {
     loadMemorials();
   }, []);
 
-  // 👇👇👇 QUI VA LA FUNZIONE 👇👇👇
   async function handleDelete(id) {
     const confirmed = window.confirm(
       "Sei sicuro di voler eliminare questo memoriale?"
@@ -39,11 +39,16 @@ export default function DashboardPage() {
     }
   }
 
-  if (loading) return <p>Caricamento...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading) {
+    return <p>Caricamento...</p>;
+  }
+
+  if (error) {
+    return <p style={{ color: "red" }}>{error}</p>;
+  }
 
   return (
-    <div>
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: 20 }}>
       <h1>La tua dashboard</h1>
 
       <Link to="/dashboard/memorials/new">
@@ -55,23 +60,40 @@ export default function DashboardPage() {
       {memorials.length === 0 ? (
         <p>Nessun memoriale creato.</p>
       ) : (
-        <ul>
-          {memorials.map((m) => (
-            <li key={m.id}>
-              <strong>{m.petName}</strong> ({m.species}) —{" "}
-              <Link to={`/memorials/${m.slug}`}>visualizza</Link>
-              <Link to={`/dashboard/memorials/${m.id}/edit`} style={{ marginLeft: "10px" }}>
-                Modifica
-              </Link>
-              <button
-                onClick={() => handleDelete(m.id)}
-                style={{ marginLeft: "10px", color: "red" }}
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+            gap: 20,
+            marginTop: 20,
+          }}
+        >
+          {memorials.map((memorial) => (
+            <div key={memorial.id}>
+              <MemorialCard memorial={memorial} />
+
+              {/* AZIONI DASHBOARD */}
+              <div
+                style={{
+                  marginTop: 8,
+                  display: "flex",
+                  justifyContent: "space-between",
+                }}
               >
-                Elimina
-              </button>
-            </li>
+                <Link to={`/dashboard/memorials/${memorial.id}/edit`}>
+                  Modifica
+                </Link>
+
+                <button
+                  onClick={() => handleDelete(memorial.id)}
+                  style={{ color: "red" }}
+                >
+                  Elimina
+                </button>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

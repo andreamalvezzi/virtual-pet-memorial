@@ -55,7 +55,7 @@ export default function MemorialPage() {
     <>
       {/* LINK DI RITORNO — SOLO SE LOGGATO */}
       {user && (
-        <div style={{ maxWidth: 600, margin: "1rem auto" }}>
+        <div style={{ maxWidth: 720, margin: "1rem auto" }}>
           <Link
             to="/dashboard"
             style={{
@@ -72,9 +72,9 @@ export default function MemorialPage() {
       {/* CARD MEMORIALE */}
       <div
         style={{
-          maxWidth: 600,
+          maxWidth: 720,
           margin: "3rem auto",
-          padding: "2rem",
+          padding: "2.5rem",
           textAlign: "center",
           border: "1px solid #ddd",
           borderRadius: "12px",
@@ -92,9 +92,11 @@ export default function MemorialPage() {
             alt={memorial.petName}
             loading="lazy"
             style={{
-              maxWidth: "100%",
-              borderRadius: "12px",
-              marginBottom: "1.5rem",
+              width: "100%",
+              maxHeight: "360px",
+              objectFit: "cover",
+              borderRadius: "14px",
+              marginBottom: "2rem",
             }}
           />
         )}
@@ -104,7 +106,8 @@ export default function MemorialPage() {
         </h1>
 
         <p style={{ color: "#666", marginBottom: "1.5rem" }}>
-          {memorial.species}
+          {memorial.species} ·{" "}
+          {new Date(memorial.deathDate).toLocaleDateString()}
         </p>
 
         <blockquote
@@ -118,10 +121,6 @@ export default function MemorialPage() {
           “{memorial.epitaph}”
         </blockquote>
 
-        <p style={{ color: "#777", marginTop: "2rem" }}>
-          🌈 {new Date(memorial.deathDate).toLocaleDateString()}
-        </p>
-
         <hr style={{ margin: "2rem 0" }} />
 
         <p style={{ fontSize: "0.85rem", color: "#aaa" }}>
@@ -131,4 +130,3 @@ export default function MemorialPage() {
     </>
   );
 }
-
