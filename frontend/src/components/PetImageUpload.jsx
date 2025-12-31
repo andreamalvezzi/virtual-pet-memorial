@@ -19,7 +19,7 @@ export default function PetImageUpload({ onUpload }) {
 
   try {
     // 1️⃣ Chiedi la firma al backend
-    const sigRes = await fetch("/api/cloudinary/signature");
+    const sigRes = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/cloudinary/signature`);
     if (!sigRes.ok) {
       throw new Error("Errore nel recupero della firma");
     }
@@ -52,7 +52,6 @@ export default function PetImageUpload({ onUpload }) {
     if (!data.secure_url) {
       throw new Error("secure_url mancante");
     }
-
 
       onUpload(data.secure_url);
     } catch (err) {
