@@ -17,7 +17,7 @@ export default function NewMemorialPage() {
   const [imageUrl, setImageUrl] = useState(null); // 👈 AGGIUNTO
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
