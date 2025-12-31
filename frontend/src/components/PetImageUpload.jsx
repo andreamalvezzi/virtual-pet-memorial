@@ -6,6 +6,7 @@ export default function PetImageUpload({ onUpload }) {
   const [previewUrl, setPreviewUrl] = useState(null);
 
   async function handleFileChange(e) {
+    if (loading) return; // 👈 FIX
     const file = e.target.files[0];
     if (!file) return;
 
@@ -56,7 +57,7 @@ export default function PetImageUpload({ onUpload }) {
       onUpload(data.secure_url);
     } catch (err) {
       console.error("UPLOAD ERROR:", err);
-      setError(err.message);
+      setError(err.message|| "Errore upload immagine");
     } finally {
       setLoading(false);
     }
@@ -119,7 +120,12 @@ export default function PetImageUpload({ onUpload }) {
       </div>
     )}
 
-    <input type="file" accept="image/*" onChange={handleFileChange} />
+    <input
+    type="file"
+    accept="image/*"
+    onChange={handleFileChange}
+    disabled={loading}
+    />
 
     {error && <p style={{ color: "red" }}>{error}</p>}
   </div>
