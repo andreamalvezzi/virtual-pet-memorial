@@ -19,6 +19,10 @@ export default function EditMemorialPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [dirty, setDirty] = useState(false);
+
+
 
   useEffect(() => {
     async function load() {
@@ -50,8 +54,23 @@ export default function EditMemorialPage() {
     load();
   }, [id]);
 
+  useEffect(() => {
+    function handleBeforeUnload(e) {
+      if (!dirty) return;
+      e.preventDefault();
+      e.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [dirty]);
+
   function handleChange(e) {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type, checked } = e.target;    
+    setDirty(true);
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -61,6 +80,7 @@ export default function EditMemorialPage() {
   async function handleSubmit(e) {
     e.preventDefault();
     setSaving(true);
+    setError(null);
 
     try {
       await updateMemorial(id, {
@@ -68,7 +88,11 @@ export default function EditMemorialPage() {
         imageUrl,
       });
 
-      navigate("/dashboard");
+      setSuccess(true);
+
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1200);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -127,6 +151,13 @@ export default function EditMemorialPage() {
           />{" "}
           Memoriale pubblico
         </label>
+
+        {/* MESSAGGIO SUCCESSO */}
+        {success && (
+          <p style={{ color: "green", marginTop: 10 }}>
+            ✔ Memoriale aggiornato con successo
+          </p>
+        )}
 
         <button type="submit" disabled={saving} style={{ marginTop: 20 }}>
           {saving ? "Salvataggio…" : "Salva modifiche"}
