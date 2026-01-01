@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateMemorial, getMyMemorials } from "../api/memorials";
+import PetImageUpload from "../components/PetImageUpload";
 
 export default function EditMemorialPage() {
   const { id } = useParams();
@@ -14,13 +15,14 @@ export default function EditMemorialPage() {
     isPublic: false,
   });
 
+  const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     async function load() {
       try {
-        // riusiamo i dati già dell’utente
         const memorials = await getMyMemorials();
         const memorial = memorials.find((m) => m.id === Number(id));
 
@@ -36,6 +38,8 @@ export default function EditMemorialPage() {
           epitaph: memorial.epitaph,
           isPublic: memorial.isPublic,
         });
+
+        setImageUrl(memorial.imageUrl || null);
       } catch (err) {
         setError("Errore caricamento memoriale");
       } finally {
@@ -56,11 +60,19 @@ export default function EditMemorialPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    setSaving(true);
+
     try {
-      await updateMemorial(id, form);
+      await updateMemorial(id, {
+        ...form,
+        imageUrl,
+      });
+
       navigate("/dashboard");
     } catch (err) {
       alert(err.message);
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -68,10 +80,13 @@ export default function EditMemorialPage() {
   if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <div>
+    <div style={{ maxWidth: 520, margin: "40px auto" }}>
       <h1>Modifica memoriale</h1>
 
       <form onSubmit={handleSubmit}>
+        {/* IMMAGINE ATTUALE + UPLOAD */}
+        <PetImageUpload onUpload={setImageUrl} />
+
         <input
           name="petName"
           value={form.petName}
@@ -103,17 +118,19 @@ export default function EditMemorialPage() {
           required
         />
 
-        <label>
+        <label style={{ display: "block", marginTop: 10 }}>
           <input
             type="checkbox"
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
-          />
+          />{" "}
           Memoriale pubblico
         </label>
 
-        <button type="submit">Salva modifiche</button>
+        <button type="submit" disabled={saving} style={{ marginTop: 20 }}>
+          {saving ? "Salvataggio…" : "Salva modifiche"}
+        </button>
       </form>
     </div>
   );
