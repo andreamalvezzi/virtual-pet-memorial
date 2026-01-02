@@ -9,6 +9,7 @@ import DashboardPage from "./pages/DashboardPage";
 import EditMemorialPage from "./pages/EditMemorialPage";
 import WelcomePage from "./pages/WelcomePage.jsx";
 import { Navigate } from "react-router-dom";
+import HomePage from "./pages/HomePage";
 
 function App() {
   const location = useLocation();
@@ -23,6 +24,13 @@ function App() {
     <>
       {!hideNavbar && <Navbar />}
 
+        {/* HOME PUBBLICA */}
+        <Route
+        path="/home"
+        element={<HomePage />
+        }
+        /> 
+
       <Routes>
       {/* HOME */}
       <Route
@@ -35,7 +43,7 @@ function App() {
           path="/welcome"
           element={<WelcomePage />
           }
-        />  
+        /> 
 
         {/* DASHBOARD UTENTE */}
         <Route

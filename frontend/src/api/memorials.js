@@ -142,3 +142,19 @@ export async function updateMemorial(id, data) {
 
   return res.json();
 }
+
+/**
+ * Recupera memoriali pubblici (home)
+ */
+export async function getPublicMemorials() {
+  const res = await fetch(`${API_URL}/memorials/public`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error("Errore caricamento memoriali pubblici");
+  }
+
+  return res.json();
+}
+

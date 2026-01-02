@@ -73,6 +73,23 @@ router.get("/my", authenticateToken, async (req, res) => {
 });
 
 /* ======================================================
+   GET /api/memorials/public  (HOME PUBBLICA)
+   ====================================================== */
+  router.get("/public", async (req, res) => {
+    try {
+      const memorials = await prisma.memorial.findMany({
+        where: { isPublic: true },
+        orderBy: { createdAt: "desc" },
+      });
+
+      res.json(memorials);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Errore caricamento memoriali pubblici" });
+    }
+  });
+
+/* ======================================================
    DELETE /api/memorials/:id
    ====================================================== */
 router.delete("/:id", authenticateToken, async (req, res) => {
