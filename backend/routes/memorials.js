@@ -75,12 +75,21 @@ router.get("/my", authenticateToken, async (req, res) => {
 /* ======================================================
    GET /api/memorials/public  (HOME PUBBLICA)
    ====================================================== */
-  router.get("/public", async (req, res) => {
-    try {
-      const memorials = await prisma.memorial.findMany({
+router.get("/public", async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 6;
+    const skip = (page - 1) * limit;
+
+    const [items, totalItems] = await Promise.all([
+      prisma.memorial.findMany({
         where: { isPublic: true },
-        orderBy: { createdAt: "desc" },
-        take: 6,
+        orderBy: [
+          { createdAt: "desc" },
+          { id: "desc" },
+        ],
+        skip,
+        take: limit,
         select: {
           id: true,
           slug: true,
@@ -89,14 +98,23 @@ router.get("/my", authenticateToken, async (req, res) => {
           imageUrl: true,
           createdAt: true,
         },
-      });
+      }),
+      prisma.memorial.count({
+        where: { isPublic: true },
+      }),
+    ]);
 
-      res.json(memorials);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Errore caricamento memoriali pubblici" });
-    }
-  });
+    res.json({
+      items,
+      page,
+      totalPages: Math.ceil(totalItems / limit),
+      totalItems,
+    });
+  } catch (err) {
+    console.error("PUBLIC MEMORIALS ERROR:", err);
+    res.status(500).json({ error: "Errore caricamento memoriali pubblici" });
+  }
+});
 
 /* ======================================================
    DELETE /api/memorials/:id

@@ -10,6 +10,8 @@ import EditMemorialPage from "./pages/EditMemorialPage";
 import WelcomePage from "./pages/WelcomePage.jsx";
 import { Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
+import PublicMemorialsPage from "./pages/PublicMemorialsPage.jsx";
+
 
 function App() {
   const location = useLocation();
@@ -36,6 +38,11 @@ function App() {
       <Route
         index
         element={<Navigate to="/welcome" replace />}
+      />
+
+      <Route
+        path="/memorials"
+        element={<PublicMemorialsPage />}
       />
     
         {/* WELCOME */}

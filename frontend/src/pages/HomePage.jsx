@@ -10,20 +10,32 @@ export default function HomePage() {
   const [error, setError] = useState(null);
   const { user } = useAuth();
 
-  useEffect(() => {
-    async function load() {
-      try {
-        const data = await getPublicMemorials();
-        setMemorials(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
+useEffect(() => {
+  async function load() {
+    try {
+      const data = await getPublicMemorials(1, 6);
 
-    load();
-  }, []);
+      // ✅ compatibilità doppia
+      if (Array.isArray(data)) {
+        setMemorials(data);
+      } else if (data && Array.isArray(data.items)) {
+        setMemorials(data.items);
+      } else {
+        setMemorials([]);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      setMemorials([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  load();
+}, []);
+
+
 
   if (loading) {
     return <p style={{ textAlign: "center" }}>Caricamento…</p>;
@@ -36,6 +48,8 @@ export default function HomePage() {
       </p>
     );
   }
+  // 👇 METTILO QUI
+  console.log("HOME memorials:", memorials, Array.isArray(memorials));
 
   return (
     <div style={{ maxWidth: 1200, margin: "40px auto", padding: "0 16px" }}>
@@ -118,6 +132,24 @@ export default function HomePage() {
           {memorials.map((m) => (
             <MemorialCard key={m.id} memorial={m} />
           ))}
+        </div>
+      )}
+
+      {memorials.length > 0 && (
+        <div style={{ textAlign: "center", marginTop: 32 }}>
+          <Link
+            to="/memorials"
+            style={{
+              display: "inline-block",
+              padding: "8px 12px",
+              color: "#fff",
+              textDecoration: "none",
+              fontWeight: 600,
+              borderBottom: "1px solid #fff",
+            }}
+          >
+            Vedi tutti i memoriali →
+          </Link>
         </div>
       )}
 
