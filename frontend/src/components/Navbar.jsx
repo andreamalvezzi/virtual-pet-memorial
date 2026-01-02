@@ -7,27 +7,30 @@ export default function Navbar() {
   return (
     <nav
       style={{
-        padding: "10px",
+        padding: "10px 16px",
         borderBottom: "1px solid #ddd",
         marginBottom: "20px",
         display: "flex",
-        gap: "10px",
+        gap: "14px",
         alignItems: "center",
       }}
     >
-      <Link to="/">Home</Link>
+      {/* HOME PUBBLICA */}
+      <Link to="/home">Home</Link>
 
       {user ? (
         <>
           <Link to="/dashboard">Dashboard</Link>
-          <span>{user.email}</span>
+          <span style={{ marginLeft: "auto" }}>
+            {user.email}
+          </span>
           <button onClick={logout}>Logout</button>
         </>
       ) : (
-        <>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "10px" }}>
           <Link to="/login">Login</Link>
           <Link to="/register">Registrati</Link>
-        </>
+        </div>
       )}
     </nav>
   );
