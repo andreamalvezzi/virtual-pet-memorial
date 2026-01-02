@@ -57,7 +57,7 @@ export default function HomePage() {
         }}
       >
         <a
-          href="#grid"
+          href="/#/home#grid"
           style={{
           padding: "10px 14px",
           borderRadius: 10,
@@ -70,7 +70,7 @@ export default function HomePage() {
       </a>
 
       <a
-        href="#cta-create"
+        href="/#/home#cta-create"
         style={{
           padding: "10px 14px",
           borderRadius: 10,
