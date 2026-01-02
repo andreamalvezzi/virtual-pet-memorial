@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 export default function MemorialCard({ memorial }) {
   return (
     <Link
-      to={`/memorial/${memorial.slug}`}
+      to={`/memorials/${memorial.slug}`}
       style={{ textDecoration: "none", color: "inherit" }}
     >
       <div
