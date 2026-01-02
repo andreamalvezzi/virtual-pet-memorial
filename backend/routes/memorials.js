@@ -80,6 +80,15 @@ router.get("/my", authenticateToken, async (req, res) => {
       const memorials = await prisma.memorial.findMany({
         where: { isPublic: true },
         orderBy: { createdAt: "desc" },
+        take: 6,
+        select: {
+          id: true,
+          slug: true,
+          petName: true,
+          species: true,
+          imageUrl: true,
+          createdAt: true,
+        },
       });
 
       res.json(memorials);
