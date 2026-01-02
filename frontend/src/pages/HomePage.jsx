@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getPublicMemorials } from "../api/memorials";
 import MemorialCard from "../components/MemorialCard";
+import { useAuth } from "../context/AuthContext";
 
 export default function HomePage() {
   const [memorials, setMemorials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     async function load() {
@@ -134,9 +137,9 @@ export default function HomePage() {
           Bastano pochi minuti. Puoi aggiungere una foto e un pensiero.
         </p>
 
-        <a
-          href="/#/login"
-          style={{
+        <Link
+          to={user ? "/dashboard/memorials/new" : "/login"}
+            style={{
             display: "inline-block",
             padding: "10px 14px",
             borderRadius: 10,
@@ -146,7 +149,7 @@ export default function HomePage() {
           }}
         >
           Inizia ora
-        </a>
+        </Link>
       </div>
     </div>
   );
