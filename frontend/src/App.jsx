@@ -9,7 +9,7 @@ import DashboardPage from "./pages/DashboardPage";
 import EditMemorialPage from "./pages/EditMemorialPage";
 import WelcomePage from "./pages/WelcomePage.jsx";
 import { Navigate } from "react-router-dom";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/HomePage.jsx";
 
 function App() {
   const location = useLocation();
@@ -23,21 +23,21 @@ function App() {
   return (
     <>
       {!hideNavbar && <Navbar />}
-
-        {/* HOME PUBBLICA */}
-        <Route
-        path="/home"
-        element={<HomePage />
-        }
-        /> 
-
       <Routes>
-      {/* HOME */}
+
+      {/* HOME PUBBLICA */}
+      <Route
+      path="/home"
+      element={<HomePage />
+      }
+      /> 
+      
+      {/* HOME */}      
       <Route
         index
         element={<Navigate to="/welcome" replace />}
       />
-
+    
         {/* WELCOME */}
         <Route
           path="/welcome"
