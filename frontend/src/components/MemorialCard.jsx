@@ -3,49 +3,18 @@ import { Link } from "react-router-dom";
 export default function MemorialCard({ memorial }) {
   return (
     <Link
-      to={`/memorials/${memorial.slug}`}
+      to={`/memorial/${memorial.slug}`}
       style={{ textDecoration: "none", color: "inherit" }}
     >
       <div
         style={{
-          position: "relative", // 👈 NECESSARIO PER IL BADGE
           borderRadius: 12,
           overflow: "hidden",
           boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
           transition: "transform 0.2s ease, box-shadow 0.2s ease",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.02)";
-          e.currentTarget.style.boxShadow =
-            "0 8px 20px rgba(0,0,0,0.12)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow =
-            "0 4px 12px rgba(0,0,0,0.08)";
+          background: "#fff",
         }}
       >
-        {/* BADGE PUBBLICO / PRIVATO */}
-        <div
-          style={{
-            position: "absolute",
-            top: 10,
-            right: 10,
-            padding: "4px 10px",
-            borderRadius: 999,
-            fontSize: 12,
-            fontWeight: 600,
-            background: memorial.isPublic ? "#e6f7ec" : "#fdecea",
-            color: memorial.isPublic ? "#18794e" : "#b42318",
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            zIndex: 2,
-          }}
-        >
-          {memorial.isPublic ? "👁️ Pubblico" : "🔒 Privato"}
-        </div>
-
         {/* IMMAGINE */}
         <div style={{ height: 180, background: "#eee" }}>
           {memorial.imageUrl ? (
@@ -76,17 +45,21 @@ export default function MemorialCard({ memorial }) {
 
         {/* TESTO */}
         <div style={{ padding: 14 }}>
-          <h3 style={{ margin: "0 0 6px" }}>{memorial.petName}</h3>
+          <h3 style={{ margin: "0 0 6px" }}>
+            {memorial.petName}
+          </h3>
 
           <p style={{ margin: 0, fontSize: 14, color: "#555" }}>
             {memorial.species}
           </p>
 
-          <p style={{ margin: "4px 0 0", fontSize: 13, color: "#888" }}>
-            {new Date(memorial.deathDate).toLocaleDateString()}
+          <p style={{ margin: "6px 0 0", fontSize: 13, color: "#888" }}>
+            Creato il{" "}
+            {new Date(memorial.createdAt).toLocaleDateString()}
           </p>
         </div>
       </div>
     </Link>
   );
 }
+

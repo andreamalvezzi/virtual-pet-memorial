@@ -36,8 +36,6 @@ export default function HomePage() {
 
   return (
   <div style={{ maxWidth: 1200, margin: "40px auto", padding: "0 16px" }}>
-    <h1 style={{ textAlign: "center" }}></h1>
-       
     <h1 style={{ textAlign: "center", marginBottom: 32 }}>
       🌈 Memoriali Pubblici
     </h1>
