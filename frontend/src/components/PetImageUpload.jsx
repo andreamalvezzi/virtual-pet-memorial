@@ -1,32 +1,42 @@
 import { useState, useEffect } from "react";
 import "./PetImageUpload.css";
 
-export default function PetImageUpload({ onUpload }) {
+export default function PetImageUpload({ onUpload, initialImage }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(initialImage || null);
+  const [isLocalPreview, setIsLocalPreview] = useState(false);
 
+  /* =========================
+     HANDLE FILE CHANGE
+     ========================= */
   async function handleFileChange(e) {
     if (loading) return;
+
     const file = e.target.files[0];
     if (!file) return;
 
+    // 👉 preview locale immediata
     const localPreview = URL.createObjectURL(file);
     setPreviewUrl(localPreview);
+    setIsLocalPreview(true);
 
     setLoading(true);
     setError(null);
 
     try {
+      // 1️⃣ firma Cloudinary
       const sigRes = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/cloudinary/signature`
       );
+
       if (!sigRes.ok) {
         throw new Error("Errore nel recupero della firma");
       }
 
       const sigData = await sigRes.json();
 
+      // 2️⃣ upload signed
       const formData = new FormData();
       formData.append("file", file);
       formData.append("folder", sigData.folder);
@@ -36,14 +46,19 @@ export default function PetImageUpload({ onUpload }) {
 
       const res = await fetch(
         `https://api.cloudinary.com/v1_1/${sigData.cloudName}/auto/upload`,
-        { method: "POST", body: formData }
+        {
+          method: "POST",
+          body: formData,
+        }
       );
 
       const data = await res.json();
+
       if (!res.ok || !data.secure_url) {
         throw new Error(data.error?.message || "Upload fallito");
       }
 
+      // 3️⃣ notifica parent
       onUpload(data.secure_url);
     } catch (err) {
       console.error("UPLOAD ERROR:", err);
@@ -53,17 +68,32 @@ export default function PetImageUpload({ onUpload }) {
     }
   }
 
+  /* =========================
+     SYNC INITIAL IMAGE (EDIT)
+     ========================= */
+  useEffect(() => {
+    if (initialImage) {
+      setPreviewUrl(initialImage);
+      setIsLocalPreview(false);
+    }
+  }, [initialImage]);
+
+  /* =========================
+     CLEANUP OBJECT URL
+     ========================= */
   useEffect(() => {
     return () => {
-      if (previewUrl) {
+      if (previewUrl && isLocalPreview) {
         URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [previewUrl]);
+  }, [previewUrl, isLocalPreview]);
 
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <div className="pet-upload">
-      {/* PREVIEW */}
       {previewUrl ? (
         <div className="pet-upload-preview">
           <img
