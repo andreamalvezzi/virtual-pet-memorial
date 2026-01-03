@@ -61,26 +61,34 @@ export default function SearchPage() {
             style={{ textDecoration: "none", color: "inherit" }}
           >
             <div
-              style={{
-                border: "1px solid #ddd",
-                borderRadius: "10px",
-                padding: "14px",
-              }}
+                style={{
+                    background: "#fff",
+                    border: "1px solid #e6e6e6",
+                    borderRadius: "12px",
+                    padding: "16px",
+                }}
             >
-              <strong>{m.petName}</strong>
-              <div>{m.species}</div>
-
-              {m.imageUrl && (
-                <img
-                  src={m.imageUrl}
-                  alt={m.petName}
-                  style={{
-                    width: "100%",
-                    marginTop: "10px",
-                    borderRadius: "6px",
-                  }}
+                {m.imageUrl && (
+                    <img
+                        src={m.imageUrl}
+                        alt={m.petName}
+                        style={{
+                        width: "100%",
+                        height: "180px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                        marginBottom: "12px",
+                    }}
                 />
-              )}
+            )}
+
+                <div style={{ fontSize: "18px", fontWeight: 600, color: "#222", }}>
+                    {m.petName}
+                </div>
+
+                <div style={{ color: "#666", marginTop: "4px", color: "#666", }}>
+                    {m.species}
+                </div>
             </div>
           </Link>
         ))}
