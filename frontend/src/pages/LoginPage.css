@@ -44,3 +44,10 @@
   margin-top: 2rem;
   font-size: 0.9rem;
 }
+
+.auth-success {
+  color: #5f8f6f;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
