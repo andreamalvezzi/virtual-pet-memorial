@@ -8,13 +8,21 @@ export default function PublicMemorialsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [totalItems, setTotalItems] = useState(0);
+
 
 useEffect(() => {
   async function load() {
     setLoading(true);
 
     try {
-      const data = await getPublicMemorials(page, 12);
+      const data = await getPublicMemorials(page, 6);
+
+      if (data && Array.isArray(data.items)) {
+        setItems(data.items);
+        setTotalPages(data.totalPages || 1);
+        setTotalItems(data.totalItems || 0);
+      }
 
       // ✅ compatibilità backend vecchio / nuovo
       if (Array.isArray(data)) {
@@ -27,6 +35,10 @@ useEffect(() => {
         setItems([]);
         setTotalPages(1);
       }
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
     } catch (err) {
       console.error(err);
       setError("Errore nel caricamento dei memoriali");
@@ -42,7 +54,11 @@ useEffect(() => {
 
 
   if (loading) {
-    return <p style={{ textAlign: "center" }}>Caricamento…</p>;
+    return (
+      <p style={{ textAlign: "center", color: "#aaa" }}>
+        Caricamento memoriali 🐾
+      </p>
+    );
   }
 
   if (error) {
@@ -58,6 +74,10 @@ useEffect(() => {
       <h1 style={{ textAlign: "center", marginBottom: 32 }}>
         Tutti i memoriali pubblici
       </h1>
+
+      <p style={{ textAlign: "center", color: "#aaa", marginBottom: 24 }}>
+        {totalItems} memoriali pubblici
+      </p>
 
       {items.length === 0 ? (
         <p style={{ textAlign: "center", color: "#666" }}>
@@ -86,9 +106,18 @@ useEffect(() => {
           gap: 12,
         }}
       >
-        <button
+        <button          
           onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1}
+          disabled={page === 1 || loading}
+          style={{
+            padding: "6px 14px",
+            borderRadius: 8,
+            border: "1px solid #555",
+            background: "1a1a1a",
+            color: "#fff",
+            cursor: loading ? "not-allowed" : "pointer",
+            opacity: page === 1 || loading ? 0.4 : 1,
+          }}
         >
           ← Indietro
         </button>
@@ -97,11 +126,20 @@ useEffect(() => {
           Pagina {page} di {totalPages}
         </span>
 
-        <button
+        <button          
           onClick={() =>
             setPage((p) => Math.min(totalPages, p + 1))
           }
-          disabled={page === totalPages}
+          disabled={page === totalPages || loading}
+          style={{
+            padding: "6px 14px",
+            borderRadius: 8,
+            border: "1px solid #555",
+            background: "1a1a1a",
+            color: "#fff",
+            cursor: loading ? "not-allowed" : "pointer",
+            opacity: page === totalPages || loading ? 0.4 : 1,
+          }}
         >
           Avanti →
         </button>
