@@ -1,0 +1,89 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+.dashboard-header {
+  margin-bottom: 2rem;
+}
+
+.dashboard-header p {
+  color: #b6b0a8;
+}
+
+.dashboard-cta {
+  margin-bottom: 2.5rem;
+}
+
+.dashboard-button {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border-radius: 999px;
+  background: #f5f2ee;
+  color: #1f1f1f;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dashboard-button:hover {
+  background: #e8e2d9;
+}
+
+/* EMPTY STATE */
+
+.dashboard-empty {
+  margin-top: 3rem;
+  padding: 3rem 2rem;
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.dashboard-empty p {
+  margin-bottom: 1.5rem;
+}
+
+/* GRID */
+
+.memorial-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2.2rem;
+}
+
+/* AZIONI */
+
+.dashboard-card-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.6rem;
+}
+
+.edit-link {
+  font-size: 0.85rem;
+  color: #cbbfae;
+}
+
+.edit-link:hover {
+  text-decoration: underline;
+}
+
+.delete-button {
+  background: none;
+  border: none;
+  color: #d16b6b;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.delete-button:hover {
+  text-decoration: underline;
+}
+
+/* STATO */
+
+.dashboard-loading,
+.dashboard-error {
+  text-align: center;
+}
