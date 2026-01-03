@@ -1,0 +1,70 @@
+.home-container {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+}
+
+/* HERO */
+
+.home-hero {
+  text-align: center;
+  margin-bottom: 4rem;
+}
+
+.home-hero h1 {
+  font-size: clamp(2.2rem, 5vw, 2.8rem);
+  margin-bottom: 0.8rem;
+}
+
+.home-hero p {
+  color: #b6b0a8;
+  max-width: 680px;
+  margin: 0 auto 1.6rem;
+}
+
+.home-hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* SECTION */
+
+.home-section-title {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* STATES */
+
+.home-loading,
+.home-error,
+.home-empty {
+  text-align: center;
+  color: #aaa;
+}
+
+/* VIEW ALL */
+
+.home-view-all {
+  text-align: center;
+  margin-top: 2.5rem;
+}
+
+.home-view-all a {
+  font-weight: 600;
+  border-bottom: 1px solid currentColor;
+}
+
+/* CTA */
+
+.home-cta {
+  margin-top: 5rem;
+  text-align: center;
+}
+
+.home-cta p {
+  margin-bottom: 1.4rem;
+  color: #b6b0a8;
+}
