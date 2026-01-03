@@ -4,8 +4,11 @@ import slugify from "slugify";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { authenticateTokenOptional } from "../middleware/authOptional.js";
 
-
 const router = express.Router();
+
+/* ======================================================
+   UTILS
+   ====================================================== */
 
 function generateSlug(petName, deathDate) {
   const year = new Date(deathDate).getFullYear();
@@ -14,7 +17,8 @@ function generateSlug(petName, deathDate) {
 }
 
 /* ======================================================
-   POST /api/memorials (creazione)
+   POST /api/memorials
+   Crea memoriale
    ====================================================== */
 router.post("/", authenticateToken, async (req, res) => {
   try {
@@ -24,7 +28,7 @@ router.post("/", authenticateToken, async (req, res) => {
       deathDate,
       epitaph,
       isPublic = false,
-      imageUrl, // 👈 AGGIUNTO
+      imageUrl,
     } = req.body;
 
     if (!petName || !species || !deathDate || !epitaph) {
@@ -40,7 +44,7 @@ router.post("/", authenticateToken, async (req, res) => {
         deathDate: new Date(deathDate),
         epitaph,
         isPublic,
-        imageUrl: imageUrl || null, // 👈 AGGIUNTO
+        imageUrl: imageUrl || null,
         slug,
         userId: req.user.userId,
       },
@@ -48,20 +52,19 @@ router.post("/", authenticateToken, async (req, res) => {
 
     res.status(201).json(memorial);
   } catch (err) {
-    console.error(err);
+    console.error("CREATE MEMORIAL ERROR:", err);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
 /* ======================================================
-   GET /api/memorials/my  (DASHBOARD UTENTE)
+   GET /api/memorials/my
+   Memoriali dell’utente
    ====================================================== */
 router.get("/my", authenticateToken, async (req, res) => {
   try {
-    const userId = req.user.userId;
-
     const memorials = await prisma.memorial.findMany({
-      where: { userId },
+      where: { userId: req.user.userId },
       orderBy: { createdAt: "desc" },
     });
 
@@ -73,21 +76,40 @@ router.get("/my", authenticateToken, async (req, res) => {
 });
 
 /* ======================================================
-   GET /api/memorials/public  (HOME PUBBLICA)
+   GET /api/memorials/public
+   Memoriali pubblici + SEARCH + PAGINATION
    ====================================================== */
 router.get("/public", async (req, res) => {
   try {
-    const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 6;
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(parseInt(req.query.limit, 10) || 6, 50);
+    const search = req.query.search?.trim();
     const skip = (page - 1) * limit;
+
+    const where = {
+      isPublic: true,
+      ...(search && {
+        OR: [
+          {
+            petName: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+          {
+            species: {
+              contains: search,
+              mode: "insensitive",
+            },
+          },
+        ],
+      }),
+    };
 
     const [items, totalItems] = await Promise.all([
       prisma.memorial.findMany({
-        where: { isPublic: true },
-        orderBy: [
-          { createdAt: "desc" },
-          { id: "desc" },
-        ],
+        where,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
         skip,
         take: limit,
         select: {
@@ -99,9 +121,7 @@ router.get("/public", async (req, res) => {
           createdAt: true,
         },
       }),
-      prisma.memorial.count({
-        where: { isPublic: true },
-      }),
+      prisma.memorial.count({ where }),
     ]);
 
     res.json({
@@ -117,12 +137,55 @@ router.get("/public", async (req, res) => {
 });
 
 /* ======================================================
-   DELETE /api/memorials/:id
+   GET /api/memorials/:slug
+   Pubblico / privato (owner)
    ====================================================== */
-router.delete("/:id", authenticateToken, async (req, res) => {
+router.get("/:slug", authenticateTokenOptional, async (req, res) => {
   try {
-    const memorialId = parseInt(req.params.id, 10);
-    const userId = req.user.userId;
+    const { slug } = req.params;
+
+    const memorial = await prisma.memorial.findUnique({
+      where: { slug },
+      select: {
+        id: true,
+        petName: true,
+        species: true,
+        deathDate: true,
+        epitaph: true,
+        imageUrl: true,
+        isPublic: true,
+        slug: true,
+        createdAt: true,
+        userId: true,
+      },
+    });
+
+    if (!memorial) {
+      return res.status(404).json({ error: "Memoriale non trovato" });
+    }
+
+    if (memorial.isPublic) {
+      return res.json(memorial);
+    }
+
+    if (req.user && req.user.userId === memorial.userId) {
+      return res.json(memorial);
+    }
+
+    return res.status(404).json({ error: "Memoriale non trovato" });
+  } catch (err) {
+    console.error("GET MEMORIAL ERROR:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+/* ======================================================
+   PATCH /api/memorials/:id
+   Aggiorna memoriale
+   ====================================================== */
+router.patch("/:id", authenticateToken, async (req, res) => {
+  try {
+    const memorialId = Number(req.params.id);
 
     if (isNaN(memorialId)) {
       return res.status(400).json({ error: "ID non valido" });
@@ -136,7 +199,59 @@ router.delete("/:id", authenticateToken, async (req, res) => {
       return res.status(404).json({ error: "Memoriale non trovato" });
     }
 
-    if (memorial.userId !== userId) {
+    if (memorial.userId !== req.user.userId) {
+      return res.status(403).json({ error: "Accesso negato" });
+    }
+
+    const {
+      petName,
+      species,
+      deathDate,
+      epitaph,
+      isPublic,
+      imageUrl,
+    } = req.body;
+
+    const updated = await prisma.memorial.update({
+      where: { id: memorialId },
+      data: {
+        petName,
+        species,
+        epitaph,
+        isPublic,
+        imageUrl,
+        deathDate: deathDate ? new Date(deathDate) : undefined,
+      },
+    });
+
+    res.json(updated);
+  } catch (err) {
+    console.error("UPDATE MEMORIAL ERROR:", err);
+    res.status(500).json({ error: "Errore aggiornamento memoriale" });
+  }
+});
+
+/* ======================================================
+   DELETE /api/memorials/:id
+   Elimina memoriale
+   ====================================================== */
+router.delete("/:id", authenticateToken, async (req, res) => {
+  try {
+    const memorialId = Number(req.params.id);
+
+    if (isNaN(memorialId)) {
+      return res.status(400).json({ error: "ID non valido" });
+    }
+
+    const memorial = await prisma.memorial.findUnique({
+      where: { id: memorialId },
+    });
+
+    if (!memorial) {
+      return res.status(404).json({ error: "Memoriale non trovato" });
+    }
+
+    if (memorial.userId !== req.user.userId) {
       return res.status(403).json({ error: "Accesso negato" });
     }
 
@@ -151,105 +266,4 @@ router.delete("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-/* ======================================================
-   PATCH /api/memorials/:id
-   ====================================================== */
-router.patch("/:id", authenticateToken, async (req, res) => {
-  try {
-    const memorialId = parseInt(req.params.id, 10);
-    const userId = req.user.userId;
-
-    if (isNaN(memorialId)) {
-      return res.status(400).json({ error: "ID non valido" });
-    }
-
-    const memorial = await prisma.memorial.findUnique({
-      where: { id: memorialId },
-    });
-
-    if (!memorial) {
-      return res.status(404).json({ error: "Memoriale non trovato" });
-    }
-
-    if (memorial.userId !== userId) {
-      return res.status(403).json({ error: "Accesso negato" });
-    }
-
-    const {
-      petName,
-      species,
-      deathDate,
-      epitaph,
-      isPublic,
-      imageUrl, // 👈 AGGIUNTO
-    } = req.body;
-
-    const updated = await prisma.memorial.update({
-      where: { id: memorialId },
-      data: {
-        petName,
-        species,
-        deathDate: deathDate ? new Date(deathDate) : undefined,
-        epitaph,
-        isPublic,
-        imageUrl, // 👈 AGGIUNTO (undefined = non modifica)
-      },
-    });
-
-    res.json(updated);
-  } catch (err) {
-    console.error("UPDATE MEMORIAL ERROR:", err);
-    res.status(500).json({ error: "Errore aggiornamento memoriale" });
-  }
-});
-
-/* ======================================================
-   GET /api/memorials/:slug  (PUBBLICO + PRIVATO)
-   ====================================================== */
-router.get(
-  "/:slug",
-  authenticateTokenOptional,
-  async (req, res) => {
-    try {
-      const { slug } = req.params;
-
-      const memorial = await prisma.memorial.findUnique({
-        where: { slug },
-        select: {
-          id: true,
-          petName: true,
-          species: true,
-          deathDate: true,
-          epitaph: true,
-          imageUrl: true,
-          isPublic: true,
-          slug: true,
-          createdAt: true,
-          userId: true, // 👈 NECESSARIO per verificare il proprietario
-        },
-      });
-
-      // 1️⃣ Memoriale inesistente
-      if (!memorial) {
-        return res.status(404).json({ error: "Memoriale non trovato" });
-      }
-
-      // 2️⃣ Memoriale pubblico → OK
-      if (memorial.isPublic) {
-        return res.json(memorial);
-      }
-
-      // 3️⃣ Memoriale privato ma proprietario → OK
-      if (req.user && req.user.userId === memorial.userId) {
-        return res.json(memorial);
-      }
-
-      // 4️⃣ Memoriale privato e NON autorizzato → fingi che non esista
-      return res.status(404).json({ error: "Memoriale non trovato" });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  }
-);
 export default router;
