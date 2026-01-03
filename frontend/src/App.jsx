@@ -93,6 +93,7 @@ function App() {
           path="/login"
           element={<LoginPage />}
         />
+        {/* REGISTER */}
         <Route
           path="/register"
           element={<RegisterPage />}
@@ -101,7 +102,6 @@ function App() {
         <Route 
           path="/search" element={<SearchPage />} 
         />
-
         {/* 404 */}
         <Route
           path="*"
