@@ -1,0 +1,48 @@
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 2rem;
+}
+
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* LINKS */
+
+.navbar a {
+  text-decoration: none;
+}
+
+/* RIGHT SIDE */
+
+.navbar-links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* USER */
+
+.navbar-user {
+  font-size: 0.85rem;
+  color: #b6b0a8;
+}
+
+/* LOGOUT */
+
+.navbar-logout {
+  background: none;
+  border: none;
+  color: #d16b6b;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.navbar-logout:hover {
+  text-decoration: underline;
+}
