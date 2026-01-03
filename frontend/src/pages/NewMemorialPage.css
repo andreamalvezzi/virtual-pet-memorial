@@ -1,3 +1,5 @@
+/* CONTAINER */
+
 .create-memorial-container {
   max-width: 720px;
   margin: 3rem auto;
@@ -10,6 +12,7 @@
 
 .create-memorial-container h1 {
   margin-bottom: 2.5rem;
+  color: #1f2937;
 }
 
 /* FORM */
@@ -17,7 +20,7 @@
 .create-memorial-form {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem; /* 🔥 QUI NASCE IL RESPIRO */
+  gap: 1.8rem; /* respiro verticale */
 }
 
 /* GROUP */
@@ -32,24 +35,44 @@
 /* LABEL */
 
 .form-group label {
-  font-size: 0.9rem;
-  color: #6f6b66;
+  font-size: 0.85rem;
+  color: #6b6b6b;
 }
 
-/* INPUT */
+/* INPUT & TEXTAREA */
 
 .create-memorial-form input,
 .create-memorial-form textarea {
   width: 100%;
-  padding: 0.65rem 0.7rem;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+  padding: 0.75rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid #d6d3cf;
+  background-color: #ffffff;
+  color: #1f2937;            /* 🔥 TESTO SCURO */
   font-size: 0.95rem;
-  background: #fff;
+  line-height: 1.4;
 }
 
+/* PLACEHOLDER */
+
+.create-memorial-form input::placeholder,
+.create-memorial-form textarea::placeholder {
+  color: #9ca3af;            /* visibile ma distinto */
+}
+
+/* FOCUS */
+
+.create-memorial-form input:focus,
+.create-memorial-form textarea:focus {
+  outline: none;
+  border-color: #8b857e;
+  box-shadow: 0 0 0 3px rgba(139, 133, 126, 0.25);
+}
+
+/* TEXTAREA */
+
 .create-memorial-form textarea {
-  min-height: 90px;
+  min-height: 110px;
   resize: vertical;
 }
 
@@ -60,7 +83,7 @@
   align-items: center;
   gap: 0.6rem;
   font-size: 0.9rem;
-  color: #6f6b66;
+  color: #1f2937;            /* 🔥 PIÙ SCURO */
 }
 
 /* ERROR */
@@ -68,11 +91,32 @@
 .form-error {
   color: #c86464;
   font-size: 0.9rem;
+  text-align: center;
 }
 
-/* CTA */
+/* SUCCESS */
+
+.form-success {
+  color: #4b7f52;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+/* CTA BUTTON */
 
 .create-memorial-form button {
-  margin-top: 1.5rem;
+  margin-top: 1.8rem;
   align-self: center;
+  padding: 0.7rem 1.6rem;
+  border-radius: 999px;
+  border: none;
+  background: #1f2937;
+  color: #ffffff;
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+
+.create-memorial-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
