@@ -11,7 +11,7 @@ import WelcomePage from "./pages/WelcomePage.jsx";
 import { Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import PublicMemorialsPage from "./pages/PublicMemorialsPage.jsx";
-
+import SearchPage from "./pages/SearchPage";
 
 function App() {
   const location = useLocation();
@@ -96,6 +96,10 @@ function App() {
         <Route
           path="/register"
           element={<RegisterPage />}
+        />
+        {/* SEARCH */}
+        <Route 
+          path="/search" element={<SearchPage />} 
         />
 
         {/* 404 */}
