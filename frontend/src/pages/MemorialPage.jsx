@@ -1,18 +1,17 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import { getMemorialBySlug } from "../api/memorials.js";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import { getMemorialBySlug } from "../api/memorials";
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import "./MemorialPage.css";
 
 export default function MemorialPage() {
   const { slug } = useParams();
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   const [memorial, setMemorial] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     getMemorialBySlug(slug)
@@ -21,105 +20,36 @@ export default function MemorialPage() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  function MemorialSkeleton() {
-    return (
-      <div style={{ maxWidth: 720, margin: "3rem auto", padding: "2.5rem" }}>
-        {/* skeleton */}
-      </div>
-    );
-  }
-
   if (loading) return <MemorialSkeleton />;
 
   if (error) {
-    return (
-      <p style={{ color: "red", textAlign: "center", marginTop: "2rem" }}>
-        {error}
-      </p>
-    );
+    return <p className="memorial-error">{error}</p>;
   }
 
   if (!memorial) {
     return (
-      <p style={{ textAlign: "center", marginTop: "3rem", color: "#777" }}>
+      <p className="memorial-missing">
         Questo memoriale non esiste 🌫️
       </p>
     );
   }
 
-  const fadeStyle = `
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(8px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-  `;
-
   const formattedDate = new Date(memorial.deathDate).toLocaleDateString(
     "it-IT",
-    {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    }
+    { day: "numeric", month: "long", year: "numeric" }
   );
 
   return (
     <>
-      <style>{fadeStyle}</style>
+      <nav className="memorial-nav">
+        <button onClick={() => navigate(-1)}>← Torna indietro</button>
 
-      {/* TORNA INDIETRO */}
-      <div style={{ maxWidth: 720, margin: "1rem auto" }}>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            background: "none",
-            border: "none",
-            color: "#888",
-            cursor: "pointer",
-            fontSize: "0.9rem",
-            padding: 0,
-          }}
-        >
-          ← Torna indietro
-        </button>
-      </div>
+        {user && (
+          <Link to="/dashboard">← Dashboard</Link>
+        )}
+      </nav>
 
-      {/* DASHBOARD (SOLO LOGGATO) */}
-      {user && (
-        <div style={{ maxWidth: 720, margin: "1rem auto" }}>
-          <Link
-            to="/dashboard"
-            style={{
-              textDecoration: "none",
-              color: "#666",
-              fontSize: "0.9rem",
-            }}
-          >
-            ← Torna alla dashboard
-          </Link>
-        </div>
-      )}
-
-      {/* CARD MEMORIALE */}
-      <div
-        style={{
-          maxWidth: 720,
-          margin: "clamp(1.5rem, 5vw, 3rem) auto",
-          padding: "clamp(1.25rem, 4vw, 2.5rem)",
-          textAlign: "center",
-          border: "1px solid #ddd",
-          borderRadius: "12px",
-          background: "#fafafa",
-          color: "#222",
-          animation: "fadeIn 0.6s ease-out",
-        }}
-      >
+      <article className="memorial-container">
         {memorial.imageUrl && (
           <img
             src={memorial.imageUrl.replace(
@@ -128,49 +58,38 @@ export default function MemorialPage() {
             )}
             alt={memorial.petName}
             loading="lazy"
-            style={{
-              width: "100%",
-              maxHeight: "360px",
-              objectFit: "cover",
-              borderRadius: "14px",
-              marginBottom: "2rem",
-            }}
+            className="memorial-image"
           />
         )}
 
-        <h1
-          style={{
-            fontSize: "clamp(1.8rem, 5vw, 2.2rem)",
-            marginBottom: "0.5rem",
-          }}
-        >
+        <h1 className="memorial-title">
           🪦 {memorial.petName}
         </h1>
 
-        <div style={{ height: "0.5rem" }} />
-
-        <p style={{ color: "#666", marginBottom: "1.5rem" }}>
+        <p className="memorial-meta">
           In memoria di un {memorial.species.toLowerCase()} · {formattedDate}
         </p>
 
-        <blockquote
-          style={{
-            fontStyle: "italic",
-            fontSize: "clamp(1.05rem, 4vw, 1.2rem)",
-            margin: "2.5rem 0",
-            color: "#444",
-            lineHeight: 1.6,
-          }}
-        >
+        <blockquote className="memorial-epitaph">
           “{memorial.epitaph}”
         </blockquote>
 
-        <hr style={{ margin: "2rem 0" }} />
-
-        <p style={{ fontSize: "0.85rem", color: "#aaa" }}>
+        <footer className="memorial-footer">
           Un ricordo che resta
-        </p>
-      </div>
+        </footer>
+      </article>
     </>
+  );
+}
+
+function MemorialSkeleton() {
+  return (
+    <div className="memorial-skeleton">
+      <div className="skeleton-image" />
+      <div className="skeleton-line title" />
+      <div className="skeleton-line meta" />
+      <div className="skeleton-line long" />
+      <div className="skeleton-line long" />
+    </div>
   );
 }
