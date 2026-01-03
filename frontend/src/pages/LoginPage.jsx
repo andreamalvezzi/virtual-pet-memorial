@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { login as loginApi } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import "./LoginPage.css";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -20,14 +21,13 @@ export default function LoginPage() {
     try {
       const data = await loginApi(email, password);
       login(data.token, data.user);
-    } catch (err) {
+    } catch {
       setError("Credenziali non valide");
     } finally {
       setLoading(false);
     }
   };
 
-  // 🔑 redirect quando lo stato auth è pronto
   useEffect(() => {
     if (isAuthenticated) {
       navigate("/dashboard/memorials/new");
@@ -35,28 +35,18 @@ export default function LoginPage() {
   }, [isAuthenticated, navigate]);
 
   return (
-    <div style={{ maxWidth: 400, margin: "80px auto", padding: "0 16px" }}>
-      <h1 style={{ textAlign: "center", marginBottom: 8 }}>
-        Bentornato 🐾
-      </h1>
+    <div className="auth-container">
+      <h1>Bentornato 🐾</h1>
 
-      <p
-        style={{
-          textAlign: "center",
-          color: "#aaa",
-          marginBottom: 24,
-        }}
-      >
+      <p className="auth-subtitle">
         Accedi per gestire i memoriali dei tuoi pet
       </p>
 
       {error && (
-        <p style={{ color: "red", textAlign: "center" }}>
-          {error}
-        </p>
+        <p className="auth-error">{error}</p>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form className="auth-form" onSubmit={handleSubmit}>
         <input
           type="email"
           placeholder="Email"
@@ -64,13 +54,6 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           disabled={loading}
           required
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: 12,
-            borderRadius: 8,
-            border: "1px solid #ccc",
-          }}
         />
 
         <input
@@ -80,34 +63,14 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           disabled={loading}
           required
-          style={{
-            width: "100%",
-            padding: "10px",
-            marginBottom: 16,
-            borderRadius: 8,
-            border: "1px solid #ccc",
-          }}
         />
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{
-            width: "100%",
-            padding: "10px",
-            borderRadius: 8,
-            border: "none",
-            background: "#1a1a1a",
-            color: "#fff",
-            cursor: loading ? "not-allowed" : "pointer",
-            opacity: loading ? 0.7 : 1,
-          }}
-        >
+        <button type="submit" disabled={loading}>
           {loading ? "Accesso in corso…" : "Accedi"}
         </button>
       </form>
 
-      <p style={{ textAlign: "center", marginTop: 20 }}>
+      <p className="auth-footer">
         Non hai un account?{" "}
         <Link to="/register">Registrati</Link>
       </p>
