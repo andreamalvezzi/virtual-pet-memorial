@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createMemorial } from "../api/memorials";
-import PetImageUpload from "../components/PetImageUpload"; // 👈 AGGIUNTO
+import PetImageUpload from "../components/PetImageUpload";
+import "./NewMemorialPage.css";
 
 export default function NewMemorialPage() {
   const navigate = useNavigate();
@@ -14,10 +15,10 @@ export default function NewMemorialPage() {
     isPublic: true,
   });
 
-  const [imageUrl, setImageUrl] = useState(null); // 👈 AGGIUNTO
+  const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
+
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
@@ -40,10 +41,7 @@ export default function NewMemorialPage() {
       setLoading(true);
 
       const memorial = await createMemorial(
-        {
-          ...form,
-          imageUrl, // 👈 AGGIUNTO
-        },
+        { ...form, imageUrl },
         token
       );
 
@@ -56,14 +54,17 @@ export default function NewMemorialPage() {
   }
 
   return (
-    <div style={{ maxWidth: 520, margin: "40px auto" }}>
+    <div className="create-memorial-container">
       <h1>Crea un memoriale</h1>
 
-      <form onSubmit={handleSubmit}>
-        {/* UPLOAD IMMAGINE */}
+      <form
+        className="create-memorial-form"
+        onSubmit={handleSubmit}
+      >
+        {/* IMMAGINE */}
         <PetImageUpload onUpload={setImageUrl} />
 
-        <div>
+        <div className="form-group">
           <label>Nome del pet</label>
           <input
             type="text"
@@ -74,7 +75,7 @@ export default function NewMemorialPage() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Specie</label>
           <input
             type="text"
@@ -86,7 +87,7 @@ export default function NewMemorialPage() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Data di scomparsa</label>
           <input
             type="date"
@@ -97,40 +98,31 @@ export default function NewMemorialPage() {
           />
         </div>
 
-        <div>
+        <div className="form-group">
           <label>Epitaffio</label>
           <textarea
             name="epitaph"
             value={form.epitaph}
             onChange={handleChange}
-            rows={4}
             required
           />
         </div>
 
-        <div style={{ marginTop: 10 }}>
-          <label>
-            <input
-              type="checkbox"
-              name="isPublic"
-              checked={form.isPublic}
-              onChange={handleChange}
-            />{" "}
-            Memoriale pubblico
-          </label>
+        <div className="form-checkbox">
+          <input
+            type="checkbox"
+            name="isPublic"
+            checked={form.isPublic}
+            onChange={handleChange}
+          />
+          <span>Memoriale pubblico</span>
         </div>
 
         {error && (
-          <p style={{ color: "red", marginTop: 10 }}>
-            {error}
-          </p>
+          <p className="form-error">{error}</p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ marginTop: 20 }}
-        >
+        <button type="submit" disabled={loading}>
           {loading ? "Salvataggio..." : "Crea memoriale"}
         </button>
       </form>
