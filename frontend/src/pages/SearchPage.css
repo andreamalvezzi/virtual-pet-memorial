@@ -1,0 +1,49 @@
+.search-container {
+  max-width: 900px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.search-container h1 {
+  margin-bottom: 1.5rem;
+}
+
+/* INPUT */
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin-bottom: 2rem;
+}
+
+/* STATES */
+
+.search-loading,
+.search-loading-more,
+.search-error,
+.search-empty {
+  color: #aaa;
+  margin-bottom: 1.5rem;
+}
+
+.search-error {
+  color: #c86464;
+}
+
+/* LOAD MORE */
+
+.search-load-more {
+  margin-top: 2.5rem;
+}
+
+.search-load-more button {
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
