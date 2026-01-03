@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { getMemorialBySlug } from "../api/memorials.js";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function MemorialPage() {
   const { slug } = useParams();
@@ -10,6 +11,9 @@ export default function MemorialPage() {
   const [memorial, setMemorial] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     getMemorialBySlug(slug)
@@ -69,6 +73,22 @@ export default function MemorialPage() {
   return (
     <>
     <style>{fadeStyle}</style>
+
+    <div style={{ maxWidth: 720, margin: "1rem auto" }}>
+      <button
+        onClick={() => navigate(-1)}
+        style={{
+        background: "none",
+        border: "none",
+        color: "#888",
+        cursor: "pointer",
+        fontSize: "0.9rem",
+        padding: 0,
+      }}
+    >
+      ← Torna indietro
+    </button>
+  </div>
     
       {/* LINK DI RITORNO — SOLO SE LOGGATO */}
       {user && (
