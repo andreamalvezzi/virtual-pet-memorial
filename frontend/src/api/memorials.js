@@ -1,8 +1,8 @@
 const API_URL = "https://virtual-pet-memorial-backend.onrender.com/api";
 
-/**
- * Crea un nuovo memoriale
- */
+/* ======================================================
+   CREATE
+   ====================================================== */
 export async function createMemorial(data, token) {
   if (!token) {
     throw new Error("Utente non autenticato");
@@ -29,27 +29,21 @@ export async function createMemorial(data, token) {
   return res.json();
 }
 
-/**
- * Recupera memoriale pubblico tramite slug
- */
+/* ======================================================
+   READ — SINGOLO MEMORIALE (slug)
+   ====================================================== */
 export async function getMemorialBySlug(slug) {
   const token = localStorage.getItem("token");
 
   const res = await fetch(`${API_URL}/memorials/${slug}`, {
     cache: "no-store",
     headers: token
-      ? {
-          Authorization: `Bearer ${token}`,
-        }
+      ? { Authorization: `Bearer ${token}` }
       : {},
   });
 
   if (res.status === 404) {
     throw new Error("Memoriale non trovato");
-  }
-
-  if (res.status === 403) {
-    throw new Error("Memoriale privato");
   }
 
   if (!res.ok) {
@@ -59,10 +53,9 @@ export async function getMemorialBySlug(slug) {
   return res.json();
 }
 
-
-/**
- * Recupera i memoriali dell'utente loggato
- */
+/* ======================================================
+   READ — MEMORIALI DELL’UTENTE
+   ====================================================== */
 export async function getMyMemorials() {
   const token = localStorage.getItem("token");
 
@@ -83,38 +76,9 @@ export async function getMyMemorials() {
   return res.json();
 }
 
-/**
- * Elimina un memoriale dell'utente
- */
-export async function deleteMemorial(id) {
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    throw new Error("Utente non autenticato");
-  }
-
-  const res = await fetch(`${API_URL}/memorials/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) {
-    let errorMessage = "Errore eliminazione memoriale";
-    try {
-      const error = await res.json();
-      if (error?.error) errorMessage = error.error;
-    } catch (_) {}
-    throw new Error(errorMessage);
-  }
-
-  return res.json();
-}
-
-/**
- * Aggiorna un memoriale
- */
+/* ======================================================
+   UPDATE
+   ====================================================== */
 export async function updateMemorial(id, data) {
   const token = localStorage.getItem("token");
 
@@ -143,12 +107,54 @@ export async function updateMemorial(id, data) {
   return res.json();
 }
 
-/**
- * Recupera memoriali pubblici (home)
- */
-export async function getPublicMemorials(page = 1, limit = 6) {
+/* ======================================================
+   DELETE
+   ====================================================== */
+export async function deleteMemorial(id) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Utente non autenticato");
+  }
+
+  const res = await fetch(`${API_URL}/memorials/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    let errorMessage = "Errore eliminazione memoriale";
+    try {
+      const error = await res.json();
+      if (error?.error) errorMessage = error.error;
+    } catch (_) {}
+    throw new Error(errorMessage);
+  }
+
+  return res.json();
+}
+
+/* ======================================================
+   READ — MEMORIALI PUBBLICI (HOME + SEARCH)
+   ====================================================== */
+export async function getPublicMemorials(
+  page = 1,
+  limit = 6,
+  search = ""
+) {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+
+  if (search) {
+    params.append("search", search);
+  }
+
   const res = await fetch(
-    `${API_URL}/memorials/public?page=${page}&limit=${limit}`,
+    `${API_URL}/memorials/public?${params.toString()}`,
     { cache: "no-store" }
   );
 
@@ -158,6 +164,3 @@ export async function getPublicMemorials(page = 1, limit = 6) {
 
   return res.json();
 }
-
-
-

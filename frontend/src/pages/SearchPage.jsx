@@ -5,38 +5,24 @@ import { getPublicMemorials } from "../api/memorials";
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [memorials, setMemorials] = useState([]);
-  const [filtered, setFiltered] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getPublicMemorials(1, 50) // 👈 temporaneamente più risultati
-      .then((data) => {
-        setMemorials(data);
-        setFiltered(data);
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+    const timeout = setTimeout(() => {
+      setLoading(true);
+      setError(null);
 
-  useEffect(() => {
-    const q = query.toLowerCase().trim();
+      getPublicMemorials(1, 12, query) // 👈 search lato backend
+        .then((data) => {
+          setMemorials(data.items); // 👈 FIX FONDAMENTALE
+        })
+        .catch((err) => setError(err.message))
+        .finally(() => setLoading(false));
+    }, 400); // debounce UX
 
-    if (!q) {
-      setFiltered(memorials);
-      return;
-    }
-
-    setFiltered(
-      memorials.filter((m) =>
-        m.petName.toLowerCase().includes(q) ||
-        m.species?.toLowerCase().includes(q)
-      )
-    );
-  }, [query, memorials]);
-
-  if (loading) return <p>Caricamento memoriali…</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+    return () => clearTimeout(timeout);
+  }, [query]);
 
   return (
     <div style={{ maxWidth: 900, margin: "0 auto", padding: "20px" }}>
@@ -55,7 +41,9 @@ export default function SearchPage() {
         }}
       />
 
-      {filtered.length === 0 && (
+      {loading && <p>Ricerca in corso…</p>}
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      {!loading && memorials.length === 0 && (
         <p>Nessun memoriale trovato</p>
       )}
 
@@ -66,7 +54,7 @@ export default function SearchPage() {
           gap: "16px",
         }}
       >
-        {filtered.map((m) => (
+        {memorials.map((m) => (
           <Link
             key={m.id}
             to={`/memorials/${m.slug}`}
@@ -77,11 +65,11 @@ export default function SearchPage() {
                 border: "1px solid #ddd",
                 borderRadius: "10px",
                 padding: "14px",
-                transition: "transform 0.2s",
               }}
             >
               <strong>{m.petName}</strong>
               <div>{m.species}</div>
+
               {m.imageUrl && (
                 <img
                   src={m.imageUrl}
