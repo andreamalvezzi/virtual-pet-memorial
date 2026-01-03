@@ -164,3 +164,26 @@ export async function getPublicMemorials(
 
   return res.json();
 }
+
+/* ======================================================
+   MODIFY — MEMORIALI 
+   ====================================================== */
+export async function getMemorialById(id) {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(
+    `${import.meta.env.VITE_API_BASE_URL}/api/memorials/id/${id}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Errore caricamento memoriale");
+  }
+
+  return res.json();
+}
+

@@ -137,6 +137,38 @@ router.get("/public", async (req, res) => {
 });
 
 /* ======================================================
+   GET /api/memorials/id/:id
+   Memoriale singolo (EDIT)
+   ====================================================== */
+router.get("/id/:id", authenticateToken, async (req, res) => {
+  const memorialId = Number(req.params.id);
+
+  if (isNaN(memorialId)) {
+    return res.status(400).json({ error: "ID non valido" });
+  }
+
+  try {
+    const memorial = await prisma.memorial.findUnique({
+      where: { id: memorialId },
+    });
+
+    if (!memorial) {
+      return res.status(404).json({ error: "Memoriale non trovato" });
+    }
+
+    if (memorial.userId !== req.user.userId) {
+      return res.status(403).json({ error: "Accesso negato" });
+    }
+
+    res.json(memorial);
+  } catch (err) {
+    console.error("GET MEMORIAL BY ID ERROR:", err);
+    res.status(500).json({ error: "Errore server" });
+  }
+});
+
+
+/* ======================================================
    GET /api/memorials/:slug
    Pubblico / privato (owner)
    ====================================================== */

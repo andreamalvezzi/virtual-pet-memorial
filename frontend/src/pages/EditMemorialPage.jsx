@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { updateMemorial, getMyMemorials } from "../api/memorials";
+import { updateMemorial, getMemorialById } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
-import "./NewMemorialPage.css"; // 🔁 RIUSO
+import "./NewMemorialPage.css"; // riuso stile form
 
 export default function EditMemorialPage() {
   const { id } = useParams();
@@ -23,30 +23,27 @@ export default function EditMemorialPage() {
   const [success, setSuccess] = useState(false);
   const [dirty, setDirty] = useState(false);
 
+  /* =========================
+     LOAD MEMORIAL (BY ID)
+     ========================= */
   useEffect(() => {
     async function load() {
       try {
-        const memorials = await getMyMemorials();
-        const memorial = memorials.find(
-          (m) => m.id === Number(id)
-        );
-
-        if (!memorial) {
-          setError("Memoriale non trovato");
-          return;
-        }
+        const memorial = await getMemorialById(id);
 
         setForm({
-          petName: memorial.petName,
-          species: memorial.species,
-          deathDate: memorial.deathDate.slice(0, 10),
-          epitaph: memorial.epitaph,
+          petName: memorial.petName || "",
+          species: memorial.species || "",
+          deathDate: memorial.deathDate
+            ? memorial.deathDate.slice(0, 10)
+            : "",
+          epitaph: memorial.epitaph || "",
           isPublic: memorial.isPublic,
         });
 
         setImageUrl(memorial.imageUrl || null);
-      } catch {
-        setError("Errore caricamento memoriale");
+      } catch (err) {
+        setError("Errore nel caricamento del memoriale");
       } finally {
         setLoading(false);
       }
@@ -55,6 +52,9 @@ export default function EditMemorialPage() {
     load();
   }, [id]);
 
+  /* =========================
+     DIRTY STATE WARNING
+     ========================= */
   useEffect(() => {
     function handleBeforeUnload(e) {
       if (!dirty) return;
@@ -70,6 +70,9 @@ export default function EditMemorialPage() {
       );
   }, [dirty]);
 
+  /* =========================
+     HANDLERS
+     ========================= */
   function handleChange(e) {
     const { name, value, type, checked } = e.target;
     setDirty(true);
@@ -96,18 +99,32 @@ export default function EditMemorialPage() {
         navigate("/dashboard");
       }, 1200);
     } catch (err) {
-      alert(err.message);
+      setError(
+        err.message || "Errore durante il salvataggio"
+      );
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading)
-    return <p className="form-loading">Caricamento…</p>;
+  /* =========================
+     STATES
+     ========================= */
+  if (loading) {
+    return (
+      <p className="form-loading">
+        Caricamento memoriale…
+      </p>
+    );
+  }
 
-  if (error)
+  if (error) {
     return <p className="form-error">{error}</p>;
+  }
 
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <div className="create-memorial-container">
       <h1>Modifica memoriale</h1>
@@ -116,7 +133,11 @@ export default function EditMemorialPage() {
         className="create-memorial-form"
         onSubmit={handleSubmit}
       >
-        <PetImageUpload onUpload={setImageUrl} />
+        {/* IMMAGINE */}
+        <PetImageUpload
+          onUpload={setImageUrl}
+          initialImage={imageUrl}
+        />
 
         <div className="form-group">
           <input
@@ -153,6 +174,7 @@ export default function EditMemorialPage() {
             name="epitaph"
             value={form.epitaph}
             onChange={handleChange}
+            placeholder="Epitaffio"
             required
           />
         </div>
