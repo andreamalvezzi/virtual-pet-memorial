@@ -14,7 +14,6 @@ export default function MemorialPage() {
 
   const navigate = useNavigate();
 
-
   useEffect(() => {
     getMemorialBySlug(slug)
       .then(setMemorial)
@@ -25,17 +24,12 @@ export default function MemorialPage() {
   function MemorialSkeleton() {
     return (
       <div style={{ maxWidth: 720, margin: "3rem auto", padding: "2.5rem" }}>
-        {/* skeleton blocks */}
+        {/* skeleton */}
       </div>
     );
   }
 
-  /* =========================
-     LOADING / ERROR STATES
-     ========================= */
-  if (loading) {
-    return <MemorialSkeleton />;      
-  }
+  if (loading) return <MemorialSkeleton />;
 
   if (error) {
     return (
@@ -54,11 +48,11 @@ export default function MemorialPage() {
   }
 
   const fadeStyle = `
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(8px);
-    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
       to {
         opacity: 1;
         transform: translateY(0);
@@ -66,31 +60,37 @@ export default function MemorialPage() {
     }
   `;
 
+  const formattedDate = new Date(memorial.deathDate).toLocaleDateString(
+    "it-IT",
+    {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }
+  );
 
-  /* =========================
-     RENDER PRINCIPALE
-     ========================= */
   return (
     <>
-    <style>{fadeStyle}</style>
+      <style>{fadeStyle}</style>
 
-    <div style={{ maxWidth: 720, margin: "1rem auto" }}>
-      <button
-        onClick={() => navigate(-1)}
-        style={{
-        background: "none",
-        border: "none",
-        color: "#888",
-        cursor: "pointer",
-        fontSize: "0.9rem",
-        padding: 0,
-      }}
-    >
-      ← Torna indietro
-    </button>
-  </div>
-    
-      {/* LINK DI RITORNO — SOLO SE LOGGATO */}
+      {/* TORNA INDIETRO */}
+      <div style={{ maxWidth: 720, margin: "1rem auto" }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#888",
+            cursor: "pointer",
+            fontSize: "0.9rem",
+            padding: 0,
+          }}
+        >
+          ← Torna indietro
+        </button>
+      </div>
+
+      {/* DASHBOARD (SOLO LOGGATO) */}
       {user && (
         <div style={{ maxWidth: 720, margin: "1rem auto" }}>
           <Link
@@ -110,18 +110,16 @@ export default function MemorialPage() {
       <div
         style={{
           maxWidth: 720,
-          margin: "clamp(1.5rem, 5vw, 3rem) auto", 
+          margin: "clamp(1.5rem, 5vw, 3rem) auto",
           padding: "clamp(1.25rem, 4vw, 2.5rem)",
           textAlign: "center",
           border: "1px solid #ddd",
           borderRadius: "12px",
           background: "#fafafa",
           color: "#222",
-          opacity: 1,
           animation: "fadeIn 0.6s ease-out",
         }}
       >
-        {/* IMMAGINE PET */}
         {memorial.imageUrl && (
           <img
             src={memorial.imageUrl.replace(
@@ -140,21 +138,28 @@ export default function MemorialPage() {
           />
         )}
 
-        <h1 style={{ fontSize: "clamp(1.8rem, 5vw, 2.2rem)", marginBottom: "0.5rem" }}>
+        <h1
+          style={{
+            fontSize: "clamp(1.8rem, 5vw, 2.2rem)",
+            marginBottom: "0.5rem",
+          }}
+        >
           🪦 {memorial.petName}
         </h1>
 
+        <div style={{ height: "0.5rem" }} />
+
         <p style={{ color: "#666", marginBottom: "1.5rem" }}>
-          {memorial.species} ·{" "}
-          {new Date(memorial.deathDate).toLocaleDateString()}
+          In memoria di un {memorial.species.toLowerCase()} · {formattedDate}
         </p>
 
         <blockquote
           style={{
             fontStyle: "italic",
             fontSize: "clamp(1.05rem, 4vw, 1.2rem)",
-            margin: "2rem 0",
+            margin: "2.5rem 0",
             color: "#444",
+            lineHeight: 1.6,
           }}
         >
           “{memorial.epitaph}”
@@ -163,7 +168,7 @@ export default function MemorialPage() {
         <hr style={{ margin: "2rem 0" }} />
 
         <p style={{ fontSize: "0.85rem", color: "#aaa" }}>
-          Creato con amore ❤️
+          Un ricordo che resta
         </p>
       </div>
     </>
