@@ -1,0 +1,104 @@
+/* WRAPPER */
+
+.welcome {
+  width: 100%;
+}
+
+/* HERO */
+
+.welcome-hero {
+  background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+  padding: 4rem 1.5rem;
+}
+
+.welcome-hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.welcome-hero h1 {
+  font-size: 2.4rem;
+  color: #e5e7eb;
+  margin-bottom: 1rem;
+}
+
+.welcome-hero p {
+  font-size: 1.05rem;
+  color: #9ca3af;
+  max-width: 620px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+.welcome-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+/* HOW IT WORKS */
+
+.welcome-how {
+  padding: 4rem 1.5rem;
+  text-align: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-how h2 {
+  font-size: 1.7rem;
+  margin-bottom: 3rem;
+}
+
+.welcome-steps {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* STEP */
+
+.welcome-step {
+  background: #fafafa;
+  border-radius: 18px;
+  padding: 2rem;
+  max-width: 360px;
+  color: #1f2937;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 600ms ease, transform 600ms ease;
+}
+
+.welcome-step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.welcome-step .icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.75rem;
+}
+
+.welcome-step h3 {
+  margin-bottom: 0.5rem;
+}
+
+.welcome-step p {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+}
+
+/* FOOTER */
+
+.welcome-footer {
+  text-align: center;
+  padding: 3rem 1.5rem;
+}
+
+.welcome-footer p {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
