@@ -1,0 +1,60 @@
+.pet-upload {
+  margin-bottom: 1.2rem;
+}
+
+/* PREVIEW */
+
+.pet-upload-preview {
+  position: relative;
+  margin-bottom: 0.6rem;
+}
+
+.pet-upload-preview img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: cover;
+  border-radius: 12px;
+  transition: opacity 0.2s ease;
+}
+
+.pet-upload-preview img.loading {
+  opacity: 0.6;
+}
+
+.pet-upload-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.45);
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+/* PLACEHOLDER */
+
+.pet-upload-placeholder {
+  height: 260px;
+  background: #e6e2dd;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6f6b66;
+  margin-bottom: 0.6rem;
+}
+
+/* INPUT */
+
+.pet-upload input[type="file"] {
+  font-size: 0.85rem;
+}
+
+/* ERROR */
+
+.pet-upload-error {
+  margin-top: 0.4rem;
+  font-size: 0.85rem;
+  color: #c86464;
+}
