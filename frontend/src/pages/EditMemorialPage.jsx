@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { updateMemorial, getMyMemorials } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
+import "./NewMemorialPage.css"; // 🔁 RIUSO
 
 export default function EditMemorialPage() {
   const { id } = useParams();
@@ -22,13 +23,13 @@ export default function EditMemorialPage() {
   const [success, setSuccess] = useState(false);
   const [dirty, setDirty] = useState(false);
 
-
-
   useEffect(() => {
     async function load() {
       try {
         const memorials = await getMyMemorials();
-        const memorial = memorials.find((m) => m.id === Number(id));
+        const memorial = memorials.find(
+          (m) => m.id === Number(id)
+        );
 
         if (!memorial) {
           setError("Memoriale non trovato");
@@ -44,7 +45,7 @@ export default function EditMemorialPage() {
         });
 
         setImageUrl(memorial.imageUrl || null);
-      } catch (err) {
+      } catch {
         setError("Errore caricamento memoriale");
       } finally {
         setLoading(false);
@@ -62,14 +63,15 @@ export default function EditMemorialPage() {
     }
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-    };
+    return () =>
+      window.removeEventListener(
+        "beforeunload",
+        handleBeforeUnload
+      );
   }, [dirty]);
 
   function handleChange(e) {
-    const { name, value, type, checked } = e.target;    
+    const { name, value, type, checked } = e.target;
     setDirty(true);
     setForm((prev) => ({
       ...prev,
@@ -100,66 +102,78 @@ export default function EditMemorialPage() {
     }
   }
 
-  if (loading) return <p>Caricamento...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
+  if (loading)
+    return <p className="form-loading">Caricamento…</p>;
+
+  if (error)
+    return <p className="form-error">{error}</p>;
 
   return (
-    <div style={{ maxWidth: 520, margin: "40px auto" }}>
+    <div className="create-memorial-container">
       <h1>Modifica memoriale</h1>
 
-      <form onSubmit={handleSubmit}>
-        {/* IMMAGINE ATTUALE + UPLOAD */}
+      <form
+        className="create-memorial-form"
+        onSubmit={handleSubmit}
+      >
         <PetImageUpload onUpload={setImageUrl} />
 
-        <input
-          name="petName"
-          value={form.petName}
-          onChange={handleChange}
-          placeholder="Nome del pet"
-          required
-        />
+        <div className="form-group">
+          <input
+            name="petName"
+            value={form.petName}
+            onChange={handleChange}
+            placeholder="Nome del pet"
+            required
+          />
+        </div>
 
-        <input
-          name="species"
-          value={form.species}
-          onChange={handleChange}
-          placeholder="Specie"
-          required
-        />
+        <div className="form-group">
+          <input
+            name="species"
+            value={form.species}
+            onChange={handleChange}
+            placeholder="Specie"
+            required
+          />
+        </div>
 
-        <input
-          type="date"
-          name="deathDate"
-          value={form.deathDate}
-          onChange={handleChange}
-          required
-        />
+        <div className="form-group">
+          <input
+            type="date"
+            name="deathDate"
+            value={form.deathDate}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-        <textarea
-          name="epitaph"
-          value={form.epitaph}
-          onChange={handleChange}
-          required
-        />
+        <div className="form-group">
+          <textarea
+            name="epitaph"
+            value={form.epitaph}
+            onChange={handleChange}
+            required
+          />
+        </div>
 
-        <label style={{ display: "block", marginTop: 10 }}>
+        <div className="form-checkbox">
           <input
             type="checkbox"
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
-          />{" "}
-          Memoriale pubblico
-        </label>
+          />
+          <span>Memoriale pubblico</span>
+        </div>
 
-        {/* MESSAGGIO SUCCESSO */}
         {success && (
-          <p style={{ color: "green", marginTop: 10 }}>
+          <p className="form-success">
             ✔ Memoriale aggiornato con successo
           </p>
         )}
 
-        <button type="submit" disabled={saving} style={{ marginTop: 20 }}>
+        <button type="submit" disabled={saving}>
           {saving ? "Salvataggio…" : "Salva modifiche"}
         </button>
       </form>

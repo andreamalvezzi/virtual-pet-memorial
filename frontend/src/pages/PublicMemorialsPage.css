@@ -1,0 +1,49 @@
+.public-container {
+  max-width: 1200px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  text-align: center;
+}
+
+.public-container h1 {
+  margin-bottom: 1.5rem;
+}
+
+.public-count {
+  color: #b6b0a8;
+  margin-bottom: 2rem;
+}
+
+/* STATES */
+
+.public-loading,
+.public-error,
+.public-empty {
+  text-align: center;
+  color: #aaa;
+  margin-top: 3rem;
+}
+
+/* PAGINATION */
+
+.pagination {
+  margin-top: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.pagination button {
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
