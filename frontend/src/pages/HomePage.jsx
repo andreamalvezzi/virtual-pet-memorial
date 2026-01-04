@@ -33,10 +33,13 @@ export default function HomePage() {
     load();
   }, []);
 
-  if (loading) return 
-    <p className="home-loading">Caricamento memoriali …<br />
-      (potrebbe richiedere qualche secondo al primo avvio)
-    </p>  
+  if (loading) {
+    return( 
+      <p className="home-loading">Caricamento memoriali …<br />
+        (potrebbe richiedere qualche secondo al primo avvio)
+      </p>  
+      );
+    }  
   if (error) return <p className="home-error">{error}</p>;
 
   return (
@@ -54,8 +57,11 @@ export default function HomePage() {
       {/* HERO */}
       <section className="home-hero">
         <h1>
-          Un luogo per ricordare chi hai amato 🐾
+          Cimitero Virtuale per Animali
         </h1>
+        <h2 className="home-subtitle">
+          Un luogo online per ricordare il tuo animale domestico
+        </h2>
 
         <p>
           Crea un memoriale digitale per il tuo pet e condividilo
@@ -81,6 +87,22 @@ export default function HomePage() {
             Crea un memoriale
           </Link>
         </div>         
+      </section>
+
+      <section className="home-seo">
+        <p>
+          Il <strong>Cimitero Virtuale per Animali</strong> è uno spazio online
+          dedicato a chi desidera ricordare il proprio animale domestico.
+          Qui puoi creare un memoriale digitale per cani, gatti e altri pet,
+          conservando il loro ricordo nel tempo.
+        </p>
+
+        <p>
+          Ogni memoriale permette di aggiungere una foto, una dedica e le
+          informazioni più importanti, offrendo un luogo rispettoso e
+          sempre accessibile per chi ha condiviso un legame speciale con
+          il proprio amico a quattro zampe.
+        </p>
       </section>
       
       {/* MEMORIALI */}
