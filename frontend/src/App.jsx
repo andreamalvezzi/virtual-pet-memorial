@@ -1,30 +1,26 @@
-import { Routes, Route, useLocation } from "react-router-dom";
-import MemorialPage from "./pages/MemorialPage.jsx";
-import NewMemorialPage from "./pages/NewMemorialPage.jsx";
-import LoginPage from "./pages/LoginPage";
-import PrivateRoute from "./components/PrivateRoute";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+
 import Navbar from "./components/Navbar";
-import RegisterPage from "./pages/RegisterPage";
-import DashboardPage from "./pages/DashboardPage";
-import EditMemorialPage from "./pages/EditMemorialPage";
-import WelcomePage from "./pages/WelcomePage.jsx";
-import { Navigate } from "react-router-dom";
+
 import HomePage from "./pages/HomePage.jsx";
+import WelcomePage from "./pages/WelcomePage.jsx";
 import PublicMemorialsPage from "./pages/PublicMemorialsPage.jsx";
+import MemorialPage from "./pages/MemorialPage.jsx";
+
+import LoginPage from "./pages/LoginPage";
+import RegisterPage from "./pages/RegisterPage";
+
+import DashboardPage from "./pages/DashboardPage";
+import NewMemorialPage from "./pages/NewMemorialPage.jsx";
+import EditMemorialPage from "./pages/EditMemorialPage";
+
+import PrivateRoute from "./components/PrivateRoute";
 import SearchPage from "./pages/SearchPage";
 
 function App() {
-  const location = useLocation();
-  
-  // Nasconde la navbar nei memoriali pubblici
-  const hideNavbar =
-    location.pathname.startsWith("/memorials/") ||
-    location.pathname === "/welcome";
-
-
   return (
     <>
-
       {/* SEO FALLBACK GLOBALE */}
       <Helmet>
         <title>
@@ -36,35 +32,24 @@ function App() {
         />
       </Helmet>
 
-      {!hideNavbar && <Navbar />}
+      {/* NAVBAR SEMPRE VISIBILE (per ora) */}
+      <Navbar />
+
       <Routes>
+        {/* HOME PUBBLICA */}
+        <Route path="/home" element={<HomePage />} />
 
-      {/* HOME PUBBLICA */}
-      <Route
-      path="/home"
-      element={<HomePage />
-      }
-      /> 
-      
-      {/* HOME */}      
-      <Route
-        index
-        element={<Navigate to="/welcome" replace />}
-      />
+        {/* REDIRECT ROOT */}
+        <Route index element={<Navigate to="/welcome" replace />} />
 
-      <Route
-        path="/memorials"
-        element={<PublicMemorialsPage />}
-      />
-    
         {/* WELCOME */}
-        <Route
-          path="/welcome"
-          element={<WelcomePage />
-          }
-        /> 
+        <Route path="/welcome" element={<WelcomePage />} />
 
-        {/* DASHBOARD UTENTE */}
+        {/* MEMORIALI PUBBLICI */}
+        <Route path="/memorials" element={<PublicMemorialsPage />} />
+        <Route path="/memorials/:slug" element={<MemorialPage />} />
+
+        {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -74,7 +59,6 @@ function App() {
           }
         />
 
-        {/* CREA MEMORIALE */}
         <Route
           path="/dashboard/memorials/new"
           element={
@@ -84,7 +68,6 @@ function App() {
           }
         />
 
-        {/* MODIFICA MEMORIALE */}
         <Route
           path="/dashboard/memorials/:id/edit"
           element={
@@ -94,31 +77,15 @@ function App() {
           }
         />
 
-        {/* MEMORIALE PUBBLICO */}
-        <Route
-          path="/memorials/:slug"
-          element={<MemorialPage />}
-        />
-
         {/* AUTH */}
-        <Route
-          path="/login"
-          element={<LoginPage />}
-        />
-        {/* REGISTER */}
-        <Route
-          path="/register"
-          element={<RegisterPage />}
-        />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
         {/* SEARCH */}
-        <Route 
-          path="/search" element={<SearchPage />} 
-        />
+        <Route path="/search" element={<SearchPage />} />
+
         {/* 404 */}
-        <Route
-          path="*"
-          element={<h1>Pagina non trovata</h1>}
-        />
+        <Route path="*" element={<h1>Pagina non trovata</h1>} />
       </Routes>
     </>
   );

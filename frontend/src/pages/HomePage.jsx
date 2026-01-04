@@ -4,6 +4,11 @@ import { getPublicMemorials } from "../api/memorials";
 import MemorialCard from "../components/MemorialCard";
 import { useAuth } from "../context/AuthContext";
 import "./HomePage.css";
+import React from "react";
+import { Helmet } from "react-helmet-async";
+
+
+
 
 export default function HomePage() {
   const [memorials, setMemorials] = useState([]);
@@ -28,10 +33,23 @@ export default function HomePage() {
     load();
   }, []);
 
-  if (loading) return <p className="home-loading">Caricamento…</p>;
+  if (loading) return 
+    <p className="home-loading">Caricamento memoriali …<br />
+      (potrebbe richiedere qualche secondo al primo avvio)
+    </p>  
   if (error) return <p className="home-error">{error}</p>;
 
   return (
+    <React.Fragment>      
+      {/* SEO — SOLO QUESTO BLOCCO È NUOVO */}
+      <Helmet>
+        <title>Cimitero Virtuale per Animali</title>
+        <meta
+          name="description"
+          content="Crea un memoriale online per il tuo animale domestico. Un luogo per ricordare cani, gatti e altri pet con amore."
+        />
+      </Helmet>
+     
     <div className="home-container">
       {/* HERO */}
       <section className="home-hero">
@@ -62,9 +80,9 @@ export default function HomePage() {
           >
             Crea un memoriale
           </Link>
-        </div>
+        </div>         
       </section>
-
+      
       {/* MEMORIALI */}
       <section>
         <h2 className="home-section-title">
@@ -117,5 +135,6 @@ export default function HomePage() {
         </Link>
       </section>
     </div>
+    </React.Fragment>
   );
 }
