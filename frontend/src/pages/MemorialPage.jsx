@@ -1,8 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { getMemorialBySlug } from "../api/memorials";
 import { useAuth } from "../context/AuthContext";
 import "./MemorialPage.css";
+
+/* ======================================================
+   MEMORIAL PAGE
+   ====================================================== */
 
 export default function MemorialPage() {
   const { slug } = useParams();
@@ -10,20 +15,33 @@ export default function MemorialPage() {
   const navigate = useNavigate();
 
   const [memorial, setMemorial] = useState(null);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  /* =========================
+     FETCH MEMORIAL
+     ========================= */
   useEffect(() => {
+    setLoading(true);
+    setError(null);
+
     getMemorialBySlug(slug)
       .then(setMemorial)
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [slug]);
 
+  /* =========================
+     LOADING / ERROR STATES
+     ========================= */
   if (loading) return <MemorialSkeleton />;
 
   if (error) {
-    return <p className="memorial-error">{error}</p>;
+    return (
+      <p className="memorial-error">
+        {error}
+      </p>
+    );
   }
 
   if (!memorial) {
@@ -34,22 +52,68 @@ export default function MemorialPage() {
     );
   }
 
-  const formattedDate = new Date(memorial.deathDate).toLocaleDateString(
-    "it-IT",
-    { day: "numeric", month: "long", year: "numeric" }
-  );
+  /* =========================
+     SEO / OPENGRAPH
+     ========================= */
+  const ogTitle = `🪦 ${memorial.petName} – Virtual Pet Memorial`;
 
+  const ogDescription =
+    memorial.epitaph?.length > 160
+      ? memorial.epitaph.slice(0, 157) + "…"
+      : memorial.epitaph;
+
+  const ogImage = memorial.imageUrl
+    ? memorial.imageUrl.replace(
+        "/upload/",
+        "/upload/w_1200,h_630,c_fill,f_auto,q_auto/"
+      )
+    : "/og-default.jpg";
+
+  const formattedDate = new Date(
+    memorial.deathDate
+  ).toLocaleDateString("it-IT", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <>
+      {/* SEO */}
+      <Helmet>
+        <title>{ogTitle}</title>
+
+        <meta name="description" content={ogDescription} />
+
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={ogTitle} />
+        <meta property="og:description" content={ogDescription} />
+        <meta property="og:image" content={ogImage} />
+
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
+
+      {/* NAV */}
       <nav className="memorial-nav">
-        <button onClick={() => navigate(-1)}>← Torna indietro</button>
+        <button onClick={() => navigate(-1)}>
+          ← Torna indietro
+        </button>
 
         {user && (
-          <Link to="/dashboard">← Dashboard</Link>
+          <Link to="/dashboard">
+            ← Dashboard
+          </Link>
         )}
       </nav>
 
-      <article className="memorial-container">
+      {/* CONTENT */}
+      <article
+        className="memorial-container"
+        role="article"
+      >
         {memorial.imageUrl && (
           <img
             src={memorial.imageUrl.replace(
@@ -67,7 +131,9 @@ export default function MemorialPage() {
         </h1>
 
         <p className="memorial-meta">
-          In memoria di un {memorial.species.toLowerCase()} · {formattedDate}
+          In memoria di un{" "}
+          {memorial.species?.toLowerCase() || "pet"} ·{" "}
+          {formattedDate}
         </p>
 
         <blockquote className="memorial-epitaph">
@@ -81,6 +147,10 @@ export default function MemorialPage() {
     </>
   );
 }
+
+/* ======================================================
+   SKELETON
+   ====================================================== */
 
 function MemorialSkeleton() {
   return (
