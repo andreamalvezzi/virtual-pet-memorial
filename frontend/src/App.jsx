@@ -24,6 +24,18 @@ function App() {
 
   return (
     <>
+
+      {/* SEO FALLBACK GLOBALE */}
+      <Helmet>
+        <title>
+          Virtual Pet Memorial – Un luogo per ricordare chi hai amato
+        </title>
+        <meta
+          name="description"
+          content="Crea un memoriale digitale per il tuo animale e custodisci il suo ricordo nel tempo."
+        />
+      </Helmet>
+
       {!hideNavbar && <Navbar />}
       <Routes>
 
