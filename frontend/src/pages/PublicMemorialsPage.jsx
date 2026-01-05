@@ -6,6 +6,10 @@ import MemorialCard from "../components/MemorialCard";
 import "./PublicMemorialsPage.css";
 
 export default function PublicMemorialsPage() {
+  const SITE_URL =
+    import.meta.env.VITE_SITE_URL ||
+    "https://virtual-pet-memorial-frontend.onrender.com";
+
   const [items, setItems] = useState([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -13,9 +17,14 @@ export default function PublicMemorialsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /* =========================
+     FETCH MEMORIALS
+     ========================= */
   useEffect(() => {
     async function load() {
       setLoading(true);
+      setError(null);
+
       try {
         const data = await getPublicMemorials(page, 6);
 
@@ -46,6 +55,9 @@ export default function PublicMemorialsPage() {
     load();
   }, [page]);
 
+  /* =========================
+     LOADING / ERROR
+     ========================= */
   if (loading) {
     return (
       <p className="public-loading">
@@ -55,32 +67,48 @@ export default function PublicMemorialsPage() {
   }
 
   if (error) {
-    return (
-      <p className="public-error">{error}</p>
-    );
+    return <p className="public-error">{error}</p>;
   }
 
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <div className="public-container">
-      {/* ===== SEO ===== */}
-        <Helmet>
-          <title>Memoriali pubblici per animali – Virtual Pet Memorial</title>
+      {/* ================= SEO ================= */}
+      <Helmet>
+        <title>
+          Memoriali pubblici per animali – Virtual Pet Memorial
+        </title>
 
-          <meta
-            name="description"
-            content="Scopri i memoriali pubblici dedicati ad animali domestici. Un luogo online per ricordare cani, gatti e altri pet con rispetto."
-          />
+        <meta
+          name="description"
+          content="Scopri i memoriali pubblici dedicati ad animali domestici. Un luogo online per ricordare cani, gatti e altri pet con rispetto."
+        />
 
-          <link
-            rel="canonical"
-            href={`${
-              import.meta.env.VITE_SITE_URL ||
-              "https://virtual-pet-memorial-frontend.onrender.com"
-            }/#/memorials`}
-          />
-        </Helmet>
+        {/* Canonical fisso (pagina principale) */}
+        <link
+          rel="canonical"
+          href={`${SITE_URL}/#/memorials`}
+        />
 
-      {/* HEADER */}
+        {/* Open Graph */}
+        <meta property="og:type" content="website" />
+        <meta
+          property="og:title"
+          content="Memoriali pubblici per animali – Virtual Pet Memorial"
+        />
+        <meta
+          property="og:description"
+          content="Scopri i memoriali pubblici dedicati ad animali domestici e condividi un ricordo che resta nel tempo."
+        />
+        <meta
+          property="og:url"
+          content={`${SITE_URL}/#/memorials`}
+        />
+      </Helmet>
+
+      {/* ================= HEADER ================= */}
       <h1>Tutti i memoriali pubblici</h1>
 
       {/* SEARCH CTA */}
@@ -92,23 +120,21 @@ export default function PublicMemorialsPage() {
         {totalItems} memoriali pubblici
       </p>
 
-      {/* EMPTY STATE */}
+      {/* ================= EMPTY STATE ================= */}
       {items.length === 0 && (
         <div className="public-empty">
           <h2>🐾 Nessun memoriale pubblico</h2>
-
           <p>
             Al momento non ci sono memoriali pubblici da
             visualizzare.
           </p>
-
           <p>
             Puoi provare a cercare un memoriale specifico.
           </p>
         </div>
       )}
 
-      {/* GRID */}
+      {/* ================= GRID ================= */}
       {items.length > 0 && (
         <div className="memorial-grid">
           {items.map((m) => (
@@ -117,30 +143,32 @@ export default function PublicMemorialsPage() {
         </div>
       )}
 
-      {/* PAGINAZIONE */}
-      <div className="pagination">
-        <button
-          className="ui-button"
-          onClick={() => setPage((p) => Math.max(1, p - 1))}
-          disabled={page === 1 || loading}
-        >
-          ← Indietro
-        </button>
+      {/* ================= PAGINAZIONE ================= */}
+      {totalPages > 1 && (
+        <div className="pagination">
+          <button
+            className="ui-button"
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+          >
+            ← Indietro
+          </button>
 
-        <span>
-          Pagina {page} di {totalPages}
-        </span>
+          <span>
+            Pagina {page} di {totalPages}
+          </span>
 
-        <button
-          className="ui-button"
-          onClick={() =>
-            setPage((p) => Math.min(totalPages, p + 1))
-          }
-          disabled={page === totalPages || loading}
-        >
-          Avanti →
-        </button>
-      </div>
+          <button
+            className="ui-button"
+            onClick={() =>
+              setPage((p) => Math.min(totalPages, p + 1))
+            }
+            disabled={page === totalPages}
+          >
+            Avanti →
+          </button>
+        </div>
+      )}
     </div>
   );
 }
