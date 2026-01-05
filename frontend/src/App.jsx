@@ -20,6 +20,10 @@ import PrivateRoute from "./components/PrivateRoute";
 import SearchPage from "./pages/SearchPage";
 
 function App() {
+  const SITE_URL =
+    import.meta.env.VITE_SITE_URL ||
+    "https://virtual-pet-memorial-frontend.onrender.com";
+
   const location = useLocation();
 
   // Focus management su cambio route (a11y)
@@ -38,15 +42,31 @@ function App() {
       </a>
 
       {/* SEO FALLBACK GLOBALE */}
-      <Helmet>
-        <title>
-          Virtual Pet Memorial – Un luogo per ricordare chi hai amato
-        </title>
-        <meta
-          name="description"
-          content="Crea un memoriale digitale per il tuo animale e custodisci il suo ricordo nel tempo."
-        />
-      </Helmet>
+        <Helmet>
+          <title>
+            Virtual Pet Memorial – Un luogo per ricordare chi hai amato
+          </title>
+
+          <meta
+            name="description"
+            content="Crea un memoriale digitale per il tuo animale e custodisci il suo ricordo nel tempo."
+          />
+
+          {/* ===== STRUCTURED DATA: WEBSITE ===== */}
+            <script type="application/ld+json">
+              {JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                "name": "Virtual Pet Memorial",
+                "url": SITE_URL,
+                "potentialAction": {
+                "@type": "SearchAction",
+                "target": `${SITE_URL}/#/search?q={search_term_string}`,
+                "query-input": "required name=search_term_string"
+              }
+            })}
+          </script>
+        </Helmet>
 
       {/* NAVBAR */}
       <Navbar />
