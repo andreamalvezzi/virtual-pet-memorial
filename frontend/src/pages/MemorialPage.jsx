@@ -37,11 +37,7 @@ export default function MemorialPage() {
   if (loading) return <MemorialSkeleton />;
 
   if (error) {
-    return (
-      <p className="memorial-error">
-        {error}
-      </p>
-    );
+    return <p className="memorial-error">{error}</p>;
   }
 
   if (!memorial) {
@@ -53,21 +49,15 @@ export default function MemorialPage() {
   }
 
   /* =========================
-     SEO / OPENGRAPH
+     SEO (B1)
      ========================= */
-  const ogTitle = `🪦 ${memorial.petName} – Virtual Pet Memorial`;
+  const title = `${memorial.petName} – Memoriale per Animali | Virtual Pet Memorial`;
 
-  const ogDescription =
-    memorial.epitaph?.length > 160
-      ? memorial.epitaph.slice(0, 157) + "…"
-      : memorial.epitaph;
-
-  const ogImage = memorial.imageUrl
-    ? memorial.imageUrl.replace(
-        "/upload/",
-        "/upload/w_1200,h_630,c_fill,f_auto,q_auto/"
-      )
-    : "/og-default.jpg";
+  const description = memorial.epitaph
+    ? memorial.epitaph.length > 155
+      ? memorial.epitaph.slice(0, 152) + "…"
+      : memorial.epitaph
+    : `Memoriale dedicato a ${memorial.petName}, un ricordo che resta nel tempo.`;
 
   const formattedDate = new Date(
     memorial.deathDate
@@ -77,23 +67,43 @@ export default function MemorialPage() {
     year: "numeric",
   });
 
+  const ogTitle = `${memorial.petName} – Virtual Pet Memorial`;
+
+  const ogDescription = description;
+
+  const ogImage = memorial.imageUrl
+    ? memorial.imageUrl.replace(
+        "/upload/",
+        "/upload/w_1200,h_630,c_fill,f_auto,q_auto/"
+      )
+    : "/og-default.jpg";
+
+  const SITE_URL = import.meta.env.VITE_SITE_URL || "https://virtual-pet-memorial-frontend.onrender.com";
+
+  const ogUrl = `${SITE_URL}/#/memorials/${slug}`;
+
   /* =========================
      RENDER
      ========================= */
   return (
     <>
-      {/* SEO */}
       <Helmet>
-        <title>{ogTitle}</title>
+      {/* SEO */}
+      <title>{title}</title>
+      <meta name="description" content={description} />
 
-        <meta name="description" content={ogDescription} />
+      {/* OpenGraph */}
+      <meta property="og:type" content="article" key="og:type" />
+      <meta property="og:title" content={ogTitle} key="og:title" />
+      <meta property="og:description" content={ogDescription} key="og:description" />
+      <meta property="og:image" content={ogImage}  key="og:image" />
+      <meta property="og:url" content={ogUrl} key="og:url" />
 
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={ogTitle} />
-        <meta property="og:description" content={ogDescription} />
-        <meta property="og:image" content={ogImage} />
-
-        <meta name="twitter:card" content="summary_large_image" />
+      {/* Twitter */}
+      <meta name="twitter:card" content="summary_large_image" key="twitter:card" />
+      <meta name="twitter:title" content={ogTitle} />
+      <meta name="twitter:description" content={ogDescription} />
+      <meta name="twitter:image" content={ogImage} />
       </Helmet>
 
       {/* NAV */}
