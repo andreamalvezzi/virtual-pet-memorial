@@ -24,6 +24,9 @@ export default function MemorialCard({ memorial }) {
               sizes="(max-width: 768px) 100vw, 300px"
               alt={`Foto di ${memorial.petName}`}
               loading="lazy"
+              decoding="async"
+              width="400"
+              height="400"
               onLoad={(e) =>
                 e.currentTarget.classList.add("loaded")
               }
