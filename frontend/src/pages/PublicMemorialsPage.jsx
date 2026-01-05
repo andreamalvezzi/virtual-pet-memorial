@@ -67,16 +67,29 @@ export default function PublicMemorialsPage() {
       </p>
 
       {items.length === 0 ? (
-        <p className="public-empty">
-          Nessun memoriale disponibile.
+      <div className="public-empty">
+        <h2>🐾 Nessun memoriale pubblico</h2>
+
+        <p>
+          Al momento non ci sono memoriali pubblici da
+          visualizzare.
         </p>
-      ) : (
-        <div className="memorial-grid">
-          {items.map((m) => (
-            <MemorialCard key={m.id} memorial={m} />
-          ))}
-        </div>
-      )}
+
+        <p>
+          Puoi provare a cercare un memoriale specifico.
+        </p>
+
+        <a href="/#/search" className="public-search-link">
+          🔍 Cerca un memoriale
+        </a>
+      </div>
+    ) : (
+      <div className="memorial-grid">
+        {items.map((m) => (
+          <MemorialCard key={m.id} memorial={m} />
+        ))}
+      </div>
+    )}
 
       {/* PAGINAZIONE */}
       <div className="pagination">

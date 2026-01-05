@@ -14,17 +14,51 @@
   margin-bottom: 2rem;
 }
 
-/* STATES */
+/* =========================
+   STATES
+   ========================= */
 
 .public-loading,
 .public-error,
 .public-empty {
   text-align: center;
   color: #aaa;
-  margin-top: 3rem;
+  margin: 3rem auto;
+  max-width: 520px;
 }
 
-/* PAGINATION */
+.public-empty h2 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+
+.public-empty p {
+  margin: 0.4rem 0;
+  line-height: 1.5;
+}
+
+/* =========================
+   SEARCH CTA (EMPTY STATE)
+   ========================= */
+
+.public-search-link {
+  display: inline-block;
+  margin-top: 1.6rem;
+  padding: 0.6rem 1.4rem;
+  border-radius: 999px;
+  border: 1px solid #444;
+  color: #ddd;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.public-search-link:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* =========================
+   PAGINATION
+   ========================= */
 
 .pagination {
   margin-top: 3rem;

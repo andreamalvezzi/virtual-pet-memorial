@@ -56,11 +56,17 @@ export default function SearchPage() {
         <p className="search-error">{error}</p>
       )}
 
-      {!loading && memorials.length === 0 && (
-        <p className="search-empty">
-          Nessun memoriale trovato
+      {!loading && memorials.length === 0 && query && (
+      <div className="search-empty">
+        <h2>🔍 Nessun risultato</h2>
+        <p>
+          Non abbiamo trovato memoriali che corrispondono a
+          <strong> “{query}”</strong>.
         </p>
-      )}
+      <p>Prova a modificare la ricerca.</p>
+      </div>
+    )}
+
 
       <div className="memorial-grid">
         {memorials.map((m) => (

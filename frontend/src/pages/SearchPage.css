@@ -28,6 +28,8 @@
 .search-empty {
   color: #aaa;
   margin-bottom: 1.5rem;
+  margin: 3rem auto;
+  text-align: center;  
 }
 
 .search-error {
@@ -46,4 +48,12 @@
   border: 1px solid #ccc;
   background: #fff;
   cursor: pointer;
+}
+
+.search-empty h2 {
+  margin-bottom: 0.8rem;
+}
+
+.search-empty p {
+  margin: 0.4rem 0;
 }
