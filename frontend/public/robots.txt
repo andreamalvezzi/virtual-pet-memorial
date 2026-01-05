@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Disallow: /dashboard
+Disallow: /login
+Disallow: /register
+
+Sitemap: https://virtual-pet-memorial-frontend.onrender.com/sitemap.xml
