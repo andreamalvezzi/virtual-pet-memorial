@@ -4,6 +4,8 @@ import { Helmet } from "react-helmet-async";
 import { getMemorialBySlug } from "../api/memorials";
 import { useAuth } from "../context/AuthContext";
 import "./MemorialPage.css";
+import MemorialSkeleton from "../components/MemorialSkeleton.jsx";
+
 
 /* ======================================================
    MEMORIAL PAGE
@@ -121,7 +123,7 @@ export default function MemorialPage() {
 
       {/* CONTENT */}
       <article
-        className="memorial-container"
+        className="memorial-container fade-in"
         role="article"
         aria-labelledby="memorial-title"
       >
@@ -167,18 +169,3 @@ export default function MemorialPage() {
   );
 }
 
-/* ======================================================
-   SKELETON
-   ====================================================== */
-
-function MemorialSkeleton() {
-  return (
-    <div className="memorial-skeleton">
-      <div className="skeleton-image" />
-      <div className="skeleton-line title" />
-      <div className="skeleton-line meta" />
-      <div className="skeleton-line long" />
-      <div className="skeleton-line long" />
-    </div>
-  );
-}
