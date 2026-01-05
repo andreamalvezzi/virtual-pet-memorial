@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { createMemorial } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
 import "./NewMemorialPage.css";
@@ -27,7 +28,7 @@ export default function NewMemorialPage() {
      FORM HANDLERS
      ========================= */
   function handleChange(e) {
-    if (loading) return; // 🔒 blocca modifiche durante submit
+    if (loading) return;
 
     const { name, value, type, checked } = e.target;
 
@@ -43,7 +44,7 @@ export default function NewMemorialPage() {
   async function handleSubmit(e) {
     e.preventDefault();
 
-    if (loading) return; // 🔒 guard doppio submit
+    if (loading) return;
 
     setError(null);
 
@@ -63,7 +64,9 @@ export default function NewMemorialPage() {
 
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
-      setError(err.message || "Errore durante la creazione del memoriale");
+      setError(
+        err.message || "Errore durante la creazione del memoriale"
+      );
       setLoading(false);
     }
   }
@@ -73,6 +76,15 @@ export default function NewMemorialPage() {
      ========================= */
   return (
     <div className="create-memorial-container">
+      {/* ===== SEO (pagina privata) ===== */}
+      <Helmet>
+        <title>Crea un memoriale – Virtual Pet Memorial</title>
+        <meta
+          name="description"
+          content="Crea un memoriale digitale per il tuo animale domestico. Inserisci una foto, una dedica e scegli se renderlo pubblico."
+        />
+      </Helmet>
+
       <h1>Crea un memoriale</h1>
 
       <form

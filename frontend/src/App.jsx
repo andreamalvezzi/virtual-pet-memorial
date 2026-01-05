@@ -20,74 +20,78 @@ import SearchPage from "./pages/SearchPage";
 
 function App() {
   return (
-    <>
-      {/* SEO FALLBACK GLOBALE */}
-      <Helmet>
-        <title>
-          Virtual Pet Memorial – Un luogo per ricordare chi hai amato
-        </title>
-        <meta
-          name="description"
-          content="Crea un memoriale digitale per il tuo animale e custodisci il suo ricordo nel tempo."
-        />
-      </Helmet>
+<>
+  {/* SEO FALLBACK GLOBALE */}
+  <Helmet>
+    <title>
+      Virtual Pet Memorial – Un luogo per ricordare chi hai amato
+    </title>
+    <meta
+      name="description"
+      content="Crea un memoriale digitale per il tuo animale e custodisci il suo ricordo nel tempo."
+    />
+  </Helmet>
 
-      {/* NAVBAR SEMPRE VISIBILE (per ora) */}
-      <Navbar />
+  {/* NAVBAR */}
+  <Navbar />
 
-      <Routes>
-        {/* HOME PUBBLICA */}
-        <Route path="/home" element={<HomePage />} />
+  {/* CONTENUTO PRINCIPALE */}
+  <main id="main-content">
+    <Routes>
+      {/* HOME PUBBLICA */}
+      <Route path="/home" element={<HomePage />} />
 
-        {/* REDIRECT ROOT */}
-        <Route index element={<Navigate to="/welcome" replace />} />
+      {/* REDIRECT ROOT */}
+      <Route index element={<Navigate to="/welcome" replace />} />
 
-        {/* WELCOME */}
-        <Route path="/welcome" element={<WelcomePage />} />
+      {/* WELCOME */}
+      <Route path="/welcome" element={<WelcomePage />} />
 
-        {/* MEMORIALI PUBBLICI */}
-        <Route path="/memorials" element={<PublicMemorialsPage />} />
-        <Route path="/memorials/:slug" element={<MemorialPage />} />
+      {/* MEMORIALI PUBBLICI */}
+      <Route path="/memorials" element={<PublicMemorialsPage />} />
+      <Route path="/memorials/:slug" element={<MemorialPage />} />
 
-        {/* DASHBOARD */}
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <DashboardPage />
-            </PrivateRoute>
-          }
-        />
+      {/* DASHBOARD */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <DashboardPage />
+          </PrivateRoute>
+        }
+      />
 
-        <Route
-          path="/dashboard/memorials/new"
-          element={
-            <PrivateRoute>
-              <NewMemorialPage />
-            </PrivateRoute>
-          }
-        />
+      <Route
+        path="/dashboard/memorials/new"
+        element={
+          <PrivateRoute>
+            <NewMemorialPage />
+          </PrivateRoute>
+        }
+      />
 
-        <Route
-          path="/dashboard/memorials/:id/edit"
-          element={
-            <PrivateRoute>
-              <EditMemorialPage />
-            </PrivateRoute>
-          }
-        />
+      <Route
+        path="/dashboard/memorials/:id/edit"
+        element={
+          <PrivateRoute>
+            <EditMemorialPage />
+          </PrivateRoute>
+        }
+      />
 
-        {/* AUTH */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+      {/* AUTH */}
+      <Route path="/login" element={<LoginPage />} />
+      <Route path="/register" element={<RegisterPage />} />
 
-        {/* SEARCH */}
-        <Route path="/search" element={<SearchPage />} />
+      {/* SEARCH */}
+      <Route path="/search" element={<SearchPage />} />
 
-        {/* 404 */}
-        <Route path="*" element={<h1>Pagina non trovata</h1>} />
-      </Routes>
-    </>
+      {/* 404 */}
+      <Route path="*" element={<h1>Pagina non trovata</h1>} />
+    </Routes>
+  </main>
+</>
+
   );
 }
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { getPublicMemorials } from "../api/memorials";
 import MemorialCard from "../components/MemorialCard";
 import "./PublicMemorialsPage.css";
@@ -61,10 +62,19 @@ export default function PublicMemorialsPage() {
 
   return (
     <div className="public-container">
+      {/* ===== SEO ===== */}
+      <Helmet>
+        <title>Memoriali pubblici per animali – Virtual Pet Memorial</title>
+        <meta
+          name="description"
+          content="Scopri i memoriali pubblici dedicati ad animali domestici. Un luogo online per ricordare cani, gatti e altri pet con rispetto."
+        />
+      </Helmet>
+
       {/* HEADER */}
       <h1>Tutti i memoriali pubblici</h1>
 
-      {/* SEARCH CTA — SEMPRE VISIBILE */}
+      {/* SEARCH CTA */}
       <Link to="/search" className="public-search-link">
         🔍 Cerca un memoriale
       </Link>
@@ -100,10 +110,9 @@ export default function PublicMemorialsPage() {
 
       {/* PAGINAZIONE */}
       <div className="pagination">
-        <button className="ui-button"
-          onClick={() =>
-            setPage((p) => Math.max(1, p - 1))
-          }
+        <button
+          className="ui-button"
+          onClick={() => setPage((p) => Math.max(1, p - 1))}
           disabled={page === 1 || loading}
         >
           ← Indietro
@@ -113,11 +122,10 @@ export default function PublicMemorialsPage() {
           Pagina {page} di {totalPages}
         </span>
 
-        <button className="ui-button"
+        <button
+          className="ui-button"
           onClick={() =>
-            setPage((p) =>
-              Math.min(totalPages, p + 1)
-            )
+            setPage((p) => Math.min(totalPages, p + 1))
           }
           disabled={page === totalPages || loading}
         >

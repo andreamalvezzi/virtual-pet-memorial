@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { getPublicMemorials } from "../api/memorials";
 import MemorialCard from "../components/MemorialCard";
 import "./SearchPage.css";
@@ -33,6 +34,17 @@ export default function SearchPage() {
 
   return (
     <div className="search-container">
+      {/* ===== SEO ===== */}
+      <Helmet>
+        <title>
+          Cerca un memoriale per animali – Virtual Pet Memorial
+        </title>
+        <meta
+          name="description"
+          content="Cerca memoriali pubblici dedicati ad animali domestici per nome o specie. Trova e visita un ricordo che resta nel tempo."
+        />
+      </Helmet>
+
       <h1>🔍 Cerca un memoriale</h1>
 
       <input
@@ -57,16 +69,15 @@ export default function SearchPage() {
       )}
 
       {!loading && memorials.length === 0 && query && (
-      <div className="search-empty">
-        <h2>🔍 Nessun risultato</h2>
-        <p>
-          Non abbiamo trovato memoriali che corrispondono a
-          <strong> “{query}”</strong>.
-        </p>
-      <p>Prova a modificare la ricerca.</p>
-      </div>
-    )}
-
+        <div className="search-empty">
+          <h2>🔍 Nessun risultato</h2>
+          <p>
+            Non abbiamo trovato memoriali che corrispondono a
+            <strong> “{query}”</strong>.
+          </p>
+          <p>Prova a modificare la ricerca.</p>
+        </div>
+      )}
 
       <div className="memorial-grid">
         {memorials.map((m) => (
@@ -77,7 +88,10 @@ export default function SearchPage() {
       {/* LOAD MORE */}
       {hasMore && !loading && memorials.length > 0 && (
         <div className="search-load-more">
-          <button className="ui-button" onClick={() => setPage((p) => p + 1)}>
+          <button
+            className="ui-button"
+            onClick={() => setPage((p) => p + 1)}
+          >
             Carica altri
           </button>
         </div>

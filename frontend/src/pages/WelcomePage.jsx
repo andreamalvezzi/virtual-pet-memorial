@@ -30,7 +30,7 @@ export default function WelcomePage() {
     `welcome-step ${visibleSteps >= step ? "visible" : ""}`;
 
   return (
-    <main className="welcome">
+    <div className="welcome">
       {/* HERO */}
       <section className="welcome-hero">
         <div className="welcome-hero-inner">
@@ -96,6 +96,6 @@ export default function WelcomePage() {
           ✨ Entra in Virtual Pet Memorial
         </button>
       </section>
-    </main>
+    </div>
   );
 }

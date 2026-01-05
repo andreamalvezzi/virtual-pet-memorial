@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { getMyMemorials, deleteMemorial } from "../api/memorials";
 import MemorialCard from "../components/MemorialCard";
 import "./DashboardPage.css";
@@ -48,6 +49,15 @@ export default function DashboardPage() {
 
   return (
     <div className="dashboard-container">
+      {/* ===== SEO (pagina privata) ===== */}
+      <Helmet>
+        <title>Dashboard – Virtual Pet Memorial</title>
+        <meta
+          name="description"
+          content="Gestisci i memoriali che hai creato, modificane i contenuti o creane di nuovi nel tuo spazio personale."
+        />
+      </Helmet>
+
       {/* HEADER */}
       <header className="dashboard-header">
         <h1>La tua dashboard</h1>
@@ -56,7 +66,10 @@ export default function DashboardPage() {
 
       {/* CTA */}
       <div className="dashboard-cta">
-        <Link to="/dashboard/memorials/new" className="dashboard-button">
+        <Link
+          to="/dashboard/memorials/new"
+          className="dashboard-button"
+        >
           ➕ Crea nuovo memoriale
         </Link>
       </div>
@@ -69,14 +82,20 @@ export default function DashboardPage() {
             Qui compariranno i memoriali dei tuoi pet.
             Inizia creando il tuo primo memoriale.
           </p>
-          <Link to="/dashboard/memorials/new" className="dashboard-button">
+          <Link
+            to="/dashboard/memorials/new"
+            className="dashboard-button"
+          >
             ➕ Crea il tuo primo memoriale
           </Link>
         </div>
       ) : (
         <div className="memorial-grid">
           {memorials.map((memorial) => (
-            <div key={memorial.id} className="dashboard-card-wrapper">
+            <div
+              key={memorial.id}
+              className="dashboard-card-wrapper"
+            >
               <MemorialCard memorial={memorial} />
 
               <div className="dashboard-card-actions">
