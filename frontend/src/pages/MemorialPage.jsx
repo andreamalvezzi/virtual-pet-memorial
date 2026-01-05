@@ -73,6 +73,11 @@ export default function MemorialPage() {
         <title>{title}</title>
         <meta name="description" content={description} />
 
+        <link
+          rel="canonical"
+          href={`${SITE_URL}/#/memorials/${slug}`}
+        />
+
         <meta property="og:type" content="article" />
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={description} />
