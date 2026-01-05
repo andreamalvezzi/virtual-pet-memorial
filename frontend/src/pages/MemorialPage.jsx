@@ -136,14 +136,18 @@ export default function MemorialPage() {
               <img
                 src={memorial.imageUrl.replace(
                   "/upload/",
-                  "/upload/f_auto,q_auto/"
+                  "/upload/w_800,f_auto,q_auto/"
                 )}
+                srcSet={`
+                  ${memorial.imageUrl.replace("/upload/", "/upload/w_400,f_auto,q_auto/")} 400w,
+                  ${memorial.imageUrl.replace("/upload/", "/upload/w_800,f_auto,q_auto/")} 800w,
+                  ${memorial.imageUrl.replace("/upload/", "/upload/w_1200,f_auto,q_auto/")} 1200w
+               `}
+                sizes="(max-width: 768px) 100vw, 720px"
                 alt={`Foto commemorativa di ${memorial.petName}`}
                 loading="lazy"
                 className="memorial-image"
-                onLoad={(e) =>
-                  e.currentTarget.classList.add("loaded")
-                }
+                onLoad={(e) => e.currentTarget.classList.add("loaded")}
               />
             </div>
           )}

@@ -14,8 +14,14 @@ export default function MemorialCard({ memorial }) {
             <img
               src={memorial.imageUrl.replace(
                 "/upload/",
-                "/upload/f_auto,q_auto/"
+                "/upload/w_400,f_auto,q_auto/"
               )}
+              srcSet={`
+                ${memorial.imageUrl.replace("/upload/", "/upload/w_300,f_auto,q_auto/")} 300w,
+                ${memorial.imageUrl.replace("/upload/", "/upload/w_400,f_auto,q_auto/")} 400w,
+                ${memorial.imageUrl.replace("/upload/", "/upload/w_600,f_auto,q_auto/")} 600w
+              `}
+              sizes="(max-width: 768px) 100vw, 300px"
               alt={`Foto di ${memorial.petName}`}
               loading="lazy"
               onLoad={(e) =>
