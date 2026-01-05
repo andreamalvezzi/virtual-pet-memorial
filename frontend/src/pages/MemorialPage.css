@@ -1,4 +1,6 @@
-/* NAV */
+/* ======================================================
+   NAV
+   ====================================================== */
 
 .memorial-nav {
   max-width: 720px;
@@ -22,7 +24,9 @@
   text-decoration: underline;
 }
 
-/* CONTAINER */
+/* ======================================================
+   CONTAINER
+   ====================================================== */
 
 .memorial-container {
   max-width: 720px;
@@ -32,20 +36,35 @@
   border-radius: 20px;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
   text-align: center;
-  animation: fadeIn 0.6s ease-out;
 }
 
-/* IMAGE */
+/* ======================================================
+   IMAGE (FADE-IN)
+   ====================================================== */
+
+.memorial-image-wrapper {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  margin-bottom: 2.2rem;
+}
 
 .memorial-image {
   width: 100%;
   max-height: 380px;
   object-fit: cover;
   border-radius: 18px;
-  margin-bottom: 2.2rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
 }
 
-/* TEXT */
+.memorial-image.loaded {
+  opacity: 1;
+}
+
+/* ======================================================
+   TEXT
+   ====================================================== */
 
 .memorial-title {
   font-size: clamp(1.9rem, 5vw, 2.4rem);
@@ -66,7 +85,9 @@
   margin: 2.5rem 0;
 }
 
-/* FOOTER */
+/* ======================================================
+   FOOTER
+   ====================================================== */
 
 .memorial-footer {
   margin-top: 2.5rem;
@@ -74,69 +95,15 @@
   color: #9a958f;
 }
 
-/* STATES */
+/* ======================================================
+   STATES
+   ====================================================== */
 
 .memorial-error,
 .memorial-missing {
   text-align: center;
   margin-top: 3rem;
   color: #aaa;
-}
-
-/* SKELETON */
-
-.memorial-skeleton {
-  max-width: 720px;
-  margin: 3rem auto;
-  padding: 2.5rem;
-}
-
-.skeleton-image {
-  height: 280px;
-  background: #e6e2dd;
-  border-radius: 18px;
-  margin-bottom: 2rem;
-}
-
-.skeleton-line {
-  height: 14px;
-  background: #e6e2dd;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-}
-
-.skeleton-line.title {
-  width: 50%;
-  height: 20px;
-}
-
-.skeleton-line.meta {
-  width: 40%;
-}
-
-.skeleton-line.long {
-  width: 100%;
-}
-
-.fade-in {
-  animation: fadeIn 220ms ease-out;
-}
-
-/* ANIMATION */
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.memorial-skeleton {
-  min-height: 60vh;
 }
 
 .memorial-empty {
@@ -168,4 +135,59 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
+/* ======================================================
+   SKELETON
+   ====================================================== */
 
+.memorial-skeleton {
+  max-width: 720px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  min-height: 60vh;
+}
+
+.skeleton-image {
+  height: 280px;
+  background: #e6e2dd;
+  border-radius: 18px;
+  margin-bottom: 2rem;
+}
+
+.skeleton-line {
+  height: 14px;
+  background: #e6e2dd;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-line.title {
+  width: 50%;
+  height: 20px;
+}
+
+.skeleton-line.meta {
+  width: 40%;
+}
+
+.skeleton-line.long {
+  width: 100%;
+}
+
+/* ======================================================
+   ANIMATION
+   ====================================================== */
+
+.fade-in {
+  animation: fadeIn 220ms ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

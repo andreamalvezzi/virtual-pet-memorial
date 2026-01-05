@@ -131,7 +131,8 @@ export default function MemorialPage() {
             role="article"
             aria-labelledby="memorial-title"
           >
-            {memorial.imageUrl && (
+          {memorial.imageUrl && (
+            <div className="memorial-image-wrapper skeleton">
               <img
                 src={memorial.imageUrl.replace(
                   "/upload/",
@@ -140,8 +141,13 @@ export default function MemorialPage() {
                 alt={`Foto commemorativa di ${memorial.petName}`}
                 loading="lazy"
                 className="memorial-image"
+                onLoad={(e) =>
+                  e.currentTarget.classList.add("loaded")
+                }
               />
-            )}
+            </div>
+          )}
+
 
             <h1
               id="memorial-title"

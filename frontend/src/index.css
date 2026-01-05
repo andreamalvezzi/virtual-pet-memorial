@@ -85,3 +85,27 @@ a:hover {
   cursor: not-allowed;
 }
 
+/* ======================================================
+   SKELETON BASE
+   ====================================================== */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    #e6e2dd 25%,
+    #f0ede9 37%,
+    #e6e2dd 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
