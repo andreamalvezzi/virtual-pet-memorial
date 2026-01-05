@@ -176,6 +176,36 @@
 }
 
 /* ======================================================
+   SKELETON – SOFT PULSE (UX POLISH)
+   ====================================================== */
+
+.skeleton-image,
+.skeleton-line {
+  animation: skeletonPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+  0% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.85;
+  }
+}
+
+/* Rispetto accessibilità */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-image,
+  .skeleton-line {
+    animation: none;
+  }
+}
+
+
+/* ======================================================
    ANIMATION
    ====================================================== */
 
