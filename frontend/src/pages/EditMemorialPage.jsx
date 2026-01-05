@@ -1,8 +1,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { updateMemorial, getMemorialById } from "../api/memorials";
+import {
+  updateMemorial,
+  getMemorialById,
+} from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
 import "./NewMemorialPage.css"; // riuso stile form
+
+/* ======================================================
+   EDIT MEMORIAL PAGE
+   ====================================================== */
 
 export default function EditMemorialPage() {
   const { id } = useParams();
@@ -29,7 +36,15 @@ export default function EditMemorialPage() {
   useEffect(() => {
     async function load() {
       try {
-        const memorial = await getMemorialById(id);
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+          setError("Devi essere autenticato per modificare un memoriale");
+          setLoading(false);
+          return;
+        }
+
+    const memorial = await getMemorialById(id, token);
 
         setForm({
           petName: memorial.petName || "",
@@ -62,7 +77,10 @@ export default function EditMemorialPage() {
       e.returnValue = "";
     }
 
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener(
+      "beforeunload",
+      handleBeforeUnload
+    );
     return () =>
       window.removeEventListener(
         "beforeunload",
@@ -74,8 +92,11 @@ export default function EditMemorialPage() {
      HANDLERS
      ========================= */
   function handleChange(e) {
+    if (saving) return; // 🔒 blocca modifiche mentre salva
+
     const { name, value, type, checked } = e.target;
     setDirty(true);
+
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
@@ -84,6 +105,9 @@ export default function EditMemorialPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (saving) return; // 🔒 guard doppio submit
+
     setSaving(true);
     setError(null);
 
@@ -94,15 +118,16 @@ export default function EditMemorialPage() {
       });
 
       setSuccess(true);
+      setDirty(false);
 
       setTimeout(() => {
         navigate("/dashboard");
       }, 1200);
     } catch (err) {
       setError(
-        err.message || "Errore durante il salvataggio"
+        err.message ||
+          "Errore durante il salvataggio"
       );
-    } finally {
       setSaving(false);
     }
   }
@@ -137,6 +162,7 @@ export default function EditMemorialPage() {
         <PetImageUpload
           onUpload={setImageUrl}
           initialImage={imageUrl}
+          disabled={saving}
         />
 
         <div className="form-group">
@@ -146,6 +172,7 @@ export default function EditMemorialPage() {
             onChange={handleChange}
             placeholder="Nome del pet"
             required
+            disabled={saving}
           />
         </div>
 
@@ -156,6 +183,7 @@ export default function EditMemorialPage() {
             onChange={handleChange}
             placeholder="Specie"
             required
+            disabled={saving}
           />
         </div>
 
@@ -166,6 +194,7 @@ export default function EditMemorialPage() {
             value={form.deathDate}
             onChange={handleChange}
             required
+            disabled={saving}
           />
         </div>
 
@@ -176,6 +205,7 @@ export default function EditMemorialPage() {
             onChange={handleChange}
             placeholder="Epitaffio"
             required
+            disabled={saving}
           />
         </div>
 
@@ -185,6 +215,7 @@ export default function EditMemorialPage() {
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
+            disabled={saving}
           />
           <span>Memoriale pubblico</span>
         </div>
@@ -195,8 +226,14 @@ export default function EditMemorialPage() {
           </p>
         )}
 
-        <button type="submit" disabled={saving}>
-          {saving ? "Salvataggio…" : "Salva modifiche"}
+        <button
+          type="submit"
+          disabled={saving}
+          className={saving ? "loading" : ""}
+        >
+          {saving
+            ? "Salvataggio in corso… ⏳"
+            : "Salva modifiche"}
         </button>
       </form>
     </div>

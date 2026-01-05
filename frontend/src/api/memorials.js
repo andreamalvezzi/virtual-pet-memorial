@@ -30,7 +30,7 @@ export async function createMemorial(data, token) {
 }
 
 /* ======================================================
-   READ — SINGOLO MEMORIALE (slug)
+   READ — SINGOLO MEMORIALE (slug, pubblico/privato)
    ====================================================== */
 export async function getMemorialBySlug(slug) {
   const token = localStorage.getItem("token");
@@ -71,6 +71,34 @@ export async function getMyMemorials() {
 
   if (!res.ok) {
     throw new Error("Errore caricamento memoriali");
+  }
+
+  return res.json();
+}
+
+/* ======================================================
+   READ — MEMORIALE BY ID (EDIT)
+   ====================================================== */
+export async function getMemorialById(id) {
+  const token = localStorage.getItem("token");
+
+  if (!token) {
+    throw new Error("Utente non autenticato");
+  }
+
+  const res = await fetch(`${API_URL}/memorials/id/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    let errorMessage = "Errore caricamento memoriale";
+    try {
+      const error = await res.json();
+      if (error?.error) errorMessage = error.error;
+    } catch (_) {}
+    throw new Error(errorMessage);
   }
 
   return res.json();
@@ -164,26 +192,3 @@ export async function getPublicMemorials(
 
   return res.json();
 }
-
-/* ======================================================
-   MODIFY — MEMORIALI 
-   ====================================================== */
-export async function getMemorialById(id) {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(
-    `${import.meta.env.VITE_API_BASE_URL}/api/memorials/id/${id}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Errore caricamento memoriale");
-  }
-
-  return res.json();
-}
-
