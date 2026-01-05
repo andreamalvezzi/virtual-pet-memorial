@@ -46,9 +46,18 @@ export default function HomePage() {
       {/* SEO */}
       <Helmet>
         <title>Cimitero Virtuale per Animali</title>
+
         <meta
           name="description"
           content="Crea un memoriale online per il tuo animale domestico. Un luogo per ricordare cani, gatti e altri pet con amore."
+        />
+
+        <link
+          rel="canonical"
+          href={`${
+            import.meta.env.VITE_SITE_URL ||
+            "https://virtual-pet-memorial-frontend.onrender.com"
+          }/#/home`}
         />
       </Helmet>
 
