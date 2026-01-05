@@ -39,15 +39,27 @@
 /* LOAD MORE */
 
 .search-load-more {
-  margin-top: 2.5rem;
+  margin-top: 2.5rem;  
+  text-align: center;
 }
 
 .search-load-more button {
   padding: 0.6rem 1.4rem;
   border-radius: 8px;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid #555;
+  background: #1a1a1a;   
+  color: #f5f5f5;        
   cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.search-load-more button:hover {
+  background: #222;
+}
+
+.search-load-more button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .search-empty h2 {

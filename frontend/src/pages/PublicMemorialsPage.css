@@ -81,3 +81,8 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+.public-search-link {
+  margin-bottom: 2rem;
+}
+

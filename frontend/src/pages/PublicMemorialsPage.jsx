@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { getPublicMemorials } from "../api/memorials";
 import MemorialCard from "../components/MemorialCard";
 import "./PublicMemorialsPage.css";
@@ -60,36 +61,42 @@ export default function PublicMemorialsPage() {
 
   return (
     <div className="public-container">
+      {/* HEADER */}
       <h1>Tutti i memoriali pubblici</h1>
+
+      {/* SEARCH CTA — SEMPRE VISIBILE */}
+      <Link to="/search" className="public-search-link">
+        🔍 Cerca un memoriale
+      </Link>
 
       <p className="public-count">
         {totalItems} memoriali pubblici
       </p>
 
-      {items.length === 0 ? (
-      <div className="public-empty">
-        <h2>🐾 Nessun memoriale pubblico</h2>
+      {/* EMPTY STATE */}
+      {items.length === 0 && (
+        <div className="public-empty">
+          <h2>🐾 Nessun memoriale pubblico</h2>
 
-        <p>
-          Al momento non ci sono memoriali pubblici da
-          visualizzare.
-        </p>
+          <p>
+            Al momento non ci sono memoriali pubblici da
+            visualizzare.
+          </p>
 
-        <p>
-          Puoi provare a cercare un memoriale specifico.
-        </p>
+          <p>
+            Puoi provare a cercare un memoriale specifico.
+          </p>
+        </div>
+      )}
 
-        <a href="/#/search" className="public-search-link">
-          🔍 Cerca un memoriale
-        </a>
-      </div>
-    ) : (
-      <div className="memorial-grid">
-        {items.map((m) => (
-          <MemorialCard key={m.id} memorial={m} />
-        ))}
-      </div>
-    )}
+      {/* GRID */}
+      {items.length > 0 && (
+        <div className="memorial-grid">
+          {items.map((m) => (
+            <MemorialCard key={m.id} memorial={m} />
+          ))}
+        </div>
+      )}
 
       {/* PAGINAZIONE */}
       <div className="pagination">
