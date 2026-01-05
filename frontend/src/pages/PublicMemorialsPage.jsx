@@ -67,7 +67,9 @@ export default function PublicMemorialsPage() {
   }
 
   if (error) {
-    return <p className="public-error">{error}</p>;
+    return (
+      <p className="public-error">{error}</p>
+    );
   }
 
   /* =========================
@@ -86,13 +88,11 @@ export default function PublicMemorialsPage() {
           content="Scopri i memoriali pubblici dedicati ad animali domestici. Un luogo online per ricordare cani, gatti e altri pet con rispetto."
         />
 
-        {/* Canonical fisso (pagina principale) */}
         <link
           rel="canonical"
           href={`${SITE_URL}/#/memorials`}
         />
 
-        {/* Open Graph */}
         <meta property="og:type" content="website" />
         <meta
           property="og:title"
@@ -109,7 +109,14 @@ export default function PublicMemorialsPage() {
       </Helmet>
 
       {/* ================= HEADER ================= */}
-      <h1>Tutti i memoriali pubblici</h1>
+      <header className="public-header">
+        <h1>Tutti i memoriali pubblici</h1>
+
+        <p className="public-intro">
+          Esplora i memoriali dedicati ad animali che hanno
+          lasciato un segno speciale.
+        </p>
+      </header>
 
       {/* SEARCH CTA */}
       <Link to="/search" className="public-search-link">
@@ -124,13 +131,29 @@ export default function PublicMemorialsPage() {
       {items.length === 0 && (
         <div className="public-empty">
           <h2>🐾 Nessun memoriale pubblico</h2>
+
           <p>
             Al momento non ci sono memoriali pubblici da
             visualizzare.
           </p>
+
           <p>
-            Puoi provare a cercare un memoriale specifico.
+            Puoi cercare un memoriale specifico oppure
+            crearne uno tuo.
           </p>
+
+          <div className="public-empty-actions">
+            <Link to="/search" className="ui-button">
+              🔍 Cerca un memoriale
+            </Link>
+
+            <Link
+              to="/login"
+              className="ui-button secondary"
+            >
+              ✨ Crea un memoriale
+            </Link>
+          </div>
         </div>
       )}
 
@@ -148,7 +171,9 @@ export default function PublicMemorialsPage() {
         <div className="pagination">
           <button
             className="ui-button"
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            onClick={() =>
+              setPage((p) => Math.max(1, p - 1))
+            }
             disabled={page === 1}
           >
             ← Indietro

@@ -13,6 +13,12 @@ export default function SearchPage() {
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
+    if (!query) {
+      setMemorials([]);
+      setHasMore(false);
+      return;
+    }
+
     const timeout = setTimeout(() => {
       setLoading(true);
       setError(null);
@@ -36,9 +42,7 @@ export default function SearchPage() {
     <div className="search-container">
       {/* ===== SEO ===== */}
       <Helmet>
-        <title>
-          Cerca un memoriale per animali – Virtual Pet Memorial
-        </title>
+        <title>Cerca un memoriale per animali – Virtual Pet Memorial</title>
         <meta
           name="description"
           content="Cerca memoriali pubblici dedicati ad animali domestici per nome o specie. Trova e visita un ricordo che resta nel tempo."
@@ -51,29 +55,43 @@ export default function SearchPage() {
         type="text"
         className="search-input"
         placeholder="Cerca per nome o specie…"
+        aria-label="Cerca memoriali per nome o specie"
         value={query}
         onChange={(e) => {
-          setQuery(e.target.value);
+          setQuery(e.target.value.trimStart());
           setPage(1);
         }}
       />
 
+      {/* STATO INIZIALE */}
+      {!query && (
+        <div className="search-hint">
+          <p>
+            Inizia a digitare il nome di un animale o una specie
+            per cercare tra i memoriali pubblici.
+          </p>
+        </div>
+      )}
+
+      {/* LOADING INIZIALE */}
       {loading && page === 1 && (
         <p className="search-loading">
           Ricerca in corso…
         </p>
       )}
 
+      {/* ERRORE */}
       {error && (
         <p className="search-error">{error}</p>
       )}
 
-      {!loading && memorials.length === 0 && query && (
+      {/* EMPTY STATE */}
+      {!loading && query && memorials.length === 0 && (
         <div className="search-empty">
           <h2>😔 Nessun memoriale trovato</h2>
 
           <p>
-            Non ci sono memoriali pubblici che corrispondono a
+            Non abbiamo trovato memoriali pubblici che corrispondono a
             <strong> “{query}”</strong>.
           </p>
 
@@ -84,7 +102,7 @@ export default function SearchPage() {
         </div>
       )}
 
-
+      {/* RISULTATI */}
       <div className="memorial-grid">
         {memorials.map((m) => (
           <MemorialCard key={m.id} memorial={m} />
@@ -103,6 +121,7 @@ export default function SearchPage() {
         </div>
       )}
 
+      {/* LOADING PAGINAZIONE */}
       {loading && page > 1 && (
         <p className="search-loading-more">
           Caricamento…
