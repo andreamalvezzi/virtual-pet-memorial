@@ -43,13 +43,13 @@ export default function HomePage() {
 
   return (
     <React.Fragment>
-      {/* SEO */}
+      {/* ===== SEO ===== */}
       <Helmet>
         <title>Cimitero Virtuale per Animali</title>
 
         <meta
           name="description"
-          content="Crea un memoriale online per il tuo animale domestico. Un luogo per ricordare cani, gatti e altri pet con amore."
+          content="Crea un memoriale online per il tuo animale domestico. Un luogo semplice e rispettoso per ricordare cani, gatti e altri pet."
         />
 
         <link
@@ -62,17 +62,19 @@ export default function HomePage() {
       </Helmet>
 
       <div className="home-container">
-        {/* HERO */}
+        {/* ================= HERO ================= */}
         <section className="home-hero">
           <h1>Cimitero Virtuale per Animali</h1>
 
           <h2 className="home-subtitle">
-            Un luogo online per ricordare il tuo animale domestico
+            Uno spazio online per ricordare chi ti ha
+            accompagnato nella vita
           </h2>
 
           <p>
-            Crea un memoriale digitale per il tuo pet e condividilo
-            con chi lo ha conosciuto.
+            Crea un memoriale dedicato al tuo animale e
+            custodisci il suo ricordo con semplicità
+            e rispetto.
           </p>
 
           <div className="home-hero-actions">
@@ -82,8 +84,8 @@ export default function HomePage() {
               className="button"
             >
               {user
-                ? "Crea il memoriale del tuo pet"
-                : "Accedi per creare un memoriale"}
+                ? "Crea un memoriale"
+                : "Crea il tuo memoriale"}
             </Link>
 
             {/* CTA SECONDARIA */}
@@ -91,33 +93,39 @@ export default function HomePage() {
               onClick={() =>
                 document
                   .getElementById("memorial-grid")
-                  ?.scrollIntoView({ behavior: "smooth" })
+                  ?.scrollIntoView({
+                    behavior: "smooth",
+                  })
               }
               className="button secondary"
             >
-              Esplora memoriali
+              Esplora i memoriali
             </button>
           </div>
         </section>
 
-        {/* SEO TESTUALE */}
+        {/* ================= SEO TESTUALE ================= */}
         <section className="home-seo">
           <p>
-            Il <strong>Cimitero Virtuale per Animali</strong> è uno spazio online
-            dedicato a chi desidera ricordare il proprio animale domestico.
-            Qui puoi creare un memoriale digitale per cani, gatti e altri pet,
-            conservando il loro ricordo nel tempo.
+            Il <strong>Cimitero Virtuale per Animali</strong>{" "}
+            è uno spazio online dedicato a chi desidera
+            ricordare il proprio animale domestico.
+            Qui puoi creare un memoriale digitale per
+            cani, gatti e altri pet, conservando il loro
+            ricordo nel tempo.
           </p>
 
           <p>
-            Ogni memoriale permette di aggiungere una foto, una dedica e le
-            informazioni più importanti, offrendo un luogo rispettoso e
-            sempre accessibile per chi ha condiviso un legame speciale con
-            il proprio amico a quattro zampe.
+            Ogni memoriale permette di aggiungere una
+            foto, una dedica e le informazioni più
+            importanti, offrendo un luogo sempre
+            accessibile per chi ha condiviso un legame
+            speciale con il proprio amico a quattro
+            zampe.
           </p>
         </section>
 
-        {/* MEMORIALI */}
+        {/* ================= MEMORIALI ================= */}
         <section>
           <h2 className="home-section-title">
             🌈 Memoriali pubblici
@@ -125,7 +133,8 @@ export default function HomePage() {
 
           {memorials.length === 0 ? (
             <p className="home-empty">
-              Nessun memoriale pubblico disponibile.
+              Al momento non ci sono memoriali pubblici
+              da visualizzare.
             </p>
           ) : (
             <div
@@ -133,7 +142,10 @@ export default function HomePage() {
               className="memorial-grid"
             >
               {memorials.map((m) => (
-                <MemorialCard key={m.id} memorial={m} />
+                <MemorialCard
+                  key={m.id}
+                  memorial={m}
+                />
               ))}
             </div>
           )}
@@ -147,7 +159,7 @@ export default function HomePage() {
           )}
         </section>
 
-        {/* CTA FINALE */}
+        {/* ================= CTA FINALE ================= */}
         <section
           id="cta-create"
           className="home-cta"
@@ -158,7 +170,7 @@ export default function HomePage() {
 
           <p>
             Bastano pochi minuti per creare un memoriale
-            dedicato al tuo pet.
+            dedicato al tuo animale.
           </p>
 
           <Link

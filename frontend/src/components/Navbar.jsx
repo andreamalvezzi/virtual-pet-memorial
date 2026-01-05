@@ -6,26 +6,30 @@ export default function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar" aria-label="Navigazione principale">
-      {/* HOME PUBBLICA */}
+    <nav
+      className="navbar"
+      aria-label="Navigazione principale"
+    >
+      {/* BRAND / HOME */}
       <Link
         to="/home"
         className="navbar-brand"
-        aria-label="Vai alla homepage"
+        aria-label="Vai alla homepage di Virtual Pet Memorial"
       >
-        Home
+        Virtual Pet Memorial
       </Link>
 
       <div className="navbar-links">
         {user ? (
           <>
             <Link to="/dashboard">
-              Dashboard
+              I tuoi memoriali
             </Link>
 
             <span
               className="navbar-user"
               aria-hidden="true"
+              title="Account attivo"
             >
               {user.email}
             </span>
@@ -35,13 +39,21 @@ export default function Navbar() {
               className="navbar-logout"
               aria-label="Esci dal tuo account"
             >
-              Logout
+              Esci
             </button>
           </>
         ) : (
           <>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Registrati</Link>
+            <Link to="/login">
+              Accedi
+            </Link>
+
+            <Link
+              to="/register"
+              className="navbar-cta"
+            >
+              Crea un memoriale
+            </Link>
           </>
         )}
       </div>

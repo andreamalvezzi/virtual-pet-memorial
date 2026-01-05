@@ -46,3 +46,8 @@
 .navbar-logout:hover {
   text-decoration: underline;
 }
+
+.navbar-cta {
+  font-weight: 600;
+}
+
