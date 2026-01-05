@@ -4,6 +4,10 @@ import { createMemorial } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
 import "./NewMemorialPage.css";
 
+/* ======================================================
+   NEW MEMORIAL PAGE
+   ====================================================== */
+
 export default function NewMemorialPage() {
   const navigate = useNavigate();
 
@@ -19,16 +23,28 @@ export default function NewMemorialPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  /* =========================
+     FORM HANDLERS
+     ========================= */
   function handleChange(e) {
+    if (loading) return; // 🔒 blocca modifiche durante submit
+
     const { name, value, type, checked } = e.target;
+
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   }
 
+  /* =========================
+     SUBMIT
+     ========================= */
   async function handleSubmit(e) {
     e.preventDefault();
+
+    if (loading) return; // 🔒 guard doppio submit
+
     setError(null);
 
     const token = localStorage.getItem("token");
@@ -47,12 +63,14 @@ export default function NewMemorialPage() {
 
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
-      setError(err.message);
-    } finally {
+      setError(err.message || "Errore durante la creazione del memoriale");
       setLoading(false);
     }
   }
 
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <div className="create-memorial-container">
       <h1>Crea un memoriale</h1>
@@ -62,7 +80,10 @@ export default function NewMemorialPage() {
         onSubmit={handleSubmit}
       >
         {/* IMMAGINE */}
-        <PetImageUpload onUpload={setImageUrl} />
+        <PetImageUpload
+          onUpload={setImageUrl}
+          disabled={loading}
+        />
 
         <div className="form-group">
           <label>Nome del pet</label>
@@ -72,6 +93,7 @@ export default function NewMemorialPage() {
             value={form.petName}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
 
@@ -84,6 +106,7 @@ export default function NewMemorialPage() {
             onChange={handleChange}
             placeholder="Cane, Gatto, Coniglio..."
             required
+            disabled={loading}
           />
         </div>
 
@@ -95,6 +118,7 @@ export default function NewMemorialPage() {
             value={form.deathDate}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
 
@@ -105,6 +129,7 @@ export default function NewMemorialPage() {
             value={form.epitaph}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
 
@@ -114,6 +139,7 @@ export default function NewMemorialPage() {
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
+            disabled={loading}
           />
           <span>Memoriale pubblico</span>
         </div>
@@ -122,8 +148,14 @@ export default function NewMemorialPage() {
           <p className="form-error">{error}</p>
         )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? "Salvataggio..." : "Crea memoriale"}
+        <button
+          type="submit"
+          disabled={loading}
+          className={loading ? "loading" : ""}
+        >
+          {loading
+            ? "Creazione in corso… ⏳"
+            : "Crea memoriale"}
         </button>
       </form>
     </div>
