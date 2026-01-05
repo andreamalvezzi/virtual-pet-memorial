@@ -123,6 +123,7 @@ export default function MemorialPage() {
       <article
         className="memorial-container"
         role="article"
+        aria-labelledby="memorial-title"
       >
         {memorial.imageUrl && (
           <img
@@ -130,23 +131,31 @@ export default function MemorialPage() {
               "/upload/",
               "/upload/f_auto,q_auto/"
             )}
-            alt={memorial.petName}
+            alt={`Foto commemorativa di ${memorial.petName}`}
             loading="lazy"
             className="memorial-image"
           />
         )}
 
-        <h1 className="memorial-title">
+        <h1
+          id="memorial-title"
+          className="memorial-title"
+        >
           🪦 {memorial.petName}
         </h1>
 
         <p className="memorial-meta">
           In memoria di un{" "}
           {memorial.species?.toLowerCase() || "pet"} ·{" "}
-          {formattedDate}
+          <time dateTime={memorial.deathDate}>
+            {formattedDate}
+          </time>
         </p>
 
-        <blockquote className="memorial-epitaph">
+        <blockquote
+          className="memorial-epitaph"
+          aria-label="Epitaffio commemorativo"
+        >
           “{memorial.epitaph}”
         </blockquote>
 
