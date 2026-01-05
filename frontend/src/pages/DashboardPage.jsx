@@ -77,11 +77,14 @@ export default function DashboardPage() {
       {/* EMPTY STATE */}
       {memorials.length === 0 ? (
         <div className="dashboard-empty">
-          <h2>Non hai ancora creato nessun memoriale 🐾</h2>
+          <h2>🐾 Il tuo spazio è pronto</h2>
+
           <p>
-            Qui compariranno i memoriali dei tuoi pet.
-            Inizia creando il tuo primo memoriale.
+            Qui troverai i memoriali dedicati ai tuoi pet.
+            Puoi iniziare creando il primo, con una foto e
+            un pensiero che resti nel tempo.
           </p>
+
           <Link
             to="/dashboard/memorials/new"
             className="dashboard-button"
@@ -89,7 +92,8 @@ export default function DashboardPage() {
             ➕ Crea il tuo primo memoriale
           </Link>
         </div>
-      ) : (
+        ) : (
+
         <div className="memorial-grid">
           {memorials.map((memorial) => (
             <div
