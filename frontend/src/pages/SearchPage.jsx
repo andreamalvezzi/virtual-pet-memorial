@@ -70,14 +70,20 @@ export default function SearchPage() {
 
       {!loading && memorials.length === 0 && query && (
         <div className="search-empty">
-          <h2>🔍 Nessun risultato</h2>
+          <h2>😔 Nessun memoriale trovato</h2>
+
           <p>
-            Non abbiamo trovato memoriali che corrispondono a
+            Non ci sono memoriali pubblici che corrispondono a
             <strong> “{query}”</strong>.
           </p>
-          <p>Prova a modificare la ricerca.</p>
+
+          <p>
+            Prova con un nome più generico oppure cerca per specie
+            (es. <em>cane</em>, <em>gatto</em>).
+          </p>
         </div>
       )}
+
 
       <div className="memorial-grid">
         {memorials.map((m) => (
