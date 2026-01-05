@@ -44,7 +44,7 @@ button {
   background-color: #f5f2ee;
   color: #1f1f1f;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background-color 0.25s ease, transform 0.15s ease;
 }
 
 button:hover {
@@ -77,7 +77,7 @@ button.secondary:hover {
 }
 
 /* ================================
-   LINK AZIONE (es. "vedi tutti")
+   LINK AZIONE
    ================================ */
 
 .action-link {
@@ -91,9 +91,9 @@ button.secondary:hover {
   text-decoration: underline;
 }
 
-/* ======================================================
-   PAGE TRANSITION (UX POLISH)
-   ====================================================== */
+/* ================================
+   PAGE TRANSITION
+   ================================ */
 
 .page-transition {
   animation: pageFadeIn 240ms ease-out;
@@ -110,16 +110,16 @@ button.secondary:hover {
   }
 }
 
-/* Accessibilità */
+/* Riduzione movimento */
 @media (prefers-reduced-motion: reduce) {
   .page-transition {
     animation: none;
   }
 }
 
-/* ======================================================
+/* ================================
    SKIP LINK (ACCESSIBILITY)
-   ====================================================== */
+   ================================ */
 
 .skip-link {
   position: absolute;
