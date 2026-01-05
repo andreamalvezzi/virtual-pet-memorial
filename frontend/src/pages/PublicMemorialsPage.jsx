@@ -100,7 +100,7 @@ export default function PublicMemorialsPage() {
 
       {/* PAGINAZIONE */}
       <div className="pagination">
-        <button
+        <button className="ui-button"
           onClick={() =>
             setPage((p) => Math.max(1, p - 1))
           }
@@ -113,7 +113,7 @@ export default function PublicMemorialsPage() {
           Pagina {page} di {totalPages}
         </span>
 
-        <button
+        <button className="ui-button"
           onClick={() =>
             setPage((p) =>
               Math.min(totalPages, p + 1)

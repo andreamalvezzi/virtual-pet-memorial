@@ -1,24 +1,48 @@
+/* ======================================================
+   MEMORIAL CARD LINK
+   ====================================================== */
+
 .memorial-card-link {
   text-decoration: none;
   color: inherit;
+  display: block;
+  height: 100%;
 }
+
+/* ======================================================
+   CARD BASE
+   ====================================================== */
 
 .memorial-card {
   background: #faf8f6;
   border-radius: 18px;
   border: 1px solid rgba(0, 0, 0, 0.04);
   overflow: hidden;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
   height: 100%;
+
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+
+  /* micro-polish */
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
 }
+
+/* HOVER */
 
 .memorial-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
 }
 
-/* IMMAGINE */
+/* FOCUS (accessibilità tastiera) */
+
+.memorial-card:focus-within {
+  outline: 2px solid rgba(0, 0, 0, 0.12);
+  outline-offset: 4px;
+}
+
+/* ======================================================
+   IMMAGINE
+   ====================================================== */
 
 .memorial-card-image {
   height: 190px;
@@ -31,7 +55,9 @@
   object-fit: cover;
 }
 
-/* PLACEHOLDER */
+/* ======================================================
+   PLACEHOLDER
+   ====================================================== */
 
 .memorial-card-placeholder {
   height: 100%;
@@ -42,7 +68,9 @@
   font-size: 0.9rem;
 }
 
-/* TESTO */
+/* ======================================================
+   CONTENT
+   ====================================================== */
 
 .memorial-card-content {
   padding: 1.1rem 1.2rem 1.4rem;

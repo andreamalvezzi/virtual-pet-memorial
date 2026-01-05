@@ -77,7 +77,7 @@ export default function SearchPage() {
       {/* LOAD MORE */}
       {hasMore && !loading && memorials.length > 0 && (
         <div className="search-load-more">
-          <button onClick={() => setPage((p) => p + 1)}>
+          <button className="ui-button" onClick={() => setPage((p) => p + 1)}>
             Carica altri
           </button>
         </div>

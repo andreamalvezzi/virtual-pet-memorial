@@ -17,7 +17,7 @@
   font-size: 1rem;
   border-radius: 10px;
   border: 1px solid #ddd;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
 }
 
 /* STATES */
@@ -28,7 +28,7 @@
 .search-empty {
   color: #aaa;
   margin-bottom: 1.5rem;
-  margin: 3rem auto;
+  margin: 3.5rem auto;
   text-align: center;  
 }
 
@@ -69,3 +69,8 @@
 .search-empty p {
   margin: 0.4rem 0;
 }
+
+.memorial-grid {
+  margin-top: 1.5rem;
+}
+
