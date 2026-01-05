@@ -63,13 +63,22 @@ export default function PublicMemorialsPage() {
   return (
     <div className="public-container">
       {/* ===== SEO ===== */}
-      <Helmet>
-        <title>Memoriali pubblici per animali – Virtual Pet Memorial</title>
-        <meta
-          name="description"
-          content="Scopri i memoriali pubblici dedicati ad animali domestici. Un luogo online per ricordare cani, gatti e altri pet con rispetto."
-        />
-      </Helmet>
+        <Helmet>
+          <title>Memoriali pubblici per animali – Virtual Pet Memorial</title>
+
+          <meta
+            name="description"
+            content="Scopri i memoriali pubblici dedicati ad animali domestici. Un luogo online per ricordare cani, gatti e altri pet con rispetto."
+          />
+
+          <link
+            rel="canonical"
+            href={`${
+              import.meta.env.VITE_SITE_URL ||
+              "https://virtual-pet-memorial-frontend.onrender.com"
+            }/#/memorials`}
+          />
+        </Helmet>
 
       {/* HEADER */}
       <h1>Tutti i memoriali pubblici</h1>
