@@ -37,6 +37,7 @@ function App() {
 
   {/* CONTENUTO PRINCIPALE */}
   <main id="main-content">
+    <div className="page-transition">
     <Routes>
       {/* HOME PUBBLICA */}
       <Route path="/home" element={<HomePage />} />
@@ -89,6 +90,7 @@ function App() {
       {/* 404 */}
       <Route path="*" element={<h1>Pagina non trovata</h1>} />
     </Routes>
+    </div>
   </main>
 </>
 

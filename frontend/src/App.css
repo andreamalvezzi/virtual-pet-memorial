@@ -90,3 +90,29 @@ button.secondary:hover {
 .action-link:hover {
   text-decoration: underline;
 }
+
+/* ======================================================
+   PAGE TRANSITION (UX POLISH)
+   ====================================================== */
+
+.page-transition {
+  animation: pageFadeIn 240ms ease-out;
+}
+
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Accessibilità */
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none;
+  }
+}
