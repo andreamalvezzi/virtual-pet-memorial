@@ -47,6 +47,8 @@
   border-radius: 18px;
   overflow: hidden;
   margin-bottom: 2.2rem;
+  aspect-ratio: 4 / 3;
+  background-color: #e6e2dd;
 }
 
 .memorial-image {
