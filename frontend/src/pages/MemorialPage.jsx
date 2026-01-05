@@ -91,16 +91,23 @@ export default function MemorialPage() {
       {/* ===== LOADING ===== */}
       {loading && <MemorialSkeleton />}
 
-      {/* ===== ERROR ===== */}
-      {!loading && error && (
-        <p className="memorial-error">{error}</p>
-      )}
+      {/* ===== ERROR / NOT FOUND ===== */}
+      {!loading && (error || !memorial) && (
+        <div className="memorial-empty">
+          <h2>😔 Memoriale non disponibile</h2>
 
-      {/* ===== NOT FOUND ===== */}
-      {!loading && !error && !memorial && (
-        <p className="memorial-missing">
-          Questo memoriale non esiste 🌫️
+        <p>
+          Questo memoriale non esiste, è stato rimosso
+          oppure non è pubblico.
         </p>
+
+        <button
+          className="empty-action"
+          onClick={() => navigate("/home")}
+        >
+          Torna alla home
+        </button>
+      </div>
       )}
 
       {/* ===== CONTENT ===== */}
