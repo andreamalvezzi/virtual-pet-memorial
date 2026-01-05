@@ -19,6 +19,10 @@ export default function MemorialPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const SITE_URL =
+    import.meta.env.VITE_SITE_URL ||
+    "https://virtual-pet-memorial-frontend.onrender.com";
+
   /* =========================
      FETCH MEMORIAL
      ========================= */
@@ -33,7 +37,7 @@ export default function MemorialPage() {
   }, [slug]);
 
   /* =========================
-     SEO
+     SEO DATA
      ========================= */
   const title = memorial
     ? `${memorial.petName} – Memoriale per Animali | Virtual Pet Memorial`
@@ -56,42 +60,71 @@ export default function MemorialPage() {
         "/upload/",
         "/upload/w_1200,h_630,c_fill,f_auto,q_auto/"
       )
-    : "/og-default.jpg";
+    : `${SITE_URL}/og-default.jpg`;
 
-  const SITE_URL =
-    import.meta.env.VITE_SITE_URL ||
-    "https://virtual-pet-memorial-frontend.onrender.com";
-
-  const ogUrl = `${SITE_URL}/#/memorials/${slug}`;
+  const canonicalUrl = `${SITE_URL}/#/memorials/${slug}`;
 
   /* =========================
      RENDER
      ========================= */
   return (
     <>
+      {/* ================= SEO / META ================= */}
       <Helmet>
         <title>{title}</title>
         <meta name="description" content={description} />
 
-        <link
-          rel="canonical"
-          href={`${SITE_URL}/#/memorials/${slug}`}
-        />
+        {/* Canonical */}
+        <link rel="canonical" href={canonicalUrl} />
 
+        {/* Open Graph */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={ogUrl} />
+        <meta property="og:url" content={canonicalUrl} />
 
+        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={ogTitle} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={ogImage} />
+
+        {/* ===== STRUCTURED DATA: ARTICLE ===== */}
+        {memorial && (
+          <script type="application/ld+json">
+            {JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Article",
+              "mainEntityOfPage": {
+                "@type": "WebPage",
+                "@id": canonicalUrl
+              },
+              "headline": `${memorial.petName} – Memoriale`,
+              "description": description,
+              ...(memorial.imageUrl && {
+                image: ogImage
+              }),
+              "author": {
+                "@type": "Organization",
+                "name": "Virtual Pet Memorial"
+              },
+              "publisher": {
+                "@type": "Organization",
+                "name": "Virtual Pet Memorial"
+              },
+              "datePublished": memorial.deathDate,
+              "dateModified": memorial.updatedAt || memorial.deathDate,
+              "isAccessibleForFree": true
+            })}
+          </script>
+        )}
       </Helmet>
 
+      {/* ================= LOADING ================= */}
       {loading && <MemorialSkeleton />}
 
+      {/* ================= ERROR / NOT FOUND ================= */}
       {!loading && (error || !memorial) && (
         <div className="memorial-empty">
           <h2>😔 Memoriale non disponibile</h2>
@@ -108,6 +141,7 @@ export default function MemorialPage() {
         </div>
       )}
 
+      {/* ================= CONTENT ================= */}
       {!loading && memorial && (
         <>
           <nav className="memorial-nav">
@@ -158,14 +192,11 @@ export default function MemorialPage() {
               In memoria di un{" "}
               {memorial.species?.toLowerCase() || "pet"} ·{" "}
               <time dateTime={memorial.deathDate}>
-                {new Date(memorial.deathDate).toLocaleDateString(
-                  "it-IT",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )}
+                {new Date(memorial.deathDate).toLocaleDateString("it-IT", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric"
+                })}
               </time>
             </p>
 
