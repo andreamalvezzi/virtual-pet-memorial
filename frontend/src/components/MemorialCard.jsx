@@ -9,11 +9,18 @@ export default function MemorialCard({ memorial }) {
     >
       <article className="memorial-card">
         {/* IMMAGINE */}
-        <div className="memorial-card-image">
+        <div className="memorial-card-image skeleton">
           {memorial.imageUrl ? (
             <img
-              src={memorial.imageUrl}
-              alt={memorial.petName}
+              src={memorial.imageUrl.replace(
+                "/upload/",
+                "/upload/f_auto,q_auto/"
+              )}
+              alt={`Foto di ${memorial.petName}`}
+              loading="lazy"
+              onLoad={(e) =>
+                e.currentTarget.classList.add("loaded")
+              }
             />
           ) : (
             <div className="memorial-card-placeholder">
@@ -39,4 +46,3 @@ export default function MemorialCard({ memorial }) {
     </Link>
   );
 }
-

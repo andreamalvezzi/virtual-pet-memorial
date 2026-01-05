@@ -47,13 +47,22 @@
 .memorial-card-image {
   height: 190px;
   background: #e6e2dd;
+  position: relative;
+  overflow: hidden;
 }
 
 .memorial-card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.35s ease;
 }
+
+.memorial-card-image img.loaded {
+  opacity: 1;
+}
+
 
 /* ======================================================
    PLACEHOLDER
