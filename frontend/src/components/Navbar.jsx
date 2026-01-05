@@ -6,24 +6,34 @@ export default function Navbar() {
   const { user, logout } = useAuth();
 
   return (
-    <nav className="navbar">
+    <nav className="navbar" aria-label="Navigazione principale">
       {/* HOME PUBBLICA */}
-      <Link to="/home" className="navbar-brand">
+      <Link
+        to="/home"
+        className="navbar-brand"
+        aria-label="Vai alla homepage"
+      >
         Home
       </Link>
 
       <div className="navbar-links">
         {user ? (
           <>
-            <Link to="/dashboard">Dashboard</Link>
+            <Link to="/dashboard">
+              Dashboard
+            </Link>
 
-            <span className="navbar-user">
+            <span
+              className="navbar-user"
+              aria-hidden="true"
+            >
               {user.email}
             </span>
 
             <button
               onClick={logout}
               className="navbar-logout"
+              aria-label="Esci dal tuo account"
             >
               Logout
             </button>
