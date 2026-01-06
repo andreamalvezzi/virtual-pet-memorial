@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { createMemorial } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
 import "./NewMemorialPage.css";
-import { PLAN } from "../config/plans";
+import { PLAN, PLAN_LIMITS } from "../config/plans";
 
 /* ======================================================
    NEW MEMORIAL PAGE
@@ -26,6 +26,8 @@ export default function NewMemorialPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const epitaphLimit = PLAN_LIMITS[plan].maxEpitaph;
+
   /* =========================
      FORM HANDLERS
      ========================= */
@@ -33,6 +35,15 @@ export default function NewMemorialPage() {
     if (loading) return;
 
     const { name, value, type, checked } = e.target;
+
+    // Epitaffio: clamp per piano
+    if (name === "epitaph") {
+      setForm((prev) => ({
+        ...prev,
+        epitaph: value.slice(0, epitaphLimit),
+      }));
+      return;
+    }
 
     setForm((prev) => ({
       ...prev,
@@ -59,7 +70,7 @@ export default function NewMemorialPage() {
 
     try {
       const memorial = await createMemorial(
-        { ...form, imageUrl }, // 👈 plan NON inviato (voluto)
+        { ...form, imageUrl }, // plan NON inviato (voluto)
         token
       );
 
@@ -89,7 +100,7 @@ export default function NewMemorialPage() {
 
       <h1>Crea un memoriale</h1>
 
-      {/* ===== SELEZIONE PIANO (solo frontend) ===== */}
+      {/* ===== SELEZIONE PIANO (frontend-only) ===== */}
       <section className="plan-selector">
         <h2>Piano memoriale</h2>
 
@@ -134,11 +145,8 @@ export default function NewMemorialPage() {
         onSubmit={handleSubmit}
         aria-busy={loading}
       >
-        {/* IMMAGINE */}
-        <PetImageUpload
-          onUpload={setImageUrl}
-          disabled={loading}
-        />
+        {/* IMMAGINE PRINCIPALE */}
+        <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
         <div className="form-group">
           <label htmlFor="petName">Nome del pet</label>
@@ -180,6 +188,7 @@ export default function NewMemorialPage() {
           />
         </div>
 
+        {/* ===== EPITAFIO (E3) ===== */}
         <div className="form-group">
           <label htmlFor="epitaph">Epitaffio</label>
           <textarea
@@ -190,6 +199,30 @@ export default function NewMemorialPage() {
             required
             disabled={loading}
           />
+
+          <div className="epitaph-meta">
+            <span>
+              {form.epitaph.length} / {epitaphLimit} caratteri
+            </span>
+
+            {plan === PLAN.FREE && form.epitaph.length >= 80 && (
+              <span className="epitaph-hint">
+                Con <strong>Medium</strong> puoi scrivere molto di più 🐾
+              </span>
+            )}
+
+            {plan === PLAN.MEDIUM && form.epitaph.length >= 420 && (
+              <span className="epitaph-hint">
+                Con <strong>Plus</strong> puoi raccontare tutta la sua storia
+              </span>
+            )}
+
+            {plan === PLAN.PLUS && (
+              <span className="epitaph-hint">
+                Hai tutto lo spazio necessario
+              </span>
+            )}
+          </div>
         </div>
 
         <div className="form-checkbox">
