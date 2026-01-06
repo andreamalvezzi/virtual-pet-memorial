@@ -38,20 +38,17 @@ function App() {
 
   return (
     <>
-      {/* ================= SKIP LINK ================= */}
-      <a href="#main-content" className="skip-link">
-        Vai al contenuto principale
-      </a>
-      <button
-        className="skip-link"
-        onClick={() => {
-          const main = document.getElementById("main-content");
-          if (main) main.focus();
-        }}
-      >
-        Vai al contenuto principale
-      </button>
-      
+  {/* ================= SKIP LINK ================= */}
+  <button
+    type="button"
+    className="skip-link"
+    onClick={() => {
+      const main = document.getElementById("main-content");
+      if (main) main.focus();
+    }}
+  >
+    Vai al contenuto principale
+  </button>      
 
       {/* ================= SEO FALLBACK GLOBALE ================= */}
       <Helmet>
