@@ -149,7 +149,10 @@ export default function NewMemorialPage() {
      RENDER
      ========================= */
   return (
-    <div className="create-memorial-container">
+    <div
+      className="create-memorial-container"
+      aria-busy={loading}
+    >
       <Helmet>
         <title>Crea un memoriale – Virtual Pet Memorial</title>
       </Helmet>
@@ -175,7 +178,10 @@ export default function NewMemorialPage() {
         </div>
       </section>
 
-      <form className="create-memorial-form" onSubmit={handleSubmit}>
+      <form
+        className="create-memorial-form"
+        onSubmit={handleSubmit}
+      >
         {/* IMMAGINE PRINCIPALE */}
         <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
@@ -230,12 +236,11 @@ export default function NewMemorialPage() {
           </div>
         </div>
 
-        {/* GALLERIA IMMAGINI */}
+        {/* GALLERIA */}
         <section
           className={`form-group ${
             galleryLimit === 0 ? "locked" : ""
           }`}
-          aria-disabled={galleryLimit === 0}
         >
           <label>Galleria immagini</label>
 
@@ -264,7 +269,11 @@ export default function NewMemorialPage() {
                   </p>
                   <div className="gallery-preview">
                     {galleryPreviews.map((src, idx) => (
-                      <img key={idx} src={src} alt={`gallery-${idx}`} />
+                      <img
+                        key={idx}
+                        src={src}
+                        alt={`gallery-${idx}`}
+                      />
                     ))}
                   </div>
                 </>
@@ -278,7 +287,6 @@ export default function NewMemorialPage() {
           className={`form-group ${
             videoLimit === 0 ? "locked" : ""
           }`}
-          aria-disabled={videoLimit === 0}
         >
           <label>Video</label>
 
@@ -355,9 +363,17 @@ export default function NewMemorialPage() {
           <label>Memoriale pubblico</label>
         </div>
 
-        {error && <p className="form-error">{error}</p>}
+        {error && (
+          <p className="form-error" role="alert">
+            {error}
+          </p>
+        )}
 
-        <button type="submit" disabled={loading}>
+        <button
+          type="submit"
+          disabled={loading}
+          className={loading ? "loading" : ""}
+        >
           {loading ? "Creazione in corso…" : "Crea memoriale"}
         </button>
       </form>
