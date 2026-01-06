@@ -124,22 +124,38 @@ export default function MemorialPage() {
       {/* ================= LOADING ================= */}
       {loading && <MemorialSkeleton />}
 
-      {/* ================= ERROR / NOT FOUND ================= */}
-      {!loading && (error || !memorial) && (
-        <div className="memorial-empty">
-          <h2>😔 Memoriale non disponibile</h2>
-          <p>
-            Questo memoriale non esiste, è stato rimosso
-            oppure non è pubblico.
-          </p>
-          <button
-            className="empty-action"
-            onClick={() => navigate("/home")}
-          >
-            Torna alla home
-          </button>
-        </div>
-      )}
+      {/* ================= ERROR ================= */}
+      {!loading && error && (
+      <div className="memorial-empty" role="alert">
+        <h2>⚠️ Errore di caricamento</h2>
+        <p>
+          Non siamo riusciti a caricare questo memoriale.
+          Controlla la connessione o riprova più tardi.
+      </p>
+      <button
+        className="empty-action"
+        onClick={() => navigate("/home")}
+      >
+        Torna alla home
+      </button>
+    </div>
+  )}
+
+  {/* ================= NOT FOUND / PRIVATE ================= */}
+  {!loading && !error && !memorial && (
+    <div className="memorial-empty">
+      <h2>😔 Memoriale non trovato</h2>
+      <p>
+        Questo memoriale non esiste oppure non è pubblico.
+      </p>
+      <button
+        className="empty-action"
+        onClick={() => navigate("/home")}
+      >
+        Torna alla home
+      </button>
+    </div>
+  )}
 
       {/* ================= CONTENT ================= */}
       {!loading && memorial && (
