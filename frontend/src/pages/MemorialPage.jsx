@@ -226,6 +226,30 @@ export default function MemorialPage() {
             <footer className="memorial-footer">
               Un ricordo che resta
             </footer>
+            <section
+                className="memorial-cta"
+                aria-label="Azioni disponibili"
+              >
+              <p className="memorial-cta-text">
+                Vuoi creare un memoriale per ricordare il tuo animale?
+              </p>
+
+                <div className="memorial-cta-actions">
+                <Link
+                  to="/dashboard/memorials/new"
+                  className="cta-primary"
+                >
+                  Crea un memoriale
+                </Link>
+
+                <Link
+                  to="/memorials"
+                  className="cta-secondary"
+                >
+                  Esplora altri memoriali
+                </Link>
+              </div>
+            </section>
           </article>
         </>
       )}
