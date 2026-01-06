@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { createMemorial } from "../api/memorials";
@@ -33,9 +33,12 @@ export default function NewMemorialPage() {
   });
 
   const [plan, setPlan] = useState(PLAN.FREE);
-  const [graveStyle, setGraveStyle] = useState("classic"); // 👈 E6
+  const [graveStyle, setGraveStyle] = useState("classic");
   const [imageUrl, setImageUrl] = useState(null);
+
   const [galleryFiles, setGalleryFiles] = useState([]);
+  const [galleryPreviews, setGalleryPreviews] = useState([]); // 👈 F1
+
   const [videoUrls, setVideoUrls] = useState(["", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -44,6 +47,26 @@ export default function NewMemorialPage() {
   const epitaphLimit = limits.maxEpitaph;
   const galleryLimit = limits.maxGalleryImages;
   const videoLimit = limits.maxVideos;
+
+  /* =========================
+     F1 — GALLERY PREVIEWS CLEANUP
+     ========================= */
+  useEffect(() => {
+    if (!galleryFiles.length) {
+      setGalleryPreviews([]);
+      return;
+    }
+
+    const previews = galleryFiles.map((file) =>
+      URL.createObjectURL(file)
+    );
+
+    setGalleryPreviews(previews);
+
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [galleryFiles]);
 
   function canUseStyle(tier) {
     if (plan === PLAN.PLUS) return true;
@@ -75,7 +98,9 @@ export default function NewMemorialPage() {
 
   function handleGallerySelect(e) {
     const files = Array.from(e.target.files || []);
-    setGalleryFiles([...galleryFiles, ...files].slice(0, galleryLimit));
+    setGalleryFiles((prev) =>
+      [...prev, ...files].slice(0, galleryLimit)
+    );
   }
 
   function handleVideoChange(index, value) {
@@ -103,7 +128,7 @@ export default function NewMemorialPage() {
 
     try {
       const memorial = await createMemorial(
-        { ...form, imageUrl }, // graveStyle NON inviato (voluto)
+        { ...form, imageUrl }, // graveStyle, gallery, video NON inviati
         token
       );
 
@@ -197,6 +222,7 @@ export default function NewMemorialPage() {
         {/* GALLERIA */}
         <section className="form-group">
           <label>Galleria immagini</label>
+
           {galleryLimit === 0 ? (
             <p className="locked-text">Disponibile con Medium</p>
           ) : (
@@ -205,6 +231,12 @@ export default function NewMemorialPage() {
               <p>
                 {galleryFiles.length} / {galleryLimit}
               </p>
+
+              <div className="gallery-preview">
+                {galleryPreviews.map((src, idx) => (
+                  <img key={idx} src={src} alt={`gallery-${idx}`} />
+                ))}
+              </div>
             </>
           )}
         </section>
@@ -227,10 +259,9 @@ export default function NewMemorialPage() {
           )}
         </section>
 
-        {/* ===== STILE LAPIDE (E6) ===== */}
+        {/* STILE LAPIDE */}
         <section className="form-group">
           <label>Stile della lapide</label>
-
           <div className="grave-grid">
             {GRAVE_STYLES.map((style) => {
               const locked = !canUseStyle(style.tier);
