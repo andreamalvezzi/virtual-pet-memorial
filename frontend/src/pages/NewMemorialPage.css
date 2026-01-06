@@ -126,3 +126,46 @@ button.loading {
   cursor: not-allowed;
 }
 
+.plan-selector {
+  margin: 2rem 0;
+  padding: 1rem;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+}
+
+.plan-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.plan-options button {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 0.75rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.plan-options button.active {
+  border-color: #555;
+  background: #f0f0f0;
+}
+
+.plan-options strong {
+  display: block;
+  font-size: 1rem;
+}
+
+.plan-options span {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.plan-helper {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  color: #444;
+}

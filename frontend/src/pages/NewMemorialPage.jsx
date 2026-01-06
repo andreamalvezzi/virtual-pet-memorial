@@ -4,6 +4,7 @@ import { Helmet } from "react-helmet-async";
 import { createMemorial } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
 import "./NewMemorialPage.css";
+import { PLAN } from "../config/plans";
 
 /* ======================================================
    NEW MEMORIAL PAGE
@@ -20,6 +21,7 @@ export default function NewMemorialPage() {
     isPublic: true,
   });
 
+  const [plan, setPlan] = useState(PLAN.FREE);
   const [imageUrl, setImageUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -57,7 +59,7 @@ export default function NewMemorialPage() {
 
     try {
       const memorial = await createMemorial(
-        { ...form, imageUrl },
+        { ...form, imageUrl }, // 👈 plan NON inviato (voluto)
         token
       );
 
@@ -86,6 +88,46 @@ export default function NewMemorialPage() {
       </Helmet>
 
       <h1>Crea un memoriale</h1>
+
+      {/* ===== SELEZIONE PIANO (solo frontend) ===== */}
+      <section className="plan-selector">
+        <h2>Piano memoriale</h2>
+
+        <div className="plan-options">
+          <button
+            type="button"
+            className={plan === PLAN.FREE ? "active" : ""}
+            onClick={() => setPlan(PLAN.FREE)}
+          >
+            <strong>Free</strong>
+            <span>Essenziale e sobrio</span>
+          </button>
+
+          <button
+            type="button"
+            className={plan === PLAN.MEDIUM ? "active" : ""}
+            onClick={() => setPlan(PLAN.MEDIUM)}
+          >
+            <strong>Medium</strong>
+            <span>Più spazio per immagini e parole</span>
+          </button>
+
+          <button
+            type="button"
+            className={plan === PLAN.PLUS ? "active" : ""}
+            onClick={() => setPlan(PLAN.PLUS)}
+          >
+            <strong>Plus</strong>
+            <span>Memoriale completo</span>
+          </button>
+        </div>
+
+        <p className="plan-helper">
+          {plan === PLAN.FREE && "Un memoriale semplice e rispettoso."}
+          {plan === PLAN.MEDIUM && "Ideale per raccontare di più con immagini."}
+          {plan === PLAN.PLUS && "Per conservare tutti i ricordi, anche video."}
+        </p>
+      </section>
 
       <form
         className="create-memorial-form"
