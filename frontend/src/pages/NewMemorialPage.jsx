@@ -1,15 +1,14 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { createMemorial } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
+import GalleryImageUpload from "../components/GalleryImageUpload";
 import "./NewMemorialPage.css";
 import { PLAN, PLAN_LIMITS } from "../config/plans";
-import GalleryImageUpload from "../components/GalleryImageUpload";
-
 
 /* ======================================================
-   NEW MEMORIAL PAGE — G3
+   NEW MEMORIAL PAGE — G3 (STABILE)
    ====================================================== */
 
 const GRAVE_STYLES = [
@@ -26,6 +25,10 @@ const GRAVE_STYLES = [
 export default function NewMemorialPage() {
   const navigate = useNavigate();
 
+  /* =========================
+     STATE
+     ========================= */
+
   const [form, setForm] = useState({
     petName: "",
     species: "",
@@ -39,34 +42,23 @@ export default function NewMemorialPage() {
   const [imageUrl, setImageUrl] = useState(null);
 
   const [galleryImages, setGalleryImages] = useState([]);
-
   const [videoUrls, setVideoUrls] = useState(["", "", ""]);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const limits = PLAN_LIMITS[plan];
+  /* =========================
+     LIMITS (SAFE)
+     ========================= */
+
+  const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.FREE;
   const epitaphLimit = limits.maxEpitaph;
   const galleryLimit = limits.maxGalleryImages;
   const videoLimit = limits.maxVideos;
 
   /* =========================
-     G3.1 — preview gallery
+     HELPERS
      ========================= */
-  useEffect(() => {
-    if (!galleryFiles.length) {
-      setGalleryPreviews([]);
-      return;
-    }
-
-    const previews = galleryFiles.map((file) =>
-      URL.createObjectURL(file)
-    );
-    setGalleryPreviews(previews);
-
-    return () => {
-      previews.forEach((url) => URL.revokeObjectURL(url));
-    };
-  }, [galleryFiles]);
 
   function canUseStyle(tier) {
     if (tier === "DEFAULT") return true;
@@ -75,10 +67,10 @@ export default function NewMemorialPage() {
     return false;
   }
 
-
   /* =========================
      HANDLERS
      ========================= */
+
   function handleChange(e) {
     if (loading) return;
 
@@ -98,15 +90,6 @@ export default function NewMemorialPage() {
     }));
   }
 
-  function handleGallerySelect(e) {
-    if (galleryLimit === 0 || loading) return;
-
-    const files = Array.from(e.target.files || []);
-    setGalleryFiles((prev) =>
-      [...prev, ...files].slice(0, galleryLimit)
-    );
-  }
-
   function handleVideoChange(index, value) {
     if (videoLimit === 0 || loading) return;
 
@@ -116,8 +99,9 @@ export default function NewMemorialPage() {
   }
 
   /* =========================
-     SUBMIT — G3
+     SUBMIT
      ========================= */
+
   async function handleSubmit(e) {
     e.preventDefault();
     if (loading) return;
@@ -129,22 +113,16 @@ export default function NewMemorialPage() {
       const memorial = await createMemorial({
         ...form,
         imageUrl,
-
-        // ===== G3: ORA REALI =====
         plan,
         graveStyle,
-
-        // TODO: galleryFiles devono essere uploadati (Cloudinary) prima del submit
-
-        galleryImages: galleryFiles.map((f) => f.secure_url).filter(Boolean),
+        galleryImages,
         videoUrls: videoUrls.filter(Boolean),
       });
 
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
       setError(
-        err?.message ||
-          "Errore durante la creazione del memoriale."
+        err?.message || "Errore durante la creazione del memoriale."
       );
       setLoading(false);
     }
@@ -153,6 +131,7 @@ export default function NewMemorialPage() {
   /* =========================
      RENDER
      ========================= */
+
   return (
     <div className="create-memorial-container" aria-busy={loading}>
       <Helmet>
@@ -180,6 +159,7 @@ export default function NewMemorialPage() {
       </section>
 
       <form className="create-memorial-form" onSubmit={handleSubmit}>
+        {/* ===== IMMAGINE PRINCIPALE ===== */}
         <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
         <div className="form-group">
@@ -282,7 +262,9 @@ export default function NewMemorialPage() {
                   className={`grave-card ${
                     graveStyle === style.id ? "selected" : ""
                   } ${locked ? "locked" : ""}`}
-                  onClick={() => !locked && setGraveStyle(style.id)}
+                  onClick={() =>
+                    !locked && setGraveStyle(style.id)
+                  }
                   disabled={locked || loading}
                 >
                   <span>{style.label}</span>
