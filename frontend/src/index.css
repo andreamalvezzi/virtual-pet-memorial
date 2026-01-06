@@ -125,3 +125,29 @@ a:hover {
     background-position: 0 0;
   }
 }
+
+.page-state {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+}
+
+.page-state__card {
+  width: min(720px, 92vw);
+  border-radius: 20px;
+  padding: 18px 16px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.page-state__title {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+}
+
+.page-state__message {
+  margin: 0;
+  opacity: 0.9;
+}

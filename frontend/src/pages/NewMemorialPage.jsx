@@ -43,20 +43,19 @@ export default function NewMemorialPage() {
      ========================= */
   async function handleSubmit(e) {
     e.preventDefault();
-
     if (loading) return;
 
     setError(null);
+    setLoading(true);
 
     const token = localStorage.getItem("token");
     if (!token) {
-      setError("Devi essere autenticato per creare un memoriale");
+      setError("Devi essere autenticato per creare un memoriale.");
+      setLoading(false);
       return;
     }
 
     try {
-      setLoading(true);
-
       const memorial = await createMemorial(
         { ...form, imageUrl },
         token
@@ -65,7 +64,8 @@ export default function NewMemorialPage() {
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
       setError(
-        err.message || "Errore durante la creazione del memoriale"
+        err?.message ||
+          "Errore durante la creazione del memoriale. Riprova."
       );
       setLoading(false);
     }
@@ -90,6 +90,7 @@ export default function NewMemorialPage() {
       <form
         className="create-memorial-form"
         onSubmit={handleSubmit}
+        aria-busy={loading}
       >
         {/* IMMAGINE */}
         <PetImageUpload
@@ -98,8 +99,9 @@ export default function NewMemorialPage() {
         />
 
         <div className="form-group">
-          <label>Nome del pet</label>
+          <label htmlFor="petName">Nome del pet</label>
           <input
+            id="petName"
             type="text"
             name="petName"
             value={form.petName}
@@ -110,8 +112,9 @@ export default function NewMemorialPage() {
         </div>
 
         <div className="form-group">
-          <label>Specie</label>
+          <label htmlFor="species">Specie</label>
           <input
+            id="species"
             type="text"
             name="species"
             value={form.species}
@@ -123,8 +126,9 @@ export default function NewMemorialPage() {
         </div>
 
         <div className="form-group">
-          <label>Data di scomparsa</label>
+          <label htmlFor="deathDate">Data di scomparsa</label>
           <input
+            id="deathDate"
             type="date"
             name="deathDate"
             value={form.deathDate}
@@ -135,8 +139,9 @@ export default function NewMemorialPage() {
         </div>
 
         <div className="form-group">
-          <label>Epitaffio</label>
+          <label htmlFor="epitaph">Epitaffio</label>
           <textarea
+            id="epitaph"
             name="epitaph"
             value={form.epitaph}
             onChange={handleChange}
@@ -147,17 +152,20 @@ export default function NewMemorialPage() {
 
         <div className="form-checkbox">
           <input
+            id="isPublic"
             type="checkbox"
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
             disabled={loading}
           />
-          <span>Memoriale pubblico</span>
+          <label htmlFor="isPublic">Memoriale pubblico</label>
         </div>
 
         {error && (
-          <p className="form-error">{error}</p>
+          <p className="form-error" role="alert">
+            {error}
+          </p>
         )}
 
         <button
@@ -165,9 +173,7 @@ export default function NewMemorialPage() {
           disabled={loading}
           className={loading ? "loading" : ""}
         >
-          {loading
-            ? "Creazione in corso… ⏳"
-            : "Crea memoriale"}
+          {loading ? "Creazione in corso…" : "Crea memoriale"}
         </button>
       </form>
     </div>
