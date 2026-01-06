@@ -74,48 +74,43 @@ export default function MemorialPage() {
         <title>{title}</title>
         <meta name="description" content={description} />
 
-        {/* Canonical */}
         <link rel="canonical" href={canonicalUrl} />
 
-        {/* Open Graph */}
         <meta property="og:type" content="article" />
         <meta property="og:title" content={ogTitle} />
         <meta property="og:description" content={description} />
         <meta property="og:image" content={ogImage} />
         <meta property="og:url" content={canonicalUrl} />
 
-        {/* Twitter */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={ogTitle} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={ogImage} />
 
-        {/* ===== STRUCTURED DATA: ARTICLE ===== */}
         {memorial && (
           <script type="application/ld+json">
             {JSON.stringify({
               "@context": "https://schema.org",
               "@type": "Article",
-              "mainEntityOfPage": {
+              mainEntityOfPage: {
                 "@type": "WebPage",
-                "@id": canonicalUrl
+                "@id": canonicalUrl,
               },
-              "headline": `${memorial.petName} – Memoriale`,
-              "description": description,
-              ...(memorial.imageUrl && {
-                image: ogImage
-              }),
-              "author": {
+              headline: `${memorial.petName} – Memoriale`,
+              description,
+              ...(memorial.imageUrl && { image: ogImage }),
+              author: {
                 "@type": "Organization",
-                "name": "Virtual Pet Memorial"
+                name: "Virtual Pet Memorial",
               },
-              "publisher": {
+              publisher: {
                 "@type": "Organization",
-                "name": "Virtual Pet Memorial"
+                name: "Virtual Pet Memorial",
               },
-              "datePublished": memorial.deathDate,
-              "dateModified": memorial.updatedAt || memorial.deathDate,
-              "isAccessibleForFree": true
+              datePublished: memorial.deathDate,
+              dateModified:
+                memorial.updatedAt || memorial.deathDate,
+              isAccessibleForFree: true,
             })}
           </script>
         )}
@@ -126,36 +121,36 @@ export default function MemorialPage() {
 
       {/* ================= ERROR ================= */}
       {!loading && error && (
-      <div className="memorial-empty" role="alert">
-        <h2>⚠️ Errore di caricamento</h2>
-        <p>
-          Non siamo riusciti a caricare questo memoriale.
-          Controlla la connessione o riprova più tardi.
-      </p>
-      <button
-        className="empty-action"
-        onClick={() => navigate("/home")}
-      >
-        Torna alla home
-      </button>
-    </div>
-  )}
+        <div className="memorial-empty" role="alert">
+          <h2>⚠️ Errore di caricamento</h2>
+          <p>
+            Non siamo riusciti a caricare questo memoriale.
+            Riprova più tardi.
+          </p>
+          <button
+            className="empty-action"
+            onClick={() => navigate("/home")}
+          >
+            Torna alla home
+          </button>
+        </div>
+      )}
 
-  {/* ================= NOT FOUND / PRIVATE ================= */}
-  {!loading && !error && !memorial && (
-    <div className="memorial-empty">
-      <h2>😔 Memoriale non trovato</h2>
-      <p>
-        Questo memoriale non esiste oppure non è pubblico.
-      </p>
-      <button
-        className="empty-action"
-        onClick={() => navigate("/home")}
-      >
-        Torna alla home
-      </button>
-    </div>
-  )}
+      {/* ================= NOT FOUND ================= */}
+      {!loading && !error && !memorial && (
+        <div className="memorial-empty">
+          <h2>😔 Memoriale non trovato</h2>
+          <p>
+            Questo memoriale non esiste oppure non è pubblico.
+          </p>
+          <button
+            className="empty-action"
+            onClick={() => navigate("/home")}
+          >
+            Torna alla home
+          </button>
+        </div>
+      )}
 
       {/* ================= CONTENT ================= */}
       {!loading && memorial && (
@@ -165,17 +160,14 @@ export default function MemorialPage() {
               ← Torna indietro
             </button>
 
-            {user && (
-              <Link to="/dashboard">
-                ← Dashboard
-              </Link>
-            )}
+            {user && <Link to="/dashboard">← Dashboard</Link>}
           </nav>
 
           <article
             className="memorial-container fade-in"
             aria-labelledby="memorial-title"
           >
+            {/* ===== IMMAGINE PRINCIPALE ===== */}
             {memorial.imageUrl && (
               <div className="memorial-image-wrapper skeleton">
                 <img
@@ -184,9 +176,18 @@ export default function MemorialPage() {
                     "/upload/w_800,f_auto,q_auto/"
                   )}
                   srcSet={`
-                    ${memorial.imageUrl.replace("/upload/", "/upload/w_400,f_auto,q_auto/")} 400w,
-                    ${memorial.imageUrl.replace("/upload/", "/upload/w_800,f_auto,q_auto/")} 800w,
-                    ${memorial.imageUrl.replace("/upload/", "/upload/w_1200,f_auto,q_auto/")} 1200w
+                    ${memorial.imageUrl.replace(
+                      "/upload/",
+                      "/upload/w_400,f_auto,q_auto/"
+                    )} 400w,
+                    ${memorial.imageUrl.replace(
+                      "/upload/",
+                      "/upload/w_800,f_auto,q_auto/"
+                    )} 800w,
+                    ${memorial.imageUrl.replace(
+                      "/upload/",
+                      "/upload/w_1200,f_auto,q_auto/"
+                    )} 1200w
                   `}
                   sizes="(max-width: 768px) 100vw, 720px"
                   alt={`Foto commemorativa di ${memorial.petName}`}
@@ -208,11 +209,14 @@ export default function MemorialPage() {
               In memoria di un{" "}
               {memorial.species?.toLowerCase() || "pet"} ·{" "}
               <time dateTime={memorial.deathDate}>
-                {new Date(memorial.deathDate).toLocaleDateString("it-IT", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric"
-                })}
+                {new Date(memorial.deathDate).toLocaleDateString(
+                  "it-IT",
+                  {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  }
+                )}
               </time>
             </p>
 
@@ -223,18 +227,25 @@ export default function MemorialPage() {
               “{memorial.epitaph}”
             </blockquote>
 
+            {/* ===== FUTURE SECTIONS (PLAN READY) ===== */}
+            {/* Galleria immagini, Video, Stile lapide verranno
+                renderizzati qui quando persistiti nel backend */}
+
             <footer className="memorial-footer">
               Un ricordo che resta
             </footer>
+
+            {/* ===== CTA ===== */}
             <section
-                className="memorial-cta"
-                aria-label="Azioni disponibili"
-              >
+              className="memorial-cta"
+              aria-label="Azioni disponibili"
+            >
               <p className="memorial-cta-text">
-                Vuoi creare un memoriale per ricordare il tuo animale?
+                Vuoi creare un memoriale per ricordare il tuo
+                animale?
               </p>
 
-                <div className="memorial-cta-actions">
+              <div className="memorial-cta-actions">
                 <Link
                   to="/dashboard/memorials/new"
                   className="cta-primary"
