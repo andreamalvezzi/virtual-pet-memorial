@@ -4,6 +4,10 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// ==============================
+// PRISMA SCHEMA
+// ==============================
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,40 +17,75 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
-  role     String @default("free")
+// ==============================
+// ENUM
+// ==============================
 
-  createdAt DateTime @default(now())
+enum MemorialPlan {
+  FREE
+  MEDIUM
+  PLUS
+}
+
+// ==============================
+// MODELS
+// ==============================
+
+model User {
+  id        Int        @id @default(autoincrement())
+  email     String     @unique
+  password  String
+  role      String     @default("free")
+
+  createdAt DateTime   @default(now())
 
   memorials Memorial[]
 }
 
 model Memorial {
-  id     Int  @id @default(autoincrement())
-  userId Int
-  user   User @relation(fields: [userId], references: [id])
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 
-  // Dati del pet
-  petName String
-  species String
+  // ==========================
+  // DATI DEL PET
+  // ==========================
+  petName   String
+  species   String
 
-  // Momento del ricordo
+  // ==========================
+  // MOMENTO DEL RICORDO
+  // ==========================
   deathDate DateTime
 
-  // Testo memoriale
-  epitaph String
+  // ==========================
+  // TESTO MEMORIALE
+  // ==========================
+  epitaph   String
 
-  // Immagine del pet (opzionale)
-  imageUrl String?
+  // ==========================
+  // MEDIA
+  // ==========================
+  imageUrl      String?
 
-  // Visibilità
+  // === G1: NUOVI CAMPI ===
+  plan          MemorialPlan @default(FREE)
+  graveStyle    String       @default("classic")
+  galleryImages String[]     @default([])
+  videoUrls     String[]     @default([])
+
+  // ==========================
+  // VISIBILITÀ
+  // ==========================
   isPublic Boolean @default(false)
 
-  // URL pubblico
-  slug String @unique
+  // ==========================
+  // URL PUBBLICO
+  // ==========================
+  slug     String  @unique
 
+  // ==========================
+  // META
+  // ==========================
   createdAt DateTime @default(now())
 }
