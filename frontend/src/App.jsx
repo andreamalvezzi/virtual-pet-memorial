@@ -19,6 +19,9 @@ import EditMemorialPage from "./pages/EditMemorialPage";
 import PrivateRoute from "./components/PrivateRoute";
 import SearchPage from "./pages/SearchPage";
 
+import NotFoundPage from "./pages/NotFoundPage";
+
+
 function App() {
   const SITE_URL =
     import.meta.env.VITE_SITE_URL ||
@@ -140,7 +143,7 @@ function App() {
             <Route path="/search" element={<SearchPage />} />
 
             {/* 404 */}
-            <Route path="*" element={<h1>Pagina non trovata</h1>} />
+            <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </div>
       </main>
