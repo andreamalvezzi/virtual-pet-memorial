@@ -23,13 +23,15 @@ export default function NewMemorialPage() {
 
   const [plan, setPlan] = useState(PLAN.FREE);
   const [imageUrl, setImageUrl] = useState(null);
-  const [galleryFiles, setGalleryFiles] = useState([]); // 👈 E4
+  const [galleryFiles, setGalleryFiles] = useState([]);
+  const [videoUrls, setVideoUrls] = useState(["", "", ""]); // 👈 E5
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   const limits = PLAN_LIMITS[plan];
   const epitaphLimit = limits.maxEpitaph;
   const galleryLimit = limits.maxGalleryImages;
+  const videoLimit = limits.maxVideos;
 
   /* =========================
      FORM HANDLERS
@@ -59,6 +61,12 @@ export default function NewMemorialPage() {
     setGalleryFiles(merged);
   }
 
+  function handleVideoChange(index, value) {
+    const next = [...videoUrls];
+    next[index] = value;
+    setVideoUrls(next);
+  }
+
   /* =========================
      SUBMIT
      ========================= */
@@ -78,7 +86,7 @@ export default function NewMemorialPage() {
 
     try {
       const memorial = await createMemorial(
-        { ...form, imageUrl }, // galleria NON inviata (voluto)
+        { ...form, imageUrl }, // galleria e video NON inviati (voluto)
         token
       );
 
@@ -200,7 +208,7 @@ export default function NewMemorialPage() {
           </div>
         </div>
 
-        {/* ===== GALLERIA IMMAGINI (E4) ===== */}
+        {/* GALLERIA IMMAGINI */}
         <section className="form-group">
           <label>Galleria immagini</label>
 
@@ -210,10 +218,6 @@ export default function NewMemorialPage() {
             </p>
           ) : (
             <>
-              <p className="helper">
-                Puoi aggiungere fino a <strong>{galleryLimit}</strong> immagini
-              </p>
-
               <input
                 type="file"
                 accept="image/*"
@@ -221,7 +225,6 @@ export default function NewMemorialPage() {
                 onChange={handleGallerySelect}
                 disabled={loading}
               />
-
               <p className="counter">
                 Immagini: {galleryFiles.length} / {galleryLimit}
               </p>
@@ -235,6 +238,37 @@ export default function NewMemorialPage() {
                   />
                 ))}
               </div>
+            </>
+          )}
+        </section>
+
+        {/* ===== VIDEO (E5) ===== */}
+        <section className="form-group">
+          <label>Video</label>
+
+          {videoLimit === 0 ? (
+            <p className="locked-text">
+              Disponibile con <strong>Plus</strong>
+            </p>
+          ) : (
+            <>
+              <p className="helper">
+                Puoi aggiungere fino a <strong>{videoLimit}</strong> video
+                (link)
+              </p>
+
+              {videoUrls.slice(0, videoLimit).map((url, index) => (
+                <input
+                  key={index}
+                  type="url"
+                  placeholder="Incolla link video (YouTube, Vimeo…) "
+                  value={url}
+                  onChange={(e) =>
+                    handleVideoChange(index, e.target.value)
+                  }
+                  disabled={loading}
+                />
+              ))}
             </>
           )}
         </section>
