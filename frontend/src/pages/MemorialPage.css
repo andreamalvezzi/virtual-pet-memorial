@@ -57,7 +57,7 @@
   object-fit: cover;
   border-radius: 18px;
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.3s ease;
 }
 
 .memorial-image.loaded {
@@ -209,27 +209,12 @@
    ANIMATION
    ====================================================== */
 
-.fade-in {
-  will-change: opacity, transform;
-  animation: fadeIn 200ms ease-out both;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .memorial-cta {
   margin-top: 48px;
   padding-top: 32px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   text-align: center;
+  transition: opacity 0.2s ease;
 }
 
 .memorial-cta-text {
@@ -261,5 +246,35 @@
 .cta-secondary {
   border: 1px solid rgba(255, 255, 255, 0.4);
   color: #ffffff;
+}
+
+/* ===============================
+   MEMORIAL PAGE — MICRO UX
+   =============================== */
+
+.fade-in {
+  animation: fadeIn 0.35s ease-out both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Immagine memoriale */
+
+.memorial-image.loaded {
+  opacity: 1;
+}
+
+/* Empty / error states */
+.memorial-empty {
+  animation: fadeIn 0.25s ease-out both;
 }
 

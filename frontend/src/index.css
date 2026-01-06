@@ -151,3 +151,41 @@ a:hover {
   margin: 0;
   opacity: 0.9;
 }
+
+/* ===============================
+   MICRO-INTERACTIONS — GLOBAL
+   =============================== */
+
+button,
+.cta-primary,
+.cta-secondary {
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+button:hover,
+.cta-primary:hover,
+.cta-secondary:hover {
+  transform: translateY(-1px);
+}
+
+button:active,
+.cta-primary:active,
+.cta-secondary:active {
+  transform: translateY(0);
+  opacity: 0.9;
+}
+
+button:focus-visible,
+.cta-primary:focus-visible,
+.cta-secondary:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.6);
+  outline-offset: 3px;
+}
+
+/* Riduzione movimento (accessibilità) */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
