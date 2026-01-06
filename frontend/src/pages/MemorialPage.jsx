@@ -1,269 +1,319 @@
-import { useEffect, useState } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { getMemorialBySlug } from "../api/memorials";
-import { useAuth } from "../context/AuthContext";
-import MemorialSkeleton from "../components/MemorialSkeleton.jsx";
-import "./MemorialPage.css";
+import { createMemorial } from "../api/memorials";
+import PetImageUpload from "../components/PetImageUpload";
+import "./NewMemorialPage.css";
+import { PLAN, PLAN_LIMITS } from "../config/plans";
 
 /* ======================================================
-   MEMORIAL PAGE
+   NEW MEMORIAL PAGE — G3
    ====================================================== */
 
-export default function MemorialPage() {
-  const { slug } = useParams();
-  const { user } = useAuth();
+const GRAVE_STYLES = [
+  { id: "classic", label: "Classica", tier: "DEFAULT" },
+  { id: "simple", label: "Semplice", tier: "MEDIUM" },
+  { id: "heart", label: "Cuore", tier: "MEDIUM" },
+  { id: "stone", label: "Pietra", tier: "MEDIUM" },
+  { id: "modern", label: "Moderna", tier: "MEDIUM" },
+  { id: "angel", label: "Ali", tier: "PLUS" },
+  { id: "gold", label: "Dorata", tier: "PLUS" },
+  { id: "nature", label: "Natura", tier: "PLUS" },
+];
+
+export default function NewMemorialPage() {
   const navigate = useNavigate();
 
-  const [memorial, setMemorial] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [form, setForm] = useState({
+    petName: "",
+    species: "",
+    deathDate: "",
+    epitaph: "",
+    isPublic: true,
+  });
+
+  const [plan, setPlan] = useState(PLAN.FREE);
+  const [graveStyle, setGraveStyle] = useState("classic");
+  const [imageUrl, setImageUrl] = useState(null);
+
+  const [galleryFiles, setGalleryFiles] = useState([]);
+  const [galleryPreviews, setGalleryPreviews] = useState([]);
+
+  const [videoUrls, setVideoUrls] = useState(["", "", ""]);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const SITE_URL =
-    import.meta.env.VITE_SITE_URL ||
-    "https://virtual-pet-memorial-frontend.onrender.com";
+  const limits = PLAN_LIMITS[plan];
+  const epitaphLimit = limits.maxEpitaph;
+  const galleryLimit = limits.maxGalleryImages;
+  const videoLimit = limits.maxVideos;
 
   /* =========================
-     FETCH MEMORIAL
+     G3.1 — preview gallery
      ========================= */
   useEffect(() => {
-    setLoading(true);
-    setError(null);
+    if (!galleryFiles.length) {
+      setGalleryPreviews([]);
+      return;
+    }
 
-    getMemorialBySlug(slug)
-      .then(setMemorial)
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false));
-  }, [slug]);
+    const previews = galleryFiles.map((file) =>
+      URL.createObjectURL(file)
+    );
+    setGalleryPreviews(previews);
+
+    return () => {
+      previews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [galleryFiles]);
+
+  function canUseStyle(tier) {
+    if (plan === PLAN.PLUS) return true;
+    if (plan === PLAN.MEDIUM) return tier !== "PLUS";
+    return tier === "DEFAULT";
+  }
 
   /* =========================
-     SEO DATA
+     HANDLERS
      ========================= */
-  const title = memorial
-    ? `${memorial.petName} – Memoriale per Animali | Virtual Pet Memorial`
-    : "Memoriale – Virtual Pet Memorial";
+  function handleChange(e) {
+    if (loading) return;
 
-  const description = memorial?.epitaph
-    ? memorial.epitaph.length > 155
-      ? memorial.epitaph.slice(0, 152) + "…"
-      : memorial.epitaph
-    : memorial
-    ? `Memoriale dedicato a ${memorial.petName}, un ricordo che resta nel tempo.`
-    : "Memoriale per animali domestici – Virtual Pet Memorial";
+    const { name, value, type, checked } = e.target;
 
-  const ogTitle = memorial
-    ? `${memorial.petName} – Virtual Pet Memorial`
-    : "Virtual Pet Memorial";
+    if (name === "epitaph") {
+      setForm((prev) => ({
+        ...prev,
+        epitaph: value.slice(0, epitaphLimit),
+      }));
+      return;
+    }
 
-  const ogImage = memorial?.imageUrl
-    ? memorial.imageUrl.replace(
-        "/upload/",
-        "/upload/w_1200,h_630,c_fill,f_auto,q_auto/"
-      )
-    : `${SITE_URL}/og-default.jpg`;
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
 
-  const canonicalUrl = `${SITE_URL}/#/memorials/${slug}`;
+  function handleGallerySelect(e) {
+    if (galleryLimit === 0 || loading) return;
+
+    const files = Array.from(e.target.files || []);
+    setGalleryFiles((prev) =>
+      [...prev, ...files].slice(0, galleryLimit)
+    );
+  }
+
+  function handleVideoChange(index, value) {
+    if (videoLimit === 0 || loading) return;
+
+    const next = [...videoUrls];
+    next[index] = value;
+    setVideoUrls(next);
+  }
+
+  /* =========================
+     SUBMIT — G3
+     ========================= */
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (loading) return;
+
+    setError(null);
+    setLoading(true);
+
+    try {
+      const memorial = await createMemorial({
+        ...form,
+        imageUrl,
+
+        // ===== G3: ORA REALI =====
+        plan,
+        graveStyle,
+        galleryImages: galleryFiles.map((f) => f.secure_url).filter(Boolean),
+        videoUrls: videoUrls.filter(Boolean),
+      });
+
+      navigate(`/memorials/${memorial.slug}`);
+    } catch (err) {
+      setError(
+        err?.message ||
+          "Errore durante la creazione del memoriale."
+      );
+      setLoading(false);
+    }
+  }
 
   /* =========================
      RENDER
      ========================= */
   return (
-    <>
-      {/* ================= SEO / META ================= */}
+    <div className="create-memorial-container" aria-busy={loading}>
       <Helmet>
-        <title>{title}</title>
-        <meta name="description" content={description} />
-
-        <link rel="canonical" href={canonicalUrl} />
-
-        <meta property="og:type" content="article" />
-        <meta property="og:title" content={ogTitle} />
-        <meta property="og:description" content={description} />
-        <meta property="og:image" content={ogImage} />
-        <meta property="og:url" content={canonicalUrl} />
-
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={ogTitle} />
-        <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content={ogImage} />
-
-        {memorial && (
-          <script type="application/ld+json">
-            {JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "Article",
-              mainEntityOfPage: {
-                "@type": "WebPage",
-                "@id": canonicalUrl,
-              },
-              headline: `${memorial.petName} – Memoriale`,
-              description,
-              ...(memorial.imageUrl && { image: ogImage }),
-              author: {
-                "@type": "Organization",
-                name: "Virtual Pet Memorial",
-              },
-              publisher: {
-                "@type": "Organization",
-                name: "Virtual Pet Memorial",
-              },
-              datePublished: memorial.deathDate,
-              dateModified:
-                memorial.updatedAt || memorial.deathDate,
-              isAccessibleForFree: true,
-            })}
-          </script>
-        )}
+        <title>Crea un memoriale – Virtual Pet Memorial</title>
       </Helmet>
 
-      {/* ================= LOADING ================= */}
-      {loading && <MemorialSkeleton />}
+      <h1>Crea un memoriale</h1>
 
-      {/* ================= ERROR ================= */}
-      {!loading && error && (
-        <div className="memorial-empty" role="alert">
-          <h2>⚠️ Errore di caricamento</h2>
-          <p>
-            Non siamo riusciti a caricare questo memoriale.
-            Riprova più tardi.
-          </p>
-          <button
-            className="empty-action"
-            onClick={() => navigate("/home")}
-          >
-            Torna alla home
-          </button>
-        </div>
-      )}
-
-      {/* ================= NOT FOUND ================= */}
-      {!loading && !error && !memorial && (
-        <div className="memorial-empty">
-          <h2>😔 Memoriale non trovato</h2>
-          <p>
-            Questo memoriale non esiste oppure non è pubblico.
-          </p>
-          <button
-            className="empty-action"
-            onClick={() => navigate("/home")}
-          >
-            Torna alla home
-          </button>
-        </div>
-      )}
-
-      {/* ================= CONTENT ================= */}
-      {!loading && memorial && (
-        <>
-          <nav className="memorial-nav">
-            <button onClick={() => navigate(-1)}>
-              ← Torna indietro
+      {/* ===== PIANO ===== */}
+      <section className="plan-selector">
+        <h2>Piano memoriale</h2>
+        <div className="plan-options">
+          {[PLAN.FREE, PLAN.MEDIUM, PLAN.PLUS].map((p) => (
+            <button
+              key={p}
+              type="button"
+              className={plan === p ? "active" : ""}
+              onClick={() => setPlan(p)}
+              disabled={loading}
+            >
+              <strong>{p}</strong>
             </button>
+          ))}
+        </div>
+      </section>
 
-            {user && <Link to="/dashboard">← Dashboard</Link>}
-          </nav>
+      <form className="create-memorial-form" onSubmit={handleSubmit}>
+        <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
-          <article
-            className="memorial-container fade-in"
-            aria-labelledby="memorial-title"
-          >
-            {/* ===== IMMAGINE PRINCIPALE ===== */}
-            {memorial.imageUrl && (
-              <div className="memorial-image-wrapper skeleton">
-                <img
-                  src={memorial.imageUrl.replace(
-                    "/upload/",
-                    "/upload/w_800,f_auto,q_auto/"
-                  )}
-                  srcSet={`
-                    ${memorial.imageUrl.replace(
-                      "/upload/",
-                      "/upload/w_400,f_auto,q_auto/"
-                    )} 400w,
-                    ${memorial.imageUrl.replace(
-                      "/upload/",
-                      "/upload/w_800,f_auto,q_auto/"
-                    )} 800w,
-                    ${memorial.imageUrl.replace(
-                      "/upload/",
-                      "/upload/w_1200,f_auto,q_auto/"
-                    )} 1200w
-                  `}
-                  sizes="(max-width: 768px) 100vw, 720px"
-                  alt={`Foto commemorativa di ${memorial.petName}`}
-                  loading="eager"
-                  fetchpriority="high"
-                  className="memorial-image"
-                  onLoad={(e) =>
-                    e.currentTarget.classList.add("loaded")
-                  }
-                />
-              </div>
-            )}
+        <div className="form-group">
+          <label>Nome del pet</label>
+          <input
+            name="petName"
+            value={form.petName}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-            <h1 id="memorial-title" className="memorial-title">
-              🪦 {memorial.petName}
-            </h1>
+        <div className="form-group">
+          <label>Specie</label>
+          <input
+            name="species"
+            value={form.species}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-            <p className="memorial-meta">
-              In memoria di un{" "}
-              {memorial.species?.toLowerCase() || "pet"} ·{" "}
-              <time dateTime={memorial.deathDate}>
-                {new Date(memorial.deathDate).toLocaleDateString(
-                  "it-IT",
-                  {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  }
-                )}
-              </time>
-            </p>
+        <div className="form-group">
+          <label>Data di scomparsa</label>
+          <input
+            type="date"
+            name="deathDate"
+            value={form.deathDate}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-            <blockquote
-              className="memorial-epitaph"
-              aria-label="Epitaffio commemorativo"
-            >
-              “{memorial.epitaph}”
-            </blockquote>
+        <div className="form-group">
+          <label>Epitaffio</label>
+          <textarea
+            name="epitaph"
+            value={form.epitaph}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+          <div className="epitaph-meta">
+            {form.epitaph.length} / {epitaphLimit}
+          </div>
+        </div>
 
-            {/* ===== FUTURE SECTIONS (PLAN READY) ===== */}
-            {/* Galleria immagini, Video, Stile lapide verranno
-                renderizzati qui quando persistiti nel backend */}
+        {/* ===== GALLERIA ===== */}
+        <section className={`form-group ${galleryLimit === 0 ? "locked" : ""}`}>
+          <label>Galleria immagini</label>
 
-            <footer className="memorial-footer">
-              Un ricordo che resta
-            </footer>
+          {galleryLimit === 0 ? (
+            <p className="locked-text">Disponibile con Medium</p>
+          ) : (
+            <>
+              <input
+                type="file"
+                multiple
+                onChange={handleGallerySelect}
+                disabled={loading}
+              />
 
-            {/* ===== CTA ===== */}
-            <section
-              className="memorial-cta"
-              aria-label="Azioni disponibili"
-            >
-              <p className="memorial-cta-text">
-                Vuoi creare un memoriale per ricordare il tuo
-                animale?
-              </p>
+              {galleryPreviews.length > 0 && (
+                <div className="gallery-preview">
+                  {galleryPreviews.map((src, i) => (
+                    <img key={i} src={src} alt="" />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </section>
 
-              <div className="memorial-cta-actions">
-                <Link
-                  to="/dashboard/memorials/new"
-                  className="cta-primary"
+        {/* ===== VIDEO ===== */}
+        <section className={`form-group ${videoLimit === 0 ? "locked" : ""}`}>
+          <label>Video</label>
+
+          {videoLimit === 0 ? (
+            <p className="locked-text">Disponibile con Plus</p>
+          ) : (
+            videoUrls.slice(0, videoLimit).map((url, i) => (
+              <input
+                key={i}
+                type="url"
+                value={url}
+                placeholder="Link video"
+                onChange={(e) =>
+                  handleVideoChange(i, e.target.value)
+                }
+                disabled={loading}
+              />
+            ))
+          )}
+        </section>
+
+        {/* ===== STILE LAPIDE ===== */}
+        <section className="form-group">
+          <label>Stile della lapide</label>
+
+          <div className="grave-grid">
+            {GRAVE_STYLES.map((style) => {
+              const locked = !canUseStyle(style.tier);
+
+              return (
+                <button
+                  key={style.id}
+                  type="button"
+                  className={`grave-card ${
+                    graveStyle === style.id ? "selected" : ""
+                  } ${locked ? "locked" : ""}`}
+                  onClick={() => !locked && setGraveStyle(style.id)}
+                  disabled={locked || loading}
                 >
-                  Crea un memoriale
-                </Link>
+                  <span>{style.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
 
-                <Link
-                  to="/memorials"
-                  className="cta-secondary"
-                >
-                  Esplora altri memoriali
-                </Link>
-              </div>
-            </section>
-          </article>
-        </>
-      )}
-    </>
+        <div className="form-checkbox">
+          <input
+            type="checkbox"
+            name="isPublic"
+            checked={form.isPublic}
+            onChange={handleChange}
+            disabled={loading}
+          />
+          <label>Memoriale pubblico</label>
+        </div>
+
+        {error && <p className="form-error">{error}</p>}
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Creazione in corso…" : "Crea memoriale"}
+        </button>
+      </form>
+    </div>
   );
 }
