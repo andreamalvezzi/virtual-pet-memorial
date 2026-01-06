@@ -18,7 +18,7 @@ function generateSlug(petName, deathDate) {
 
 /* ======================================================
    POST /api/memorials
-   Crea memoriale
+   Crea memoriale (G2)
    ====================================================== */
 router.post("/", authenticateToken, async (req, res) => {
   try {
@@ -29,6 +29,12 @@ router.post("/", authenticateToken, async (req, res) => {
       epitaph,
       isPublic = false,
       imageUrl,
+
+      // ===== G2: nuovi campi (opzionali) =====
+      plan,
+      graveStyle,
+      galleryImages,
+      videoUrls
     } = req.body;
 
     if (!petName || !species || !deathDate || !epitaph) {
@@ -47,6 +53,12 @@ router.post("/", authenticateToken, async (req, res) => {
         imageUrl: imageUrl || null,
         slug,
         userId: req.user.userId,
+
+        // ===== G2 persist =====
+        ...(plan && { plan }),
+        ...(graveStyle && { graveStyle }),
+        ...(Array.isArray(galleryImages) && { galleryImages }),
+        ...(Array.isArray(videoUrls) && { videoUrls })
       },
     });
 
@@ -90,18 +102,8 @@ router.get("/public", async (req, res) => {
       isPublic: true,
       ...(search && {
         OR: [
-          {
-            petName: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
-          {
-            species: {
-              contains: search,
-              mode: "insensitive",
-            },
-          },
+          { petName: { contains: search, mode: "insensitive" } },
+          { species: { contains: search, mode: "insensitive" } },
         ],
       }),
     };
@@ -167,7 +169,6 @@ router.get("/id/:id", authenticateToken, async (req, res) => {
   }
 });
 
-
 /* ======================================================
    GET /api/memorials/:slug
    Pubblico / privato (owner)
@@ -178,18 +179,6 @@ router.get("/:slug", authenticateTokenOptional, async (req, res) => {
 
     const memorial = await prisma.memorial.findUnique({
       where: { slug },
-      select: {
-        id: true,
-        petName: true,
-        species: true,
-        deathDate: true,
-        epitaph: true,
-        imageUrl: true,
-        isPublic: true,
-        slug: true,
-        createdAt: true,
-        userId: true,
-      },
     });
 
     if (!memorial) {
@@ -213,7 +202,7 @@ router.get("/:slug", authenticateTokenOptional, async (req, res) => {
 
 /* ======================================================
    PATCH /api/memorials/:id
-   Aggiorna memoriale
+   Aggiorna memoriale (G2)
    ====================================================== */
 router.patch("/:id", authenticateToken, async (req, res) => {
   try {
@@ -242,6 +231,12 @@ router.patch("/:id", authenticateToken, async (req, res) => {
       epitaph,
       isPublic,
       imageUrl,
+
+      // G2
+      plan,
+      graveStyle,
+      galleryImages,
+      videoUrls
     } = req.body;
 
     const updated = await prisma.memorial.update({
@@ -252,7 +247,11 @@ router.patch("/:id", authenticateToken, async (req, res) => {
         epitaph,
         isPublic,
         imageUrl,
-        deathDate: deathDate ? new Date(deathDate) : undefined,
+        ...(deathDate && { deathDate: new Date(deathDate) }),
+        ...(plan && { plan }),
+        ...(graveStyle && { graveStyle }),
+        ...(Array.isArray(galleryImages) && { galleryImages }),
+        ...(Array.isArray(videoUrls) && { videoUrls }),
       },
     });
 
