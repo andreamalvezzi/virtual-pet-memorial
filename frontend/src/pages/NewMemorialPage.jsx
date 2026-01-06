@@ -7,7 +7,7 @@ import "./NewMemorialPage.css";
 import { PLAN, PLAN_LIMITS } from "../config/plans";
 
 /* ======================================================
-   NEW MEMORIAL PAGE
+   NEW MEMORIAL PAGE — G3
    ====================================================== */
 
 const GRAVE_STYLES = [
@@ -49,7 +49,7 @@ export default function NewMemorialPage() {
   const videoLimit = limits.maxVideos;
 
   /* =========================
-     F1 — Gallery preview cleanup
+     G3.1 — preview gallery
      ========================= */
   useEffect(() => {
     if (!galleryFiles.length) {
@@ -74,7 +74,7 @@ export default function NewMemorialPage() {
   }
 
   /* =========================
-     FORM HANDLERS
+     HANDLERS
      ========================= */
   function handleChange(e) {
     if (loading) return;
@@ -113,7 +113,7 @@ export default function NewMemorialPage() {
   }
 
   /* =========================
-     SUBMIT
+     SUBMIT — G3
      ========================= */
   async function handleSubmit(e) {
     e.preventDefault();
@@ -122,24 +122,23 @@ export default function NewMemorialPage() {
     setError(null);
     setLoading(true);
 
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setError("Devi essere autenticato per creare un memoriale.");
-      setLoading(false);
-      return;
-    }
-
     try {
-      const memorial = await createMemorial(
-        { ...form, imageUrl },
-        token
-      );
+      const memorial = await createMemorial({
+        ...form,
+        imageUrl,
+
+        // ===== G3: ORA REALI =====
+        plan,
+        graveStyle,
+        galleryImages: galleryFiles.map((f) => f.secure_url).filter(Boolean),
+        videoUrls: videoUrls.filter(Boolean),
+      });
 
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
       setError(
         err?.message ||
-          "Errore durante la creazione del memoriale. Riprova."
+          "Errore durante la creazione del memoriale."
       );
       setLoading(false);
     }
@@ -149,10 +148,7 @@ export default function NewMemorialPage() {
      RENDER
      ========================= */
   return (
-    <div
-      className="create-memorial-container"
-      aria-busy={loading}
-    >
+    <div className="create-memorial-container" aria-busy={loading}>
       <Helmet>
         <title>Crea un memoriale – Virtual Pet Memorial</title>
       </Helmet>
@@ -170,7 +166,6 @@ export default function NewMemorialPage() {
               className={plan === p ? "active" : ""}
               onClick={() => setPlan(p)}
               disabled={loading}
-              aria-disabled={loading}
             >
               <strong>{p}</strong>
             </button>
@@ -178,14 +173,9 @@ export default function NewMemorialPage() {
         </div>
       </section>
 
-      <form
-        className="create-memorial-form"
-        onSubmit={handleSubmit}
-      >
-        {/* IMMAGINE PRINCIPALE */}
+      <form className="create-memorial-form" onSubmit={handleSubmit}>
         <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
-        {/* DATI BASE */}
         <div className="form-group">
           <label>Nome del pet</label>
           <input
@@ -203,7 +193,6 @@ export default function NewMemorialPage() {
             name="species"
             value={form.species}
             onChange={handleChange}
-            placeholder="Cane, Gatto, Coniglio..."
             required
             disabled={loading}
           />
@@ -221,7 +210,6 @@ export default function NewMemorialPage() {
           />
         </div>
 
-        {/* EPITAFFIO */}
         <div className="form-group">
           <label>Epitaffio</label>
           <textarea
@@ -232,22 +220,16 @@ export default function NewMemorialPage() {
             disabled={loading}
           />
           <div className="epitaph-meta">
-            {form.epitaph.length} / {epitaphLimit} caratteri
+            {form.epitaph.length} / {epitaphLimit}
           </div>
         </div>
 
-        {/* GALLERIA */}
-        <section
-          className={`form-group ${
-            galleryLimit === 0 ? "locked" : ""
-          }`}
-        >
+        {/* ===== GALLERIA ===== */}
+        <section className={`form-group ${galleryLimit === 0 ? "locked" : ""}`}>
           <label>Galleria immagini</label>
 
           {galleryLimit === 0 ? (
-            <p className="locked-text">
-              Disponibile con piano <strong>Medium</strong>
-            </p>
+            <p className="locked-text">Disponibile con Medium</p>
           ) : (
             <>
               <input
@@ -257,69 +239,40 @@ export default function NewMemorialPage() {
                 disabled={loading}
               />
 
-              {galleryFiles.length === 0 ? (
-                <p className="empty-text">
-                  Puoi aggiungere fino a{" "}
-                  <strong>{galleryLimit}</strong> immagini.
-                </p>
-              ) : (
-                <>
-                  <p>
-                    {galleryFiles.length} / {galleryLimit} immagini
-                  </p>
-                  <div className="gallery-preview">
-                    {galleryPreviews.map((src, idx) => (
-                      <img
-                        key={idx}
-                        src={src}
-                        alt={`gallery-${idx}`}
-                      />
-                    ))}
-                  </div>
-                </>
+              {galleryPreviews.length > 0 && (
+                <div className="gallery-preview">
+                  {galleryPreviews.map((src, i) => (
+                    <img key={i} src={src} alt="" />
+                  ))}
+                </div>
               )}
             </>
           )}
         </section>
 
-        {/* VIDEO */}
-        <section
-          className={`form-group ${
-            videoLimit === 0 ? "locked" : ""
-          }`}
-        >
+        {/* ===== VIDEO ===== */}
+        <section className={`form-group ${videoLimit === 0 ? "locked" : ""}`}>
           <label>Video</label>
 
           {videoLimit === 0 ? (
-            <p className="locked-text">
-              Disponibile con piano <strong>Plus</strong>
-            </p>
+            <p className="locked-text">Disponibile con Plus</p>
           ) : (
-            <>
-              {videoUrls.slice(0, videoLimit).every((v) => !v) && (
-                <p className="empty-text">
-                  Puoi aggiungere fino a{" "}
-                  <strong>{videoLimit}</strong> video tramite link.
-                </p>
-              )}
-
-              {videoUrls.slice(0, videoLimit).map((url, i) => (
-                <input
-                  key={i}
-                  type="url"
-                  value={url}
-                  placeholder="Link video"
-                  onChange={(e) =>
-                    handleVideoChange(i, e.target.value)
-                  }
-                  disabled={loading}
-                />
-              ))}
-            </>
+            videoUrls.slice(0, videoLimit).map((url, i) => (
+              <input
+                key={i}
+                type="url"
+                value={url}
+                placeholder="Link video"
+                onChange={(e) =>
+                  handleVideoChange(i, e.target.value)
+                }
+                disabled={loading}
+              />
+            ))
           )}
         </section>
 
-        {/* STILE LAPIDE */}
+        {/* ===== STILE LAPIDE ===== */}
         <section className="form-group">
           <label>Stile della lapide</label>
 
@@ -336,22 +289,14 @@ export default function NewMemorialPage() {
                   } ${locked ? "locked" : ""}`}
                   onClick={() => !locked && setGraveStyle(style.id)}
                   disabled={locked || loading}
-                  aria-disabled={locked}
                 >
-                  <div className="grave-preview" />
                   <span>{style.label}</span>
-                  {locked && (
-                    <span className="badge">
-                      {style.tier === "PLUS" ? "Plus" : "Medium"}
-                    </span>
-                  )}
                 </button>
               );
             })}
           </div>
         </section>
 
-        {/* PUBBLICO */}
         <div className="form-checkbox">
           <input
             type="checkbox"
@@ -363,17 +308,9 @@ export default function NewMemorialPage() {
           <label>Memoriale pubblico</label>
         </div>
 
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
-        )}
+        {error && <p className="form-error">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={loading ? "loading" : ""}
-        >
+        <button type="submit" disabled={loading}>
           {loading ? "Creazione in corso…" : "Crea memoriale"}
         </button>
       </form>
