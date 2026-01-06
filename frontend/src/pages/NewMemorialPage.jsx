@@ -10,6 +10,17 @@ import { PLAN, PLAN_LIMITS } from "../config/plans";
    NEW MEMORIAL PAGE
    ====================================================== */
 
+const GRAVE_STYLES = [
+  { id: "classic", label: "Classica", tier: "DEFAULT" },
+  { id: "simple", label: "Semplice", tier: "MEDIUM" },
+  { id: "heart", label: "Cuore", tier: "MEDIUM" },
+  { id: "stone", label: "Pietra", tier: "MEDIUM" },
+  { id: "modern", label: "Moderna", tier: "MEDIUM" },
+  { id: "angel", label: "Ali", tier: "PLUS" },
+  { id: "gold", label: "Dorata", tier: "PLUS" },
+  { id: "nature", label: "Natura", tier: "PLUS" },
+];
+
 export default function NewMemorialPage() {
   const navigate = useNavigate();
 
@@ -22,9 +33,10 @@ export default function NewMemorialPage() {
   });
 
   const [plan, setPlan] = useState(PLAN.FREE);
+  const [graveStyle, setGraveStyle] = useState("classic"); // 👈 E6
   const [imageUrl, setImageUrl] = useState(null);
   const [galleryFiles, setGalleryFiles] = useState([]);
-  const [videoUrls, setVideoUrls] = useState(["", "", ""]); // 👈 E5
+  const [videoUrls, setVideoUrls] = useState(["", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -32,6 +44,12 @@ export default function NewMemorialPage() {
   const epitaphLimit = limits.maxEpitaph;
   const galleryLimit = limits.maxGalleryImages;
   const videoLimit = limits.maxVideos;
+
+  function canUseStyle(tier) {
+    if (plan === PLAN.PLUS) return true;
+    if (plan === PLAN.MEDIUM) return tier !== "PLUS";
+    return tier === "DEFAULT";
+  }
 
   /* =========================
      FORM HANDLERS
@@ -57,8 +75,7 @@ export default function NewMemorialPage() {
 
   function handleGallerySelect(e) {
     const files = Array.from(e.target.files || []);
-    const merged = [...galleryFiles, ...files].slice(0, galleryLimit);
-    setGalleryFiles(merged);
+    setGalleryFiles([...galleryFiles, ...files].slice(0, galleryLimit));
   }
 
   function handleVideoChange(index, value) {
@@ -86,7 +103,7 @@ export default function NewMemorialPage() {
 
     try {
       const memorial = await createMemorial(
-        { ...form, imageUrl }, // galleria e video NON inviati (voluto)
+        { ...form, imageUrl }, // graveStyle NON inviato (voluto)
         token
       );
 
@@ -107,57 +124,30 @@ export default function NewMemorialPage() {
     <div className="create-memorial-container">
       <Helmet>
         <title>Crea un memoriale – Virtual Pet Memorial</title>
-        <meta
-          name="description"
-          content="Crea un memoriale digitale per il tuo animale domestico."
-        />
       </Helmet>
 
       <h1>Crea un memoriale</h1>
 
-      {/* ===== SELEZIONE PIANO ===== */}
+      {/* ===== PIANO ===== */}
       <section className="plan-selector">
         <h2>Piano memoriale</h2>
-
         <div className="plan-options">
-          <button
-            type="button"
-            className={plan === PLAN.FREE ? "active" : ""}
-            onClick={() => setPlan(PLAN.FREE)}
-          >
-            <strong>Free</strong>
-            <span>Essenziale e sobrio</span>
-          </button>
-
-          <button
-            type="button"
-            className={plan === PLAN.MEDIUM ? "active" : ""}
-            onClick={() => setPlan(PLAN.MEDIUM)}
-          >
-            <strong>Medium</strong>
-            <span>Più spazio ai ricordi</span>
-          </button>
-
-          <button
-            type="button"
-            className={plan === PLAN.PLUS ? "active" : ""}
-            onClick={() => setPlan(PLAN.PLUS)}
-          >
-            <strong>Plus</strong>
-            <span>Memoriale completo</span>
-          </button>
+          {[PLAN.FREE, PLAN.MEDIUM, PLAN.PLUS].map((p) => (
+            <button
+              key={p}
+              type="button"
+              className={plan === p ? "active" : ""}
+              onClick={() => setPlan(p)}
+            >
+              <strong>{p}</strong>
+            </button>
+          ))}
         </div>
       </section>
 
-      <form
-        className="create-memorial-form"
-        onSubmit={handleSubmit}
-        aria-busy={loading}
-      >
-        {/* IMMAGINE PRINCIPALE */}
+      <form className="create-memorial-form" onSubmit={handleSubmit}>
         <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
-        {/* DATI BASE */}
         <div className="form-group">
           <label>Nome del pet</label>
           <input
@@ -165,7 +155,6 @@ export default function NewMemorialPage() {
             value={form.petName}
             onChange={handleChange}
             required
-            disabled={loading}
           />
         </div>
 
@@ -177,7 +166,6 @@ export default function NewMemorialPage() {
             onChange={handleChange}
             placeholder="Cane, Gatto, Coniglio..."
             required
-            disabled={loading}
           />
         </div>
 
@@ -189,7 +177,6 @@ export default function NewMemorialPage() {
             value={form.deathDate}
             onChange={handleChange}
             required
-            disabled={loading}
           />
         </div>
 
@@ -201,76 +188,78 @@ export default function NewMemorialPage() {
             value={form.epitaph}
             onChange={handleChange}
             required
-            disabled={loading}
           />
           <div className="epitaph-meta">
-            {form.epitaph.length} / {epitaphLimit} caratteri
+            {form.epitaph.length} / {epitaphLimit}
           </div>
         </div>
 
-        {/* GALLERIA IMMAGINI */}
+        {/* GALLERIA */}
         <section className="form-group">
           <label>Galleria immagini</label>
-
           {galleryLimit === 0 ? (
-            <p className="locked-text">
-              Disponibile con <strong>Medium</strong>
-            </p>
+            <p className="locked-text">Disponibile con Medium</p>
           ) : (
             <>
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={handleGallerySelect}
-                disabled={loading}
-              />
-              <p className="counter">
-                Immagini: {galleryFiles.length} / {galleryLimit}
+              <input type="file" multiple onChange={handleGallerySelect} />
+              <p>
+                {galleryFiles.length} / {galleryLimit}
               </p>
-
-              <div className="gallery-preview">
-                {galleryFiles.map((file, idx) => (
-                  <img
-                    key={idx}
-                    src={URL.createObjectURL(file)}
-                    alt={`gallery-${idx}`}
-                  />
-                ))}
-              </div>
             </>
           )}
         </section>
 
-        {/* ===== VIDEO (E5) ===== */}
+        {/* VIDEO */}
         <section className="form-group">
           <label>Video</label>
-
           {videoLimit === 0 ? (
-            <p className="locked-text">
-              Disponibile con <strong>Plus</strong>
-            </p>
+            <p className="locked-text">Disponibile con Plus</p>
           ) : (
-            <>
-              <p className="helper">
-                Puoi aggiungere fino a <strong>{videoLimit}</strong> video
-                (link)
-              </p>
-
-              {videoUrls.slice(0, videoLimit).map((url, index) => (
-                <input
-                  key={index}
-                  type="url"
-                  placeholder="Incolla link video (YouTube, Vimeo…) "
-                  value={url}
-                  onChange={(e) =>
-                    handleVideoChange(index, e.target.value)
-                  }
-                  disabled={loading}
-                />
-              ))}
-            </>
+            videoUrls.slice(0, videoLimit).map((url, i) => (
+              <input
+                key={i}
+                type="url"
+                value={url}
+                placeholder="Link video"
+                onChange={(e) => handleVideoChange(i, e.target.value)}
+              />
+            ))
           )}
+        </section>
+
+        {/* ===== STILE LAPIDE (E6) ===== */}
+        <section className="form-group">
+          <label>Stile della lapide</label>
+
+          <div className="grave-grid">
+            {GRAVE_STYLES.map((style) => {
+              const locked = !canUseStyle(style.tier);
+
+              return (
+                <button
+                  key={style.id}
+                  type="button"
+                  className={`grave-card ${
+                    graveStyle === style.id ? "selected" : ""
+                  } ${locked ? "locked" : ""}`}
+                  onClick={() => !locked && setGraveStyle(style.id)}
+                  title={
+                    locked
+                      ? `Disponibile con ${style.tier}`
+                      : "Seleziona stile"
+                  }
+                >
+                  <div className="grave-preview" />
+                  <span>{style.label}</span>
+                  {locked && (
+                    <span className="badge">
+                      {style.tier === "PLUS" ? "Plus" : "Medium"}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </section>
 
         {/* PUBBLICO */}
@@ -280,7 +269,6 @@ export default function NewMemorialPage() {
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
-            disabled={loading}
           />
           <label>Memoriale pubblico</label>
         </div>
