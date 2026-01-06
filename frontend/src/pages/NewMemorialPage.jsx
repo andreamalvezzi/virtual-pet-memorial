@@ -96,6 +96,8 @@ export default function NewMemorialPage() {
   }
 
   function handleGallerySelect(e) {
+    if (galleryLimit === 0 || loading) return;
+
     const files = Array.from(e.target.files || []);
     setGalleryFiles((prev) =>
       [...prev, ...files].slice(0, galleryLimit)
@@ -103,6 +105,8 @@ export default function NewMemorialPage() {
   }
 
   function handleVideoChange(index, value) {
+    if (videoLimit === 0 || loading) return;
+
     const next = [...videoUrls];
     next[index] = value;
     setVideoUrls(next);
@@ -162,6 +166,8 @@ export default function NewMemorialPage() {
               type="button"
               className={plan === p ? "active" : ""}
               onClick={() => setPlan(p)}
+              disabled={loading}
+              aria-disabled={loading}
             >
               <strong>{p}</strong>
             </button>
@@ -181,6 +187,7 @@ export default function NewMemorialPage() {
             value={form.petName}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
 
@@ -192,6 +199,7 @@ export default function NewMemorialPage() {
             onChange={handleChange}
             placeholder="Cane, Gatto, Coniglio..."
             required
+            disabled={loading}
           />
         </div>
 
@@ -203,6 +211,7 @@ export default function NewMemorialPage() {
             value={form.deathDate}
             onChange={handleChange}
             required
+            disabled={loading}
           />
         </div>
 
@@ -214,28 +223,38 @@ export default function NewMemorialPage() {
             value={form.epitaph}
             onChange={handleChange}
             required
+            disabled={loading}
           />
           <div className="epitaph-meta">
             {form.epitaph.length} / {epitaphLimit} caratteri
           </div>
         </div>
 
-        {/* ===== GALLERIA IMMAGINI ===== */}
-        <section className="form-group">
+        {/* GALLERIA IMMAGINI */}
+        <section
+          className={`form-group ${
+            galleryLimit === 0 ? "locked" : ""
+          }`}
+          aria-disabled={galleryLimit === 0}
+        >
           <label>Galleria immagini</label>
 
           {galleryLimit === 0 ? (
             <p className="locked-text">
-              Puoi aggiungere una galleria immagini con il piano{" "}
-              <strong>Medium</strong>.
+              Disponibile con piano <strong>Medium</strong>
             </p>
           ) : (
             <>
-              <input type="file" multiple onChange={handleGallerySelect} />
+              <input
+                type="file"
+                multiple
+                onChange={handleGallerySelect}
+                disabled={loading}
+              />
 
               {galleryFiles.length === 0 ? (
                 <p className="empty-text">
-                  Nessuna immagine aggiunta. Puoi inserire fino a{" "}
+                  Puoi aggiungere fino a{" "}
                   <strong>{galleryLimit}</strong> immagini.
                 </p>
               ) : (
@@ -254,20 +273,24 @@ export default function NewMemorialPage() {
           )}
         </section>
 
-        {/* ===== VIDEO ===== */}
-        <section className="form-group">
+        {/* VIDEO */}
+        <section
+          className={`form-group ${
+            videoLimit === 0 ? "locked" : ""
+          }`}
+          aria-disabled={videoLimit === 0}
+        >
           <label>Video</label>
 
           {videoLimit === 0 ? (
             <p className="locked-text">
-              Puoi aggiungere video ricordo con il piano{" "}
-              <strong>Plus</strong>.
+              Disponibile con piano <strong>Plus</strong>
             </p>
           ) : (
             <>
               {videoUrls.slice(0, videoLimit).every((v) => !v) && (
                 <p className="empty-text">
-                  Nessun video inserito. Aggiungi fino a{" "}
+                  Puoi aggiungere fino a{" "}
                   <strong>{videoLimit}</strong> video tramite link.
                 </p>
               )}
@@ -277,23 +300,20 @@ export default function NewMemorialPage() {
                   key={i}
                   type="url"
                   value={url}
-                  placeholder="Link video (YouTube, Vimeo…)"
+                  placeholder="Link video"
                   onChange={(e) =>
                     handleVideoChange(i, e.target.value)
                   }
+                  disabled={loading}
                 />
               ))}
             </>
           )}
         </section>
 
-        {/* ===== STILE LAPIDE ===== */}
+        {/* STILE LAPIDE */}
         <section className="form-group">
           <label>Stile della lapide</label>
-
-          <p className="helper">
-            Scegli lo stile che meglio rappresenta il suo ricordo.
-          </p>
 
           <div className="grave-grid">
             {GRAVE_STYLES.map((style) => {
@@ -307,11 +327,8 @@ export default function NewMemorialPage() {
                     graveStyle === style.id ? "selected" : ""
                   } ${locked ? "locked" : ""}`}
                   onClick={() => !locked && setGraveStyle(style.id)}
-                  title={
-                    locked
-                      ? `Disponibile con ${style.tier}`
-                      : "Seleziona stile"
-                  }
+                  disabled={locked || loading}
+                  aria-disabled={locked}
                 >
                   <div className="grave-preview" />
                   <span>{style.label}</span>
@@ -333,6 +350,7 @@ export default function NewMemorialPage() {
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
+            disabled={loading}
           />
           <label>Memoriale pubblico</label>
         </div>
