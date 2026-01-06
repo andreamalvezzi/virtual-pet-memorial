@@ -3,7 +3,9 @@ const API_URL = "https://virtual-pet-memorial-backend.onrender.com/api";
 /* ======================================================
    CREATE
    ====================================================== */
-export async function createMemorial(data, token) {
+export async function createMemorial(data) {
+  const token = localStorage.getItem("token");
+
   if (!token) {
     throw new Error("Utente non autenticato");
   }
