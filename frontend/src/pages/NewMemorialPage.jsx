@@ -5,6 +5,8 @@ import { createMemorial } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
 import "./NewMemorialPage.css";
 import { PLAN, PLAN_LIMITS } from "../config/plans";
+import GalleryImageUpload from "../components/GalleryImageUpload";
+
 
 /* ======================================================
    NEW MEMORIAL PAGE — G3
@@ -36,8 +38,7 @@ export default function NewMemorialPage() {
   const [graveStyle, setGraveStyle] = useState("classic");
   const [imageUrl, setImageUrl] = useState(null);
 
-  const [galleryFiles, setGalleryFiles] = useState([]);
-  const [galleryPreviews, setGalleryPreviews] = useState([]);
+  const [galleryImages, setGalleryImages] = useState([]);
 
   const [videoUrls, setVideoUrls] = useState(["", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -68,10 +69,12 @@ export default function NewMemorialPage() {
   }, [galleryFiles]);
 
   function canUseStyle(tier) {
-    if (plan === PLAN.PLUS) return true;
-    if (plan === PLAN.MEDIUM) return tier !== "PLUS";
-    return tier === "DEFAULT";
+    if (tier === "DEFAULT") return true;
+    if (tier === "MEDIUM") return plan !== PLAN.FREE;
+    if (tier === "PLUS") return plan === PLAN.PLUS;
+    return false;
   }
+
 
   /* =========================
      HANDLERS
@@ -130,6 +133,9 @@ export default function NewMemorialPage() {
         // ===== G3: ORA REALI =====
         plan,
         graveStyle,
+
+        // TODO: galleryFiles devono essere uploadati (Cloudinary) prima del submit
+
         galleryImages: galleryFiles.map((f) => f.secure_url).filter(Boolean),
         videoUrls: videoUrls.filter(Boolean),
       });
@@ -229,24 +235,13 @@ export default function NewMemorialPage() {
           <label>Galleria immagini</label>
 
           {galleryLimit === 0 ? (
-            <p className="locked-text">Disponibile con Medium</p>
+            <p className="locked-text">Disponibile con Plus</p>
           ) : (
-            <>
-              <input
-                type="file"
-                multiple
-                onChange={handleGallerySelect}
-                disabled={loading}
-              />
-
-              {galleryPreviews.length > 0 && (
-                <div className="gallery-preview">
-                  {galleryPreviews.map((src, i) => (
-                    <img key={i} src={src} alt="" />
-                  ))}
-                </div>
-              )}
-            </>
+            <GalleryImageUpload
+              maxImages={galleryLimit}
+              onChange={setGalleryImages}
+              disabled={loading}
+            />
           )}
         </section>
 

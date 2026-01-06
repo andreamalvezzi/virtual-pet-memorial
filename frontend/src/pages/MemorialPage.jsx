@@ -14,6 +14,13 @@ export default function MemorialPage() {
   const { slug } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+      } else {
+      navigate("/home");
+    }
+  };
 
   const [memorial, setMemorial] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -56,6 +63,9 @@ export default function MemorialPage() {
 
   const canonicalUrl = `${SITE_URL}/#/memorials/${slug}`;
 
+  const graveStyle = memorial?.graveStyle || "classic";
+
+
   /* =========================
      RENDER
      ========================= */
@@ -88,14 +98,16 @@ export default function MemorialPage() {
       {!loading && memorial && (
         <>
           <nav className="memorial-nav">
-            <button onClick={() => navigate(-1)}>
+            <button onClick={handleBack}>
               ← Torna indietro
             </button>
             {user && <Link to="/dashboard">Dashboard</Link>}
           </nav>
 
           <article
-            className={`memorial-container grave-${memorial.graveStyle}`}
+            className={`memorial-container plan-${
+              memorial.plan?.toLowerCase() || "free"
+            } grave-${graveStyle}`}
           >
             {/* IMMAGINE PRINCIPALE */}
             {memorial.imageUrl && (
@@ -120,15 +132,17 @@ export default function MemorialPage() {
               )}
             </p>
 
-            <blockquote className="memorial-epitaph">
-              “{memorial.epitaph}”
-            </blockquote>
+            {memorial.epitaph && (
+              <blockquote className="memorial-epitaph">
+                “{memorial.epitaph}”
+              </blockquote>
+            )}
 
             {/* ===== GALLERIA IMMAGINI ===== */}
             {Array.isArray(memorial.galleryImages) &&
               memorial.galleryImages.length > 0 && (
                 <section className="memorial-gallery">
-                  <h2>Ricordi fotografici</h2>
+                  <h2>Momenti insieme</h2>
                   <div className="gallery-grid">
                     {memorial.galleryImages.map((url, i) => (
                       <img
@@ -146,7 +160,7 @@ export default function MemorialPage() {
             {Array.isArray(memorial.videoUrls) &&
               memorial.videoUrls.length > 0 && (
                 <section className="memorial-videos">
-                  <h2>Video ricordo</h2>
+                  <h2>Ricordi in movimento</h2>
                   <div className="video-grid">
                     {memorial.videoUrls.map((url, i) => (
                       <iframe
@@ -162,7 +176,7 @@ export default function MemorialPage() {
               )}
 
             <footer className="memorial-footer">
-              Un ricordo che resta
+              Un ricordo che resta nel tempo
             </footer>
           </article>
         </>

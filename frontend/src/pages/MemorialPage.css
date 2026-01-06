@@ -25,13 +25,13 @@
 }
 
 /* ======================================================
-   CONTAINER
+   CONTAINER — BASE (FREE)
    ====================================================== */
 
 .memorial-container {
   max-width: 720px;
   margin: clamp(2rem, 5vw, 3rem) auto;
-  padding: clamp(1.5rem, 4vw, 2.8rem);
+  padding: clamp(1.6rem, 4vw, 2.8rem);
   background: #faf8f6;
   border-radius: 20px;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
@@ -39,7 +39,23 @@
 }
 
 /* ======================================================
-   IMAGE (REAL – NO FADE-IN)
+   PLAN OVERRIDES
+   ====================================================== */
+
+/* PLUS: più respiro, più eleganza */
+.memorial-container.plan-plus {
+  max-width: 760px;
+  padding: clamp(2rem, 4vw, 3.2rem);
+}
+
+/* PREMIUM: presenza maggiore */
+.memorial-container.plan-premium {
+  max-width: 820px;
+  padding: clamp(2.4rem, 5vw, 3.8rem);
+}
+
+/* ======================================================
+   IMAGE
    ====================================================== */
 
 .memorial-image {
@@ -49,6 +65,12 @@
   border-radius: 18px;
   display: block;
   margin-bottom: 2.2rem;
+}
+
+/* PREMIUM hero più importante */
+.memorial-container.plan-premium .memorial-image {
+  max-height: 460px;
+  margin-bottom: 2.8rem;
 }
 
 /* ======================================================
@@ -66,6 +88,7 @@
   margin-bottom: 2.2rem;
 }
 
+/* Epitaffio */
 .memorial-epitaph {
   font-style: italic;
   font-size: clamp(1.05rem, 4vw, 1.25rem);
@@ -74,14 +97,89 @@
   margin: 2.5rem 0;
 }
 
+/* Plus/Premium: testo più arioso */
+.memorial-container.plan-plus .memorial-epitaph,
+.memorial-container.plan-premium .memorial-epitaph {
+  line-height: 1.75;
+  margin: 3rem 0;
+}
+
+/* ======================================================
+   GALLERY (PLUS / PREMIUM)
+   ====================================================== */
+
+.memorial-gallery {
+  margin-top: 3rem;
+}
+
+.memorial-gallery h2 {
+  font-size: 1.1rem;
+  color: #4b4844;
+  margin-bottom: 1.2rem;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 0.8rem;
+}
+
+.gallery-grid img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* Premium: galleria più elegante */
+.memorial-container.plan-premium .gallery-grid {
+  gap: 1.1rem;
+}
+
+.memorial-container.plan-premium .gallery-grid img {
+  height: 170px;
+}
+
+/* ======================================================
+   VIDEO (PREMIUM)
+   ====================================================== */
+
+.memorial-videos {
+  margin-top: 3.5rem;
+}
+
+.memorial-videos h2 {
+  font-size: 1.1rem;
+  color: #4b4844;
+  margin-bottom: 1.2rem;
+}
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.2rem;
+}
+
+.video-grid iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  border: none;
+}
+
 /* ======================================================
    FOOTER
    ====================================================== */
 
 .memorial-footer {
-  margin-top: 2.5rem;
+  margin-top: 3rem;
   font-size: 0.85rem;
   color: #9a958f;
+}
+
+/* Premium footer più distanziato */
+.memorial-container.plan-premium .memorial-footer {
+  margin-top: 3.8rem;
 }
 
 /* ======================================================
@@ -100,7 +198,6 @@
   margin: 4rem auto;
   text-align: center;
   color: #aaa;
-  animation: fadeIn 0.25s ease-out both;
 }
 
 .memorial-empty h2 {
@@ -126,7 +223,7 @@
 }
 
 /* ======================================================
-   SKELETON (SEPARATO, USATO SOLO IN LOADING)
+   SKELETON
    ====================================================== */
 
 .memorial-skeleton {
@@ -162,23 +259,15 @@
   width: 100%;
 }
 
-/* Skeleton pulse */
-
 .skeleton-image,
 .skeleton-line {
   animation: skeletonPulse 1.6s ease-in-out infinite;
 }
 
 @keyframes skeletonPulse {
-  0% {
-    opacity: 0.85;
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0.85;
-  }
+  0% { opacity: 0.85; }
+  50% { opacity: 1; }
+  100% { opacity: 0.85; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -206,5 +295,3 @@
     transform: translateY(0);
   }
 }
-
-

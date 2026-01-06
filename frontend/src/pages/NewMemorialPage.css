@@ -1,4 +1,6 @@
-/* CONTAINER */
+/* ======================================================
+   CREATE MEMORIAL — BASE CONTAINER
+   ====================================================== */
 
 .create-memorial-container {
   max-width: 720px;
@@ -15,31 +17,40 @@
   color: #1f2937;
 }
 
-/* FORM */
+/* ======================================================
+   FORM LAYOUT
+   ====================================================== */
 
 .create-memorial-form {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem; /* respiro verticale */
+  gap: 1.8rem;
 }
 
-/* GROUP */
+/* ======================================================
+   FORM GROUP
+   ====================================================== */
 
 .form-group {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 0.4rem;
+  width: 100%;
 }
 
-/* LABEL */
+/* ======================================================
+   LABEL
+   ====================================================== */
 
 .form-group label {
   font-size: 0.85rem;
   color: #6b6b6b;
 }
 
-/* INPUT & TEXTAREA */
+/* ======================================================
+   INPUT & TEXTAREA
+   ====================================================== */
 
 .create-memorial-form input,
 .create-memorial-form textarea {
@@ -48,7 +59,7 @@
   border-radius: 12px;
   border: 1px solid #d6d3cf;
   background-color: #ffffff;
-  color: #1f2937;            /* 🔥 TESTO SCURO */
+  color: #1f2937;
   font-size: 0.95rem;
   line-height: 1.4;
 }
@@ -57,7 +68,7 @@
 
 .create-memorial-form input::placeholder,
 .create-memorial-form textarea::placeholder {
-  color: #9ca3af;            /* visibile ma distinto */
+  color: #9ca3af;
 }
 
 /* FOCUS */
@@ -76,17 +87,31 @@
   resize: vertical;
 }
 
-/* CHECKBOX */
+/* ======================================================
+   EPITAPH META
+   ====================================================== */
+
+.epitaph-meta {
+  align-self: flex-end;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+/* ======================================================
+   CHECKBOX
+   ====================================================== */
 
 .form-checkbox {
   display: flex;
   align-items: center;
   gap: 0.6rem;
   font-size: 0.9rem;
-  color: #1f2937;            /* 🔥 PIÙ SCURO */
+  color: #1f2937;
 }
 
-/* ERROR */
+/* ======================================================
+   ERROR / SUCCESS
+   ====================================================== */
 
 .form-error {
   color: #c86464;
@@ -94,17 +119,17 @@
   text-align: center;
 }
 
-/* SUCCESS */
-
 .form-success {
   color: #4b7f52;
   font-size: 0.9rem;
   text-align: center;
 }
 
-/* CTA BUTTON */
+/* ======================================================
+   CTA BUTTON
+   ====================================================== */
 
-.create-memorial-form button {
+.create-memorial-form button[type="submit"] {
   margin-top: 1.8rem;
   align-self: center;
   padding: 0.7rem 1.6rem;
@@ -121,51 +146,122 @@
   cursor: not-allowed;
 }
 
-button.loading {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
+/* ======================================================
+   PLAN SELECTOR
+   ====================================================== */
 
 .plan-selector {
   margin: 2rem 0;
-  padding: 1rem;
+  padding: 1.2rem;
+  border-radius: 12px;
   border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  background: #fdfcfb;
+}
+
+.plan-selector h2 {
+  font-size: 1rem;
+  margin-bottom: 0.6rem;
+  color: #1f2937;
 }
 
 .plan-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
-  margin-top: 1rem;
 }
 
 .plan-options button {
   background: #fafafa;
   border: 1px solid #ddd;
-  border-radius: 6px;
+  border-radius: 10px;
   padding: 0.75rem;
   cursor: pointer;
-  text-align: left;
+  text-align: center;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.plan-options button strong {
+  font-size: 0.95rem;
 }
 
 .plan-options button.active {
-  border-color: #555;
-  background: #f0f0f0;
+  border-color: #1f2937;
+  background: #eae7e3;
 }
 
-.plan-options strong {
-  display: block;
-  font-size: 1rem;
+/* ======================================================
+   LOCKED STATE (GLOBAL)
+   ====================================================== */
+
+.form-group.locked {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
 }
 
-.plan-options span {
+.locked-text {
   font-size: 0.85rem;
-  color: #666;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 0.25rem;
 }
 
-.plan-helper {
-  margin-top: 0.75rem;
-  font-size: 0.9rem;
-  color: #444;
+/* ======================================================
+   GALLERY PREVIEW
+   ====================================================== */
+
+.gallery-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.6rem;
+}
+
+.gallery-preview img {
+  width: 100%;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* ======================================================
+   GRAVE STYLES GRID
+   ====================================================== */
+
+.grave-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.grave-card {
+  padding: 0.9rem;
+  border-radius: 12px;
+  border: 1px solid #d6d3cf;
+  background: #ffffff;
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.grave-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.grave-card.selected {
+  border-color: #1f2937;
+}
+
+/* LOCKED GRAVE */
+
+.grave-card.locked {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.grave-card.locked:hover {
+  transform: none;
+  box-shadow: none;
 }
