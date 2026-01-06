@@ -37,7 +37,7 @@ export default function NewMemorialPage() {
   const [imageUrl, setImageUrl] = useState(null);
 
   const [galleryFiles, setGalleryFiles] = useState([]);
-  const [galleryPreviews, setGalleryPreviews] = useState([]); // 👈 F1
+  const [galleryPreviews, setGalleryPreviews] = useState([]);
 
   const [videoUrls, setVideoUrls] = useState(["", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,7 @@ export default function NewMemorialPage() {
   const videoLimit = limits.maxVideos;
 
   /* =========================
-     F1 — GALLERY PREVIEWS CLEANUP
+     F1 — Gallery preview cleanup
      ========================= */
   useEffect(() => {
     if (!galleryFiles.length) {
@@ -60,7 +60,6 @@ export default function NewMemorialPage() {
     const previews = galleryFiles.map((file) =>
       URL.createObjectURL(file)
     );
-
     setGalleryPreviews(previews);
 
     return () => {
@@ -128,7 +127,7 @@ export default function NewMemorialPage() {
 
     try {
       const memorial = await createMemorial(
-        { ...form, imageUrl }, // graveStyle, gallery, video NON inviati
+        { ...form, imageUrl },
         token
       );
 
@@ -171,8 +170,10 @@ export default function NewMemorialPage() {
       </section>
 
       <form className="create-memorial-form" onSubmit={handleSubmit}>
+        {/* IMMAGINE PRINCIPALE */}
         <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
+        {/* DATI BASE */}
         <div className="form-group">
           <label>Nome del pet</label>
           <input
@@ -215,53 +216,85 @@ export default function NewMemorialPage() {
             required
           />
           <div className="epitaph-meta">
-            {form.epitaph.length} / {epitaphLimit}
+            {form.epitaph.length} / {epitaphLimit} caratteri
           </div>
         </div>
 
-        {/* GALLERIA */}
+        {/* ===== GALLERIA IMMAGINI ===== */}
         <section className="form-group">
           <label>Galleria immagini</label>
 
           {galleryLimit === 0 ? (
-            <p className="locked-text">Disponibile con Medium</p>
+            <p className="locked-text">
+              Puoi aggiungere una galleria immagini con il piano{" "}
+              <strong>Medium</strong>.
+            </p>
           ) : (
             <>
               <input type="file" multiple onChange={handleGallerySelect} />
-              <p>
-                {galleryFiles.length} / {galleryLimit}
-              </p>
 
-              <div className="gallery-preview">
-                {galleryPreviews.map((src, idx) => (
-                  <img key={idx} src={src} alt={`gallery-${idx}`} />
-                ))}
-              </div>
+              {galleryFiles.length === 0 ? (
+                <p className="empty-text">
+                  Nessuna immagine aggiunta. Puoi inserire fino a{" "}
+                  <strong>{galleryLimit}</strong> immagini.
+                </p>
+              ) : (
+                <>
+                  <p>
+                    {galleryFiles.length} / {galleryLimit} immagini
+                  </p>
+                  <div className="gallery-preview">
+                    {galleryPreviews.map((src, idx) => (
+                      <img key={idx} src={src} alt={`gallery-${idx}`} />
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           )}
         </section>
 
-        {/* VIDEO */}
+        {/* ===== VIDEO ===== */}
         <section className="form-group">
           <label>Video</label>
+
           {videoLimit === 0 ? (
-            <p className="locked-text">Disponibile con Plus</p>
+            <p className="locked-text">
+              Puoi aggiungere video ricordo con il piano{" "}
+              <strong>Plus</strong>.
+            </p>
           ) : (
-            videoUrls.slice(0, videoLimit).map((url, i) => (
-              <input
-                key={i}
-                type="url"
-                value={url}
-                placeholder="Link video"
-                onChange={(e) => handleVideoChange(i, e.target.value)}
-              />
-            ))
+            <>
+              {videoUrls.slice(0, videoLimit).every((v) => !v) && (
+                <p className="empty-text">
+                  Nessun video inserito. Aggiungi fino a{" "}
+                  <strong>{videoLimit}</strong> video tramite link.
+                </p>
+              )}
+
+              {videoUrls.slice(0, videoLimit).map((url, i) => (
+                <input
+                  key={i}
+                  type="url"
+                  value={url}
+                  placeholder="Link video (YouTube, Vimeo…)"
+                  onChange={(e) =>
+                    handleVideoChange(i, e.target.value)
+                  }
+                />
+              ))}
+            </>
           )}
         </section>
 
-        {/* STILE LAPIDE */}
+        {/* ===== STILE LAPIDE ===== */}
         <section className="form-group">
           <label>Stile della lapide</label>
+
+          <p className="helper">
+            Scegli lo stile che meglio rappresenta il suo ricordo.
+          </p>
+
           <div className="grave-grid">
             {GRAVE_STYLES.map((style) => {
               const locked = !canUseStyle(style.tier);
