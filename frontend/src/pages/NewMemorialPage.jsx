@@ -23,10 +23,13 @@ export default function NewMemorialPage() {
 
   const [plan, setPlan] = useState(PLAN.FREE);
   const [imageUrl, setImageUrl] = useState(null);
+  const [galleryFiles, setGalleryFiles] = useState([]); // 👈 E4
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const epitaphLimit = PLAN_LIMITS[plan].maxEpitaph;
+  const limits = PLAN_LIMITS[plan];
+  const epitaphLimit = limits.maxEpitaph;
+  const galleryLimit = limits.maxGalleryImages;
 
   /* =========================
      FORM HANDLERS
@@ -36,7 +39,6 @@ export default function NewMemorialPage() {
 
     const { name, value, type, checked } = e.target;
 
-    // Epitaffio: clamp per piano
     if (name === "epitaph") {
       setForm((prev) => ({
         ...prev,
@@ -49,6 +51,12 @@ export default function NewMemorialPage() {
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  }
+
+  function handleGallerySelect(e) {
+    const files = Array.from(e.target.files || []);
+    const merged = [...galleryFiles, ...files].slice(0, galleryLimit);
+    setGalleryFiles(merged);
   }
 
   /* =========================
@@ -70,7 +78,7 @@ export default function NewMemorialPage() {
 
     try {
       const memorial = await createMemorial(
-        { ...form, imageUrl }, // plan NON inviato (voluto)
+        { ...form, imageUrl }, // galleria NON inviata (voluto)
         token
       );
 
@@ -89,18 +97,17 @@ export default function NewMemorialPage() {
      ========================= */
   return (
     <div className="create-memorial-container">
-      {/* ===== SEO (pagina privata) ===== */}
       <Helmet>
         <title>Crea un memoriale – Virtual Pet Memorial</title>
         <meta
           name="description"
-          content="Crea un memoriale digitale per il tuo animale domestico. Inserisci una foto, una dedica e scegli se renderlo pubblico."
+          content="Crea un memoriale digitale per il tuo animale domestico."
         />
       </Helmet>
 
       <h1>Crea un memoriale</h1>
 
-      {/* ===== SELEZIONE PIANO (frontend-only) ===== */}
+      {/* ===== SELEZIONE PIANO ===== */}
       <section className="plan-selector">
         <h2>Piano memoriale</h2>
 
@@ -120,7 +127,7 @@ export default function NewMemorialPage() {
             onClick={() => setPlan(PLAN.MEDIUM)}
           >
             <strong>Medium</strong>
-            <span>Più spazio per immagini e parole</span>
+            <span>Più spazio ai ricordi</span>
           </button>
 
           <button
@@ -132,12 +139,6 @@ export default function NewMemorialPage() {
             <span>Memoriale completo</span>
           </button>
         </div>
-
-        <p className="plan-helper">
-          {plan === PLAN.FREE && "Un memoriale semplice e rispettoso."}
-          {plan === PLAN.MEDIUM && "Ideale per raccontare di più con immagini."}
-          {plan === PLAN.PLUS && "Per conservare tutti i ricordi, anche video."}
-        </p>
       </section>
 
       <form
@@ -148,11 +149,10 @@ export default function NewMemorialPage() {
         {/* IMMAGINE PRINCIPALE */}
         <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
+        {/* DATI BASE */}
         <div className="form-group">
-          <label htmlFor="petName">Nome del pet</label>
+          <label>Nome del pet</label>
           <input
-            id="petName"
-            type="text"
             name="petName"
             value={form.petName}
             onChange={handleChange}
@@ -162,10 +162,8 @@ export default function NewMemorialPage() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="species">Specie</label>
+          <label>Specie</label>
           <input
-            id="species"
-            type="text"
             name="species"
             value={form.species}
             onChange={handleChange}
@@ -176,9 +174,8 @@ export default function NewMemorialPage() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="deathDate">Data di scomparsa</label>
+          <label>Data di scomparsa</label>
           <input
-            id="deathDate"
             type="date"
             name="deathDate"
             value={form.deathDate}
@@ -188,66 +185,75 @@ export default function NewMemorialPage() {
           />
         </div>
 
-        {/* ===== EPITAFIO (E3) ===== */}
+        {/* EPITAFFIO */}
         <div className="form-group">
-          <label htmlFor="epitaph">Epitaffio</label>
+          <label>Epitaffio</label>
           <textarea
-            id="epitaph"
             name="epitaph"
             value={form.epitaph}
             onChange={handleChange}
             required
             disabled={loading}
           />
-
           <div className="epitaph-meta">
-            <span>
-              {form.epitaph.length} / {epitaphLimit} caratteri
-            </span>
-
-            {plan === PLAN.FREE && form.epitaph.length >= 80 && (
-              <span className="epitaph-hint">
-                Con <strong>Medium</strong> puoi scrivere molto di più 🐾
-              </span>
-            )}
-
-            {plan === PLAN.MEDIUM && form.epitaph.length >= 420 && (
-              <span className="epitaph-hint">
-                Con <strong>Plus</strong> puoi raccontare tutta la sua storia
-              </span>
-            )}
-
-            {plan === PLAN.PLUS && (
-              <span className="epitaph-hint">
-                Hai tutto lo spazio necessario
-              </span>
-            )}
+            {form.epitaph.length} / {epitaphLimit} caratteri
           </div>
         </div>
 
+        {/* ===== GALLERIA IMMAGINI (E4) ===== */}
+        <section className="form-group">
+          <label>Galleria immagini</label>
+
+          {galleryLimit === 0 ? (
+            <p className="locked-text">
+              Disponibile con <strong>Medium</strong>
+            </p>
+          ) : (
+            <>
+              <p className="helper">
+                Puoi aggiungere fino a <strong>{galleryLimit}</strong> immagini
+              </p>
+
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleGallerySelect}
+                disabled={loading}
+              />
+
+              <p className="counter">
+                Immagini: {galleryFiles.length} / {galleryLimit}
+              </p>
+
+              <div className="gallery-preview">
+                {galleryFiles.map((file, idx) => (
+                  <img
+                    key={idx}
+                    src={URL.createObjectURL(file)}
+                    alt={`gallery-${idx}`}
+                  />
+                ))}
+              </div>
+            </>
+          )}
+        </section>
+
+        {/* PUBBLICO */}
         <div className="form-checkbox">
           <input
-            id="isPublic"
             type="checkbox"
             name="isPublic"
             checked={form.isPublic}
             onChange={handleChange}
             disabled={loading}
           />
-          <label htmlFor="isPublic">Memoriale pubblico</label>
+          <label>Memoriale pubblico</label>
         </div>
 
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
-        )}
+        {error && <p className="form-error">{error}</p>}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className={loading ? "loading" : ""}
-        >
+        <button type="submit" disabled={loading}>
           {loading ? "Creazione in corso…" : "Crea memoriale"}
         </button>
       </form>
