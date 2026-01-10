@@ -27,6 +27,23 @@
   gap: 1.8rem;
 }
 
+/* =========================
+   EPITAPH TEXTAREA FIX
+   ========================= */
+
+.create-memorial-form textarea {
+  width: 100%;
+  min-height: 120px;
+  resize: vertical;
+
+  white-space: pre-wrap;   /* 🔥 va a capo */
+  word-break: break-word;  /* 🔥 spezza parole lunghe */
+  overflow-wrap: break-word;
+
+  line-height: 1.5;
+}
+
+
 /* ======================================================
    FORM GROUP
    ====================================================== */
@@ -178,15 +195,27 @@
   cursor: pointer;
   text-align: center;
   transition: background 0.2s, border-color 0.2s;
+  color: #1f2937;          /* 🔥 TESTO SCURO */
+  font-weight: 600;        /* 🔥 PIÙ LEGGIBILE */
 }
 
 .plan-options button strong {
-  font-size: 0.95rem;
+  color: #111827;          /* 🔥 ANCORA PIÙ SCURO */
+  font-size: 1rem;
+}
+
+.plan-options button span {
+  color: #4b5563;          /* descrizione leggibile */
+  font-size: 0.85rem;
 }
 
 .plan-options button.active {
-  border-color: #1f2937;
-  background: #eae7e3;
+  border-color: #111827;
+  background: #e5e7eb;
+}
+
+.plan-options button:hover:not(.active) {
+  background: #f3f4f6;
 }
 
 /* ======================================================
