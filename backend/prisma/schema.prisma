@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 // ==============================
 // PRISMA SCHEMA
 // ==============================
@@ -27,17 +21,30 @@ enum MemorialPlan {
   PLUS
 }
 
+enum GraveTier {
+  FREE
+  MEDIUM
+  PLUS
+}
+
 // ==============================
 // MODELS
 // ==============================
 
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
+  id        Int          @id @default(autoincrement())
+  email     String       @unique
   password  String
-  role      String     @default("free")
 
-  createdAt DateTime   @default(now())
+  // Piano account (source of truth)
+  plan      MemorialPlan @default(FREE)
+
+  // Email verification (pronta per invio email in futuro)
+  emailVerified     Boolean   @default(false)
+  emailVerifyToken  String?   @unique
+  emailVerifyExpiry DateTime?
+
+  createdAt DateTime @default(now())
 
   memorials Memorial[]
 }
@@ -64,15 +71,15 @@ model Memorial {
   epitaph   String
 
   // ==========================
-  // MEDIA
+  // MEDIA (cover / principale)
   // ==========================
-  imageUrl      String?
+  imageUrl  String?
 
-  // === G1: NUOVI CAMPI ===
-  plan          MemorialPlan @default(FREE)
-  graveStyle    String       @default("classic")
-  galleryImages String[]     @default([])
-  videoUrls     String[]     @default([])
+  // ==========================
+  // LAPIDE
+  // ==========================
+  graveStyleKey String @default("classic")
+  graveStyle    GraveStyle? @relation(fields: [graveStyleKey], references: [key])
 
   // ==========================
   // VISIBILITÀ
@@ -85,7 +92,53 @@ model Memorial {
   slug     String  @unique
 
   // ==========================
+  // RELATIONS
+  // ==========================
+  images   MemorialImage[]
+  videos   MemorialVideo[]
+
+  // ==========================
   // META
   // ==========================
   createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model MemorialImage {
+  id         Int      @id @default(autoincrement())
+  memorialId Int
+  memorial   Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+
+  imageUrl   String
+  createdAt  DateTime @default(now())
+
+  @@index([memorialId])
+}
+
+model MemorialVideo {
+  id         Int      @id @default(autoincrement())
+  memorialId Int
+  memorial   Memorial @relation(fields: [memorialId], references: [id], onDelete: Cascade)
+
+  videoUrl   String
+  createdAt  DateTime @default(now())
+
+  @@index([memorialId])
+}
+
+model GraveStyle {
+  // key usata dal Memorial (string stabile, facile da cambiare in futuro)
+  key        String   @id
+
+  label      String
+  tier       GraveTier @default(FREE)
+
+  // opzionali per prove UI
+  previewUrl String?
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+
+  memorials  Memorial[]
 }

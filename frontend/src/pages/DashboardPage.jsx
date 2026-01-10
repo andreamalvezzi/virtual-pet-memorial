@@ -2,74 +2,66 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { getMyMemorials, deleteMemorial } from "../api/memorials";
+import { getMe } from "../api/users";
+import PlanInfoTooltip from "../components/PlanInfoTooltip";
 import MemorialCard from "../components/MemorialCard";
 import "./DashboardPage.css";
 
 export default function DashboardPage() {
+  const [me, setMe] = useState(null);
+
   const [memorials, setMemorials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  /* =========================
-     FETCH MEMORIALS
-     ========================= */
   useEffect(() => {
-    async function loadMemorials() {
+    async function loadAll() {
       try {
-        const data = await getMyMemorials();
-        setMemorials(data);
+        const [meData, memData] = await Promise.all([getMe(), getMyMemorials()]);
+        setMe(meData);
+        setMemorials(memData);
       } catch {
-        setError("Errore nel caricamento dei memoriali");
+        setError("Errore nel caricamento dei dati");
       } finally {
         setLoading(false);
       }
     }
-
-    loadMemorials();
+    loadAll();
   }, []);
 
-  /* =========================
-     DELETE
-     ========================= */
   async function handleDelete(id) {
-    const confirmed = window.confirm(
-      "Sei sicuro di voler eliminare questo memoriale?"
-    );
+    const confirmed = window.confirm("Sei sicuro di voler eliminare questo memoriale?");
     if (!confirmed) return;
 
     try {
       await deleteMemorial(id);
-      setMemorials((prev) =>
-        prev.filter((m) => m.id !== id)
-      );
+      setMemorials((prev) => prev.filter((m) => m.id !== id));
     } catch (err) {
       alert(err.message);
     }
   }
 
-  /* =========================
-     LOADING / ERROR
-     ========================= */
-  if (loading) {
-    return (
-      <p className="dashboard-loading">
-        Caricamento…
-      </p>
-    );
-  }
+  if (loading) return <p className="dashboard-loading">Caricamento…</p>;
+  if (error) return <p className="dashboard-error">{error}</p>;
 
-  if (error) {
-    return (
-      <p className="dashboard-error">{error}</p>
-    );
-  }
+  const plan = me?.plan || "FREE";
+  const maxMemorials = me?.limits?.maxMemorials ?? 1;
+  const used = me?.usage?.memorialsUsed ?? memorials.length;
 
-  /* =========================
-     RENDER
-     ========================= */
+  const planTitle =
+    plan === "FREE" ? "Piano FREE – 0€" :
+    plan === "MEDIUM" ? "Piano MEDIUM – 2,99€ / memoriale" :
+    "Piano PLUS – 5,99€ / memoriale";
+
+  const planText =
+    plan === "FREE"
+      ? "1 memoriale, 1 foto, lapide standard, 100 parole."
+      : plan === "MEDIUM"
+      ? "3 memoriali, 5 immagini, 6 lapidi, 300 parole."
+      : "6 memoriali, 10 immagini, 3 video, tutte le lapidi, 1000 parole.";
+
   return (
     <div className="dashboard-container">
-      {/* ===== SEO (pagina privata) ===== */}
       <Helmet>
         <title>Dashboard – Virtual Pet Memorial</title>
         <meta
@@ -78,16 +70,29 @@ export default function DashboardPage() {
         />
       </Helmet>
 
-      {/* ================= HEADER ================= */}
       <header className="dashboard-header">
         <h1>La tua dashboard</h1>
-        <p>
-          Questo è il tuo spazio personale, dove
-          custodire i ricordi dei tuoi pet.
-        </p>
+        <p>Questo è il tuo spazio personale, dove custodire i ricordi dei tuoi pet.</p>
       </header>
 
-      {/* ================= CTA ================= */}
+      {/* BOX PIANO */}
+      {me && (
+        <div className="dashboard-planbox">
+          <strong>
+            Piano: {plan}
+            <PlanInfoTooltip title={planTitle}>{planText}</PlanInfoTooltip>
+          </strong>
+          <div>
+            Memoriali: {used} / {maxMemorials}
+          </div>
+          {!me.emailVerified && (
+            <div className="dashboard-planwarn">
+              ⚠️ Email non verificata: non puoi creare memoriali finché non verifichi.
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="dashboard-cta">
         <Link
           to="/dashboard/memorials/new"
@@ -97,32 +102,22 @@ export default function DashboardPage() {
         </Link>
       </div>
 
-      {/* ================= EMPTY STATE ================= */}
       {memorials.length === 0 ? (
         <div className="dashboard-empty">
           <h2>🐾 Il tuo spazio è pronto</h2>
-
           <p>
-            Qui troverai i memoriali dedicati ai tuoi
-            animali. Puoi iniziare creando il primo,
-            aggiungendo una foto e un pensiero che resti
-            nel tempo.
+            Qui troverai i memoriali dedicati ai tuoi animali. Puoi iniziare creando il primo,
+            aggiungendo una foto e un pensiero che resti nel tempo.
           </p>
 
-          <Link
-            to="/dashboard/memorials/new"
-            className="dashboard-button"
-          >
+          <Link to="/dashboard/memorials/new" className="dashboard-button">
             ✨ Crea il tuo primo memoriale
           </Link>
         </div>
       ) : (
         <div className="memorial-grid">
           {memorials.map((memorial) => (
-            <div
-              key={memorial.id}
-              className="dashboard-card-wrapper"
-            >
+            <div key={memorial.id} className="dashboard-card-wrapper">
               <MemorialCard memorial={memorial} />
 
               <div className="dashboard-card-actions">
@@ -134,9 +129,7 @@ export default function DashboardPage() {
                 </Link>
 
                 <button
-                  onClick={() =>
-                    handleDelete(memorial.id)
-                  }
+                  onClick={() => handleDelete(memorial.id)}
                   className="delete-button"
                 >
                   🗑️ Elimina

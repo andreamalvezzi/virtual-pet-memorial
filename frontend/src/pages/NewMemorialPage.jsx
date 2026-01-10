@@ -1,33 +1,23 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { createMemorial } from "../api/memorials";
+import { getMe } from "../api/users";
 import PetImageUpload from "../components/PetImageUpload";
 import GalleryImageUpload from "../components/GalleryImageUpload";
+import PlanInfoTooltip from "../components/PlanInfoTooltip";
 import "./NewMemorialPage.css";
-import { PLAN, PLAN_LIMITS } from "../config/plans";
 
-/* ======================================================
-   NEW MEMORIAL PAGE — G3 (STABILE)
-   ====================================================== */
-
-const GRAVE_STYLES = [
-  { id: "classic", label: "Classica", tier: "DEFAULT" },
-  { id: "simple", label: "Semplice", tier: "MEDIUM" },
-  { id: "heart", label: "Cuore", tier: "MEDIUM" },
-  { id: "stone", label: "Pietra", tier: "MEDIUM" },
-  { id: "modern", label: "Moderna", tier: "MEDIUM" },
-  { id: "angel", label: "Ali", tier: "PLUS" },
-  { id: "gold", label: "Dorata", tier: "PLUS" },
-  { id: "nature", label: "Natura", tier: "PLUS" },
-];
+function countWords(text) {
+  if (!text) return 0;
+  return String(text).trim().split(/\s+/).filter(Boolean).length;
+}
 
 export default function NewMemorialPage() {
   const navigate = useNavigate();
 
-  /* =========================
-     STATE
-     ========================= */
+  const [me, setMe] = useState(null);
+  const [loadingMe, setLoadingMe] = useState(true);
 
   const [form, setForm] = useState({
     petName: "",
@@ -35,102 +25,136 @@ export default function NewMemorialPage() {
     deathDate: "",
     epitaph: "",
     isPublic: true,
+    graveStyleKey: "classic",
   });
 
-  const [plan, setPlan] = useState(PLAN.FREE);
-  const [graveStyle, setGraveStyle] = useState("classic");
   const [imageUrl, setImageUrl] = useState(null);
-
   const [galleryImages, setGalleryImages] = useState([]);
   const [videoUrls, setVideoUrls] = useState(["", "", ""]);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  /* =========================
-     LIMITS (SAFE)
-     ========================= */
+  // Load account info (plan, limits, verified)
+  useEffect(() => {
+    async function load() {
+      try {
+        const data = await getMe();
+        setMe(data);
+      } catch {
+        setMe(null);
+      } finally {
+        setLoadingMe(false);
+      }
+    }
+    load();
+  }, []);
 
-  const limits = PLAN_LIMITS[plan] || PLAN_LIMITS.FREE;
-  const epitaphLimit = limits.maxEpitaph;
-  const galleryLimit = limits.maxGalleryImages;
-  const videoLimit = limits.maxVideos;
+  const limits = me?.limits;
+  const plan = me?.plan;
 
-  /* =========================
-     HELPERS
-     ========================= */
+  const epitaphWords = useMemo(() => countWords(form.epitaph), [form.epitaph]);
+  const epitaphLimit = limits?.maxEpitaphWords ?? 100;
+  const maxImagesTotal = limits?.maxImagesPerMemorial ?? 1;
+  const maxVideos = limits?.maxVideosPerMemorial ?? 0;
 
-  function canUseStyle(tier) {
-    if (tier === "DEFAULT") return true;
-    if (tier === "MEDIUM") return plan !== PLAN.FREE;
-    if (tier === "PLUS") return plan === PLAN.PLUS;
-    return false;
-  }
-
-  /* =========================
-     HANDLERS
-     ========================= */
+  const coverCount = imageUrl ? 1 : 0;
+  const maxGalleryRemaining = Math.max(maxImagesTotal - coverCount, 0);
 
   function handleChange(e) {
     if (loading) return;
-
     const { name, value, type, checked } = e.target;
 
     if (name === "epitaph") {
-      setForm((prev) => ({
-        ...prev,
-        epitaph: value.slice(0, epitaphLimit),
-      }));
+      // UX: taglio “morbido” per parole (non perfetto al 100%, ma evita sforamenti)
+      setForm((prev) => ({ ...prev, epitaph: value }));
       return;
     }
 
-    setForm((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   }
 
   function handleVideoChange(index, value) {
-    if (videoLimit === 0 || loading) return;
-
+    if (maxVideos === 0 || loading) return;
     const next = [...videoUrls];
     next[index] = value;
     setVideoUrls(next);
   }
-
-  /* =========================
-     SUBMIT
-     ========================= */
 
   async function handleSubmit(e) {
     e.preventDefault();
     if (loading) return;
 
     setError(null);
+
+    if (!me) {
+      setError("Sessione non valida. Effettua di nuovo il login.");
+      return;
+    }
+
+    if (!me.emailVerified) {
+      setError("Devi verificare la tua email prima di creare un memoriale.");
+      return;
+    }
+
+    if (epitaphWords > epitaphLimit) {
+      setError(`Epitaffio troppo lungo: max ${epitaphLimit} parole per il piano ${plan}.`);
+      return;
+    }
+
+    const totalImages = (imageUrl ? 1 : 0) + (galleryImages?.length || 0);
+    if (totalImages > maxImagesTotal) {
+      setError(`Troppe immagini: max ${maxImagesTotal} per memoriale (cover inclusa).`);
+      return;
+    }
+
+    const videosClean = videoUrls.map((v) => v.trim()).filter(Boolean);
+    if (videosClean.length > maxVideos) {
+      setError(`Troppi video: max ${maxVideos} per memoriale.`);
+      return;
+    }
+
     setLoading(true);
 
     try {
       const memorial = await createMemorial({
-        ...form,
+        petName: form.petName,
+        species: form.species,
+        deathDate: form.deathDate,
+        epitaph: form.epitaph,
+        isPublic: form.isPublic,
         imageUrl,
-        plan,
-        graveStyle,
+        graveStyleKey: form.graveStyleKey,
         galleryImages,
-        videoUrls: videoUrls.filter(Boolean),
+        videoUrls: videosClean,
       });
 
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
-      setError(
-        err?.message || "Errore durante la creazione del memoriale."
-      );
+      setError(err?.message || "Errore durante la creazione del memoriale.");
       setLoading(false);
     }
   }
 
-  /* =========================
-     RENDER
-     ========================= */
+  if (loadingMe) {
+    return <p className="dashboard-loading">Caricamento…</p>;
+  }
+
+  if (!me) {
+    return <p className="dashboard-error">Impossibile caricare i dati account. Fai login e riprova.</p>;
+  }
+
+  const planTitle =
+    plan === "FREE" ? "Piano FREE – 0€" :
+    plan === "MEDIUM" ? "Piano MEDIUM – 2,99€ / memoriale" :
+    "Piano PLUS – 5,99€ / memoriale";
+
+  const planText =
+    plan === "FREE"
+      ? "1 memoriale, 1 foto (cover), lapide standard, epitaffio fino a 100 parole."
+      : plan === "MEDIUM"
+      ? "Fino a 3 memoriali, 5 immagini per memoriale (cover inclusa), 6 lapidi, epitaffio fino a 300 parole."
+      : "Fino a 6 memoriali, 10 immagini per memoriale (cover inclusa), 3 video, tutte le lapidi, epitaffio fino a 1000 parole.";
 
   return (
     <div className="create-memorial-container" aria-busy={loading}>
@@ -138,28 +162,20 @@ export default function NewMemorialPage() {
         <title>Crea un memoriale – Virtual Pet Memorial</title>
       </Helmet>
 
-      <h1>Crea un memoriale</h1>
+      <h1>
+        Crea un memoriale
+        <PlanInfoTooltip title={planTitle}>
+          {planText}
+        </PlanInfoTooltip>
+      </h1>
 
-      {/* ===== PIANO ===== */}
-      <section className="plan-selector">
-        <h2>Piano memoriale</h2>
-        <div className="plan-options">
-          {[PLAN.FREE, PLAN.MEDIUM, PLAN.PLUS].map((p) => (
-            <button
-              key={p}
-              type="button"
-              className={plan === p ? "active" : ""}
-              onClick={() => setPlan(p)}
-              disabled={loading}
-            >
-              <strong>{p}</strong>
-            </button>
-          ))}
-        </div>
-      </section>
+      {!me.emailVerified && (
+        <p className="form-error">
+          ⚠️ Email non verificata. Verifica l’email per creare memoriali.
+        </p>
+      )}
 
       <form className="create-memorial-form" onSubmit={handleSubmit}>
-        {/* ===== IMMAGINE PRINCIPALE ===== */}
         <PetImageUpload onUpload={setImageUrl} disabled={loading} />
 
         <div className="form-group">
@@ -206,73 +222,64 @@ export default function NewMemorialPage() {
             disabled={loading}
           />
           <div className="epitaph-meta">
-            {form.epitaph.length} / {epitaphLimit}
+            {epitaphWords} / {epitaphLimit} parole
           </div>
         </div>
 
-        {/* ===== GALLERIA ===== */}
-        <section className={`form-group ${galleryLimit === 0 ? "locked" : ""}`}>
-          <label>Galleria immagini</label>
+        {/* GALLERIA */}
+        <section className={`form-group ${maxGalleryRemaining === 0 ? "locked" : ""}`}>
+          <label>
+            Galleria immagini
+            <PlanInfoTooltip title={planTitle}>
+              Immagini totali per memoriale (cover inclusa): {maxImagesTotal}.
+            </PlanInfoTooltip>
+          </label>
 
-          {galleryLimit === 0 ? (
-            <p className="locked-text">Disponibile con Plus</p>
+          {maxGalleryRemaining === 0 ? (
+            <p className="locked-text">
+              Non puoi aggiungere immagini extra con il tuo piano (cover inclusa nel limite).
+            </p>
           ) : (
             <GalleryImageUpload
-              maxImages={galleryLimit}
+              maxImages={maxGalleryRemaining}
               onChange={setGalleryImages}
               disabled={loading}
             />
           )}
         </section>
 
-        {/* ===== VIDEO ===== */}
-        <section className={`form-group ${videoLimit === 0 ? "locked" : ""}`}>
+        {/* VIDEO */}
+        <section className={`form-group ${maxVideos === 0 ? "locked" : ""}`}>
           <label>Video</label>
 
-          {videoLimit === 0 ? (
+          {maxVideos === 0 ? (
             <p className="locked-text">Disponibile con Plus</p>
           ) : (
-            videoUrls.slice(0, videoLimit).map((url, i) => (
+            videoUrls.slice(0, maxVideos).map((url, i) => (
               <input
                 key={i}
                 type="url"
                 value={url}
                 placeholder="Link video"
-                onChange={(e) =>
-                  handleVideoChange(i, e.target.value)
-                }
+                onChange={(e) => handleVideoChange(i, e.target.value)}
                 disabled={loading}
               />
             ))
           )}
         </section>
 
-        {/* ===== STILE LAPIDE ===== */}
-        <section className="form-group">
-          <label>Stile della lapide</label>
-
-          <div className="grave-grid">
-            {GRAVE_STYLES.map((style) => {
-              const locked = !canUseStyle(style.tier);
-
-              return (
-                <button
-                  key={style.id}
-                  type="button"
-                  className={`grave-card ${
-                    graveStyle === style.id ? "selected" : ""
-                  } ${locked ? "locked" : ""}`}
-                  onClick={() =>
-                    !locked && setGraveStyle(style.id)
-                  }
-                  disabled={locked || loading}
-                >
-                  <span>{style.label}</span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
+        {/* LAPIDE (per ora scegli chiave, poi la renderizzi con cards) */}
+        <div className="form-group">
+          <label>Stile lapide (test)</label>
+          <input
+            name="graveStyleKey"
+            value={form.graveStyleKey}
+            onChange={handleChange}
+            disabled={loading}
+            placeholder="classic / heart / angel ..."
+          />
+          <small>Per ora è un input di test: poi lo trasformiamo in selettore con card.</small>
+        </div>
 
         <div className="form-checkbox">
           <input
@@ -287,7 +294,7 @@ export default function NewMemorialPage() {
 
         {error && <p className="form-error">{error}</p>}
 
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading || !me.emailVerified}>
           {loading ? "Creazione in corso…" : "Crea memoriale"}
         </button>
       </form>

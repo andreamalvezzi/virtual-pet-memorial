@@ -3,6 +3,7 @@ import prisma from "../prisma/client.js";
 import slugify from "slugify";
 import { authenticateToken } from "../middleware/authMiddleware.js";
 import { authenticateTokenOptional } from "../middleware/authOptional.js";
+import { PLAN_LIMITS, normalizePlan, countWords } from "../utils/limits.js";
 
 const router = express.Router();
 
@@ -16,19 +17,40 @@ function generateSlug(petName, deathDate) {
   return `${slugify(petName, { lower: true })}-${year}-${random}`;
 }
 
-const PLAN_LIMITS = {
-  FREE: 100,
-  MEDIUM: 300,
-  PLUS: 1000,
-};
-
+function tierAllowed(userPlan, graveTier) {
+  // GraveTier: FREE | MEDIUM | PLUS
+  if (graveTier === "FREE") return true;
+  if (graveTier === "MEDIUM") return userPlan === "MEDIUM" || userPlan === "PLUS";
+  if (graveTier === "PLUS") return userPlan === "PLUS";
+  return false;
+}
 
 /* ======================================================
    POST /api/memorials
-   Crea memoriale (G2)
+   Crea memoriale
    ====================================================== */
 router.post("/", authenticateToken, async (req, res) => {
   try {
+    if (!req.user.emailVerified) {
+      return res.status(403).json({
+        error: "Devi verificare la tua email prima di creare un memoriale.",
+      });
+    }
+
+    const plan = normalizePlan(req.user.plan);
+    const limits = PLAN_LIMITS[plan];
+
+    // Limite memoriali per account
+    const currentCount = await prisma.memorial.count({
+      where: { userId: req.user.userId },
+    });
+
+    if (currentCount >= limits.maxMemorials) {
+      return res.status(403).json({
+        error: `Hai raggiunto il limite di memoriali del piano ${plan} (${limits.maxMemorials}).`,
+      });
+    }
+
     const {
       petName,
       species,
@@ -37,23 +59,59 @@ router.post("/", authenticateToken, async (req, res) => {
       isPublic = false,
       imageUrl,
 
-      // ===== G2: nuovi campi (opzionali) =====
-      plan,
-      graveStyle,
+      // nuovi (opzionali)
+      graveStyleKey,
       galleryImages,
-      videoUrls
+      videoUrls,
     } = req.body;
 
     if (!petName || !species || !deathDate || !epitaph) {
       return res.status(400).json({ error: "Missing required fields" });
     }
 
-    const effectivePlan = plan || "FREE";
-    const maxEpitaph = PLAN_LIMITS[effectivePlan] ?? 100;
-
-    if (epitaph.length > maxEpitaph) {
+    // Epitaffio: limite in PAROLE
+    const words = countWords(epitaph);
+    if (words > limits.maxEpitaphWords) {
       return res.status(400).json({
-        error: `Epitaffio troppo lungo (max ${maxEpitaph} caratteri per il piano ${effectivePlan})`,
+        error: `Epitaffio troppo lungo (max ${limits.maxEpitaphWords} parole per il piano ${plan}).`,
+      });
+    }
+
+    // Validazione lapide
+    const chosenKey = String(graveStyleKey || "classic");
+    const style = await prisma.graveStyle.findUnique({
+      where: { key: chosenKey },
+    });
+
+    if (!style || !style.isActive) {
+      return res.status(400).json({ error: "Stile lapide non valido" });
+    }
+
+    if (!tierAllowed(plan, style.tier)) {
+      return res.status(403).json({
+        error: `Lo stile lapide selezionato richiede un piano superiore.`,
+      });
+    }
+
+    // Immagini: totale (cover + gallery) <= maxImagesPerMemorial
+    const galleryArr = Array.isArray(galleryImages) ? galleryImages.filter(Boolean) : [];
+    const coverCount = imageUrl ? 1 : 0;
+    const totalImages = coverCount + galleryArr.length;
+
+    if (totalImages > limits.maxImagesPerMemorial) {
+      return res.status(400).json({
+        error: `Troppe immagini: max ${limits.maxImagesPerMemorial} per memoriale nel piano ${plan} (cover inclusa).`,
+      });
+    }
+
+    // Video: solo PLUS
+    const videosArr = Array.isArray(videoUrls) ? videoUrls.filter(Boolean) : [];
+    if (videosArr.length > 0 && limits.maxVideosPerMemorial === 0) {
+      return res.status(403).json({ error: "I video sono disponibili solo con il piano PLUS." });
+    }
+    if (videosArr.length > limits.maxVideosPerMemorial) {
+      return res.status(400).json({
+        error: `Troppi video: max ${limits.maxVideosPerMemorial} per memoriale nel piano ${plan}.`,
       });
     }
 
@@ -69,12 +127,19 @@ router.post("/", authenticateToken, async (req, res) => {
         imageUrl: imageUrl || null,
         slug,
         userId: req.user.userId,
+        graveStyleKey: chosenKey,
 
-        // ===== G2 persist =====
-        ...(plan && { plan }),
-        ...(graveStyle && { graveStyle }),
-        ...(Array.isArray(galleryImages) && { galleryImages }),
-        ...(Array.isArray(videoUrls) && { videoUrls })
+        images: {
+          create: galleryArr.map((url) => ({ imageUrl: String(url) })),
+        },
+        videos: {
+          create: videosArr.map((url) => ({ videoUrl: String(url) })),
+        },
+      },
+      include: {
+        images: true,
+        videos: true,
+        graveStyle: true,
       },
     });
 
@@ -94,6 +159,7 @@ router.get("/my", authenticateToken, async (req, res) => {
     const memorials = await prisma.memorial.findMany({
       where: { userId: req.user.userId },
       orderBy: { createdAt: "desc" },
+      include: { graveStyle: true },
     });
 
     res.json(memorials);
@@ -168,15 +234,11 @@ router.get("/id/:id", authenticateToken, async (req, res) => {
   try {
     const memorial = await prisma.memorial.findUnique({
       where: { id: memorialId },
+      include: { images: true, videos: true, graveStyle: true },
     });
 
-    if (!memorial) {
-      return res.status(404).json({ error: "Memoriale non trovato" });
-    }
-
-    if (memorial.userId !== req.user.userId) {
-      return res.status(403).json({ error: "Accesso negato" });
-    }
+    if (!memorial) return res.status(404).json({ error: "Memoriale non trovato" });
+    if (memorial.userId !== req.user.userId) return res.status(403).json({ error: "Accesso negato" });
 
     res.json(memorial);
   } catch (err) {
@@ -195,19 +257,13 @@ router.get("/:slug", authenticateTokenOptional, async (req, res) => {
 
     const memorial = await prisma.memorial.findUnique({
       where: { slug },
+      include: { images: true, videos: true, graveStyle: true },
     });
 
-    if (!memorial) {
-      return res.status(404).json({ error: "Memoriale non trovato" });
-    }
+    if (!memorial) return res.status(404).json({ error: "Memoriale non trovato" });
 
-    if (memorial.isPublic) {
-      return res.json(memorial);
-    }
-
-    if (req.user && req.user.userId === memorial.userId) {
-      return res.json(memorial);
-    }
+    if (memorial.isPublic) return res.json(memorial);
+    if (req.user && req.user.userId === memorial.userId) return res.json(memorial);
 
     return res.status(404).json({ error: "Memoriale non trovato" });
   } catch (err) {
@@ -218,27 +274,22 @@ router.get("/:slug", authenticateTokenOptional, async (req, res) => {
 
 /* ======================================================
    PATCH /api/memorials/:id
-   Aggiorna memoriale (G2)
+   Aggiorna memoriale
    ====================================================== */
 router.patch("/:id", authenticateToken, async (req, res) => {
   try {
     const memorialId = Number(req.params.id);
-
-    if (isNaN(memorialId)) {
-      return res.status(400).json({ error: "ID non valido" });
-    }
+    if (isNaN(memorialId)) return res.status(400).json({ error: "ID non valido" });
 
     const memorial = await prisma.memorial.findUnique({
       where: { id: memorialId },
     });
 
-    if (!memorial) {
-      return res.status(404).json({ error: "Memoriale non trovato" });
-    }
+    if (!memorial) return res.status(404).json({ error: "Memoriale non trovato" });
+    if (memorial.userId !== req.user.userId) return res.status(403).json({ error: "Accesso negato" });
 
-    if (memorial.userId !== req.user.userId) {
-      return res.status(403).json({ error: "Accesso negato" });
-    }
+    const plan = normalizePlan(req.user.plan);
+    const limits = PLAN_LIMITS[plan];
 
     const {
       petName,
@@ -247,38 +298,29 @@ router.patch("/:id", authenticateToken, async (req, res) => {
       epitaph,
       isPublic,
       imageUrl,
-
-      // G2
-      plan,
-      graveStyle,
-      galleryImages,
-      videoUrls,
+      graveStyleKey,
     } = req.body;
 
-    /* =========================
-       VALIDAZIONE EPITAPH (PIANO)
-       ========================= */
-    const effectivePlan =
-      (typeof plan === "string" && plan) ||
-      memorial.plan ||
-      "FREE";
-
-    const normalizedPlan = effectivePlan.toUpperCase();
-    const maxEpitaph =
-      PLAN_LIMITS[normalizedPlan] ?? PLAN_LIMITS.FREE;
-
-    if (
-      typeof epitaph === "string" &&
-      epitaph.length > maxEpitaph
-    ) {
-      return res.status(400).json({
-        error: `Epitaffio troppo lungo (max ${maxEpitaph} caratteri per il piano ${normalizedPlan})`,
-      });
+    // epitaffio parole
+    if (typeof epitaph === "string") {
+      const words = countWords(epitaph);
+      if (words > limits.maxEpitaphWords) {
+        return res.status(400).json({
+          error: `Epitaffio troppo lungo (max ${limits.maxEpitaphWords} parole per il piano ${plan}).`,
+        });
+      }
     }
 
-    /* =========================
-       UPDATE
-       ========================= */
+    // grave style validate (se viene cambiato)
+    if (graveStyleKey) {
+      const chosenKey = String(graveStyleKey);
+      const style = await prisma.graveStyle.findUnique({ where: { key: chosenKey } });
+      if (!style || !style.isActive) return res.status(400).json({ error: "Stile lapide non valido" });
+      if (!tierAllowed(plan, style.tier)) {
+        return res.status(403).json({ error: "Lo stile lapide selezionato richiede un piano superiore." });
+      }
+    }
+
     const updated = await prisma.memorial.update({
       where: { id: memorialId },
       data: {
@@ -288,11 +330,9 @@ router.patch("/:id", authenticateToken, async (req, res) => {
         isPublic,
         imageUrl,
         ...(deathDate && { deathDate: new Date(deathDate) }),
-        ...(plan && { plan: normalizedPlan }),
-        ...(graveStyle && { graveStyle }),
-        ...(Array.isArray(galleryImages) && { galleryImages }),
-        ...(Array.isArray(videoUrls) && { videoUrls }),
+        ...(graveStyleKey && { graveStyleKey: String(graveStyleKey) }),
       },
+      include: { images: true, videos: true, graveStyle: true },
     });
 
     res.json(updated);
@@ -302,7 +342,6 @@ router.patch("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-
 /* ======================================================
    DELETE /api/memorials/:id
    Elimina memoriale
@@ -310,26 +349,13 @@ router.patch("/:id", authenticateToken, async (req, res) => {
 router.delete("/:id", authenticateToken, async (req, res) => {
   try {
     const memorialId = Number(req.params.id);
+    if (isNaN(memorialId)) return res.status(400).json({ error: "ID non valido" });
 
-    if (isNaN(memorialId)) {
-      return res.status(400).json({ error: "ID non valido" });
-    }
+    const memorial = await prisma.memorial.findUnique({ where: { id: memorialId } });
+    if (!memorial) return res.status(404).json({ error: "Memoriale non trovato" });
+    if (memorial.userId !== req.user.userId) return res.status(403).json({ error: "Accesso negato" });
 
-    const memorial = await prisma.memorial.findUnique({
-      where: { id: memorialId },
-    });
-
-    if (!memorial) {
-      return res.status(404).json({ error: "Memoriale non trovato" });
-    }
-
-    if (memorial.userId !== req.user.userId) {
-      return res.status(403).json({ error: "Accesso negato" });
-    }
-
-    await prisma.memorial.delete({
-      where: { id: memorialId },
-    });
+    await prisma.memorial.delete({ where: { id: memorialId } });
 
     res.json({ message: "Memoriale eliminato con successo" });
   } catch (err) {

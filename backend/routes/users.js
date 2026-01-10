@@ -1,38 +1,34 @@
 import express from "express";
 import prisma from "../prisma/client.js";
-import bcrypt from "bcrypt";
+import { authenticateToken } from "../middleware/authMiddleware.js";
+import { PLAN_LIMITS, PLAN_PRICES, normalizePlan } from "../utils/limits.js";
 
 const router = express.Router();
 
-// POST /api/users
-router.post("/", async (req, res) => {
-  const { email, password } = req.body;
-
-  if (!email || !password) {
-    return res.status(400).json({ error: "Email e password obbligatorie" });
-  }
-
+// GET /api/users/me
+router.get("/me", authenticateToken, async (req, res) => {
   try {
-    // 🔐 Hash della password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const plan = normalizePlan(req.user.plan);
+    const limits = PLAN_LIMITS[plan];
+    const price = PLAN_PRICES[plan];
 
-    const user = await prisma.user.create({
-      data: {
-        email,
-        password: hashedPassword,
-      },
+    const memorialCount = await prisma.memorial.count({
+      where: { userId: req.user.userId },
     });
 
-    // ❌ non rimandiamo la password (neanche hash)
-    const { password: _, ...userSafe } = user;
-
-    res.status(201).json(userSafe);
-  } catch (error) {
-    if (error.code === "P2002") {
-      return res.status(409).json({ error: "Email già registrata" });
-    }
-
-    console.error(error);
+    res.json({
+      id: req.user.userId,
+      email: req.user.email,
+      plan,
+      emailVerified: req.user.emailVerified,
+      price,
+      limits,
+      usage: {
+        memorialsUsed: memorialCount,
+      },
+    });
+  } catch (err) {
+    console.error("ME ERROR:", err);
     res.status(500).json({ error: "Errore server" });
   }
 });
