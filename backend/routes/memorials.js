@@ -16,6 +16,13 @@ function generateSlug(petName, deathDate) {
   return `${slugify(petName, { lower: true })}-${year}-${random}`;
 }
 
+const PLAN_LIMITS = {
+  FREE: 100,
+  MEDIUM: 300,
+  PLUS: 1000,
+};
+
+
 /* ======================================================
    POST /api/memorials
    Crea memoriale (G2)
@@ -39,6 +46,15 @@ router.post("/", authenticateToken, async (req, res) => {
 
     if (!petName || !species || !deathDate || !epitaph) {
       return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    const effectivePlan = plan || "FREE";
+    const maxEpitaph = PLAN_LIMITS[effectivePlan] ?? 100;
+
+    if (epitaph.length > maxEpitaph) {
+      return res.status(400).json({
+        error: `Epitaffio troppo lungo (max ${maxEpitaph} caratteri per il piano ${effectivePlan})`,
+      });
     }
 
     const slug = generateSlug(petName, deathDate);
@@ -236,9 +252,33 @@ router.patch("/:id", authenticateToken, async (req, res) => {
       plan,
       graveStyle,
       galleryImages,
-      videoUrls
+      videoUrls,
     } = req.body;
 
+    /* =========================
+       VALIDAZIONE EPITAPH (PIANO)
+       ========================= */
+    const effectivePlan =
+      (typeof plan === "string" && plan) ||
+      memorial.plan ||
+      "FREE";
+
+    const normalizedPlan = effectivePlan.toUpperCase();
+    const maxEpitaph =
+      PLAN_LIMITS[normalizedPlan] ?? PLAN_LIMITS.FREE;
+
+    if (
+      typeof epitaph === "string" &&
+      epitaph.length > maxEpitaph
+    ) {
+      return res.status(400).json({
+        error: `Epitaffio troppo lungo (max ${maxEpitaph} caratteri per il piano ${normalizedPlan})`,
+      });
+    }
+
+    /* =========================
+       UPDATE
+       ========================= */
     const updated = await prisma.memorial.update({
       where: { id: memorialId },
       data: {
@@ -248,7 +288,7 @@ router.patch("/:id", authenticateToken, async (req, res) => {
         isPublic,
         imageUrl,
         ...(deathDate && { deathDate: new Date(deathDate) }),
-        ...(plan && { plan }),
+        ...(plan && { plan: normalizedPlan }),
         ...(graveStyle && { graveStyle }),
         ...(Array.isArray(galleryImages) && { galleryImages }),
         ...(Array.isArray(videoUrls) && { videoUrls }),
@@ -261,6 +301,7 @@ router.patch("/:id", authenticateToken, async (req, res) => {
     res.status(500).json({ error: "Errore aggiornamento memoriale" });
   }
 });
+
 
 /* ======================================================
    DELETE /api/memorials/:id

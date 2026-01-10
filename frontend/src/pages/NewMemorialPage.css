@@ -7,14 +7,21 @@
   margin: 3rem auto;
   padding: 3rem 2.5rem;
   background: #faf8f6;
-  border-radius: 20px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
+  border-radius: 22px;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.16);
   text-align: center;
 }
 
 .create-memorial-container h1 {
-  margin-bottom: 2.5rem;
+  margin-bottom: 0.6rem;
   color: #1f2937;
+}
+
+/* sottotitolo empatico */
+.create-subtitle {
+  margin-bottom: 2.4rem;
+  font-size: 0.95rem;
+  color: #7a746c;
 }
 
 /* ======================================================
@@ -24,25 +31,8 @@
 .create-memorial-form {
   display: flex;
   flex-direction: column;
-  gap: 1.8rem;
+  gap: 1.9rem;
 }
-
-/* =========================
-   EPITAPH TEXTAREA FIX
-   ========================= */
-
-.create-memorial-form textarea {
-  width: 100%;
-  min-height: 120px;
-  resize: vertical;
-
-  white-space: pre-wrap;   /* 🔥 va a capo */
-  word-break: break-word;  /* 🔥 spezza parole lunghe */
-  overflow-wrap: break-word;
-
-  line-height: 1.5;
-}
-
 
 /* ======================================================
    FORM GROUP
@@ -52,7 +42,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.4rem;
+  gap: 0.45rem;
   width: 100%;
 }
 
@@ -62,30 +52,30 @@
 
 .form-group label {
   font-size: 0.85rem;
-  color: #6b6b6b;
+  color: #6f6b66;
 }
 
 /* ======================================================
-   INPUT & TEXTAREA
+   INPUT & TEXTAREA (UNIFICATO, PULITO)
    ====================================================== */
 
 .create-memorial-form input,
 .create-memorial-form textarea {
   width: 100%;
   padding: 0.75rem 0.9rem;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #d6d3cf;
   background-color: #ffffff;
   color: #1f2937;
   font-size: 0.95rem;
-  line-height: 1.4;
+  line-height: 1.5;
 }
 
 /* PLACEHOLDER */
 
 .create-memorial-form input::placeholder,
 .create-memorial-form textarea::placeholder {
-  color: #9ca3af;
+  color: #9a948c;
 }
 
 /* FOCUS */
@@ -93,15 +83,23 @@
 .create-memorial-form input:focus,
 .create-memorial-form textarea:focus {
   outline: none;
-  border-color: #8b857e;
-  box-shadow: 0 0 0 3px rgba(139, 133, 126, 0.25);
+  border-color: #bfae9f;
+  box-shadow: 0 0 0 3px rgba(191, 174, 159, 0.25);
 }
 
-/* TEXTAREA */
+/* ======================================================
+   EPITAPH TEXTAREA (CORRETTO E DEFINITIVO)
+   ====================================================== */
 
 .create-memorial-form textarea {
-  min-height: 110px;
+  min-height: 130px;
   resize: vertical;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  line-height: 1.6;
 }
 
 /* ======================================================
@@ -111,7 +109,7 @@
 .epitaph-meta {
   align-self: flex-end;
   font-size: 0.8rem;
-  color: #6b7280;
+  color: #8a857e;
 }
 
 /* ======================================================
@@ -143,19 +141,20 @@
 }
 
 /* ======================================================
-   CTA BUTTON
+   CTA BUTTON (PIÙ “RITUALE”)
    ====================================================== */
 
 .create-memorial-form button[type="submit"] {
-  margin-top: 1.8rem;
+  margin-top: 2.2rem;
   align-self: center;
-  padding: 0.7rem 1.6rem;
+  padding: 0.75rem 1.8rem;
   border-radius: 999px;
   border: none;
   background: #1f2937;
   color: #ffffff;
   font-size: 0.95rem;
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
 }
 
 .create-memorial-form button:disabled {
@@ -164,20 +163,20 @@
 }
 
 /* ======================================================
-   PLAN SELECTOR
+   PLAN SELECTOR (PIÙ CALDO)
    ====================================================== */
 
 .plan-selector {
-  margin: 2rem 0;
-  padding: 1.2rem;
-  border-radius: 12px;
-  border: 1px solid #e5e5e5;
+  margin: 2.4rem 0;
+  padding: 1.4rem;
+  border-radius: 16px;
+  border: 1px solid #e3ddd6;
   background: #fdfcfb;
 }
 
 .plan-selector h2 {
   font-size: 1rem;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.9rem;
   color: #1f2937;
 }
 
@@ -190,49 +189,39 @@
 .plan-options button {
   background: #fafafa;
   border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 0.75rem;
+  border-radius: 14px;
+  padding: 0.85rem;
   cursor: pointer;
   text-align: center;
-  transition: background 0.2s, border-color 0.2s;
-  color: #1f2937;          /* 🔥 TESTO SCURO */
-  font-weight: 600;        /* 🔥 PIÙ LEGGIBILE */
-}
-
-.plan-options button strong {
-  color: #111827;          /* 🔥 ANCORA PIÙ SCURO */
-  font-size: 1rem;
-}
-
-.plan-options button span {
-  color: #4b5563;          /* descrizione leggibile */
-  font-size: 0.85rem;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  color: #1f2937;
+  font-weight: 600;
 }
 
 .plan-options button.active {
-  border-color: #111827;
-  background: #e5e7eb;
+  border-color: #bfae9f;
+  background: #f1ece6;
+  transform: translateY(-1px);
 }
 
 .plan-options button:hover:not(.active) {
-  background: #f3f4f6;
+  background: #f3f0eb;
 }
 
 /* ======================================================
-   LOCKED STATE (GLOBAL)
+   LOCKED STATE
    ====================================================== */
 
 .form-group.locked {
-  opacity: 0.6;
+  opacity: 0.55;
   pointer-events: none;
-  position: relative;
 }
 
 .locked-text {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: #8a857e;
   font-style: italic;
-  margin-top: 0.25rem;
+  margin-top: 0.3rem;
 }
 
 /* ======================================================
@@ -250,7 +239,7 @@
   width: 100%;
   height: 90px;
   object-fit: cover;
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 /* ======================================================
@@ -260,13 +249,13 @@
 .grave-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.8rem;
+  gap: 0.9rem;
   width: 100%;
 }
 
 .grave-card {
-  padding: 0.9rem;
-  border-radius: 12px;
+  padding: 1rem;
+  border-radius: 14px;
   border: 1px solid #d6d3cf;
   background: #ffffff;
   cursor: pointer;
@@ -276,11 +265,11 @@
 
 .grave-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
 }
 
 .grave-card.selected {
-  border-color: #1f2937;
+  border-color: #bfae9f;
 }
 
 /* LOCKED GRAVE */

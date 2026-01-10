@@ -5,6 +5,7 @@ import {
   getMemorialById,
 } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
+import { PLAN_LIMITS } from "../config/plans";
 import "./NewMemorialPage.css"; // riuso stile form
 
 /* ======================================================
@@ -21,6 +22,7 @@ export default function EditMemorialPage() {
     deathDate: "",
     epitaph: "",
     isPublic: false,
+    plan: "FREE",
   });
 
   const [imageUrl, setImageUrl] = useState(null);
@@ -36,15 +38,7 @@ export default function EditMemorialPage() {
   useEffect(() => {
     async function load() {
       try {
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          setError("Devi essere autenticato per modificare un memoriale");
-          setLoading(false);
-          return;
-        }
-
-    const memorial = await getMemorialById(id, token);
+        const memorial = await getMemorialById(id);
 
         setForm({
           petName: memorial.petName || "",
@@ -54,6 +48,7 @@ export default function EditMemorialPage() {
             : "",
           epitaph: memorial.epitaph || "",
           isPublic: memorial.isPublic,
+          plan: memorial.plan || "FREE",
         });
 
         setImageUrl(memorial.imageUrl || null);
@@ -68,6 +63,12 @@ export default function EditMemorialPage() {
   }, [id]);
 
   /* =========================
+     PLAN LIMITS
+     ========================= */
+  const epitaphLimit =
+    PLAN_LIMITS[form.plan]?.maxEpitaph ?? 100;
+
+  /* =========================
      DIRTY STATE WARNING
      ========================= */
   useEffect(() => {
@@ -77,10 +78,7 @@ export default function EditMemorialPage() {
       e.returnValue = "";
     }
 
-    window.addEventListener(
-      "beforeunload",
-      handleBeforeUnload
-    );
+    window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
       window.removeEventListener(
         "beforeunload",
@@ -92,10 +90,18 @@ export default function EditMemorialPage() {
      HANDLERS
      ========================= */
   function handleChange(e) {
-    if (saving) return; // 🔒 blocca modifiche mentre salva
+    if (saving) return;
 
     const { name, value, type, checked } = e.target;
     setDirty(true);
+
+    if (name === "epitaph") {
+      setForm((prev) => ({
+        ...prev,
+        epitaph: value.slice(0, epitaphLimit),
+      }));
+      return;
+    }
 
     setForm((prev) => ({
       ...prev,
@@ -105,8 +111,7 @@ export default function EditMemorialPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    if (saving) return; // 🔒 guard doppio submit
+    if (saving) return;
 
     setSaving(true);
     setError(null);
@@ -125,8 +130,7 @@ export default function EditMemorialPage() {
       }, 1200);
     } catch (err) {
       setError(
-        err.message ||
-          "Errore durante il salvataggio"
+        err.message || "Errore durante il salvataggio"
       );
       setSaving(false);
     }
@@ -207,6 +211,9 @@ export default function EditMemorialPage() {
             required
             disabled={saving}
           />
+          <div className="epitaph-meta">
+            {form.epitaph.length} / {epitaphLimit}
+          </div>
         </div>
 
         <div className="form-checkbox">
