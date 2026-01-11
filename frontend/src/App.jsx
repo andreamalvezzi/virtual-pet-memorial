@@ -21,6 +21,9 @@ import SearchPage from "./pages/SearchPage";
 
 import NotFoundPage from "./pages/NotFoundPage";
 
+import VerifyEmailPage from "./pages/VerifyEmailPage";
+
+import VerifiedRoute from "./components/VerifiedRoute";
 
 function App() {
   const SITE_URL =
@@ -120,24 +123,25 @@ function App() {
             <Route
               path="/dashboard/memorials/new"
               element={
-                <PrivateRoute>
+                <VerifiedRoute>
                   <NewMemorialPage />
-                </PrivateRoute>
+                </VerifiedRoute>
               }
             />
 
             <Route
               path="/dashboard/memorials/:id/edit"
               element={
-                <PrivateRoute>
+                <VerifiedRoute>
                   <EditMemorialPage />
-                </PrivateRoute>
+                </VerifiedRoute>
               }
             />
 
             {/* AUTH */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
+            <Route path="/verify-email" element={<VerifyEmailPage />} />
 
             {/* SEARCH */}
             <Route path="/search" element={<SearchPage />} />

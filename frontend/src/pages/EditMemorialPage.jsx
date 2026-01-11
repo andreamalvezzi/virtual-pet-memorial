@@ -1,12 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  updateMemorial,
-  getMemorialById,
-} from "../api/memorials";
+import { updateMemorial, getMemorialById } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
-import { PLAN_LIMITS } from "../config/plans";
-import "./NewMemorialPage.css"; // riuso stile form
+import "./NewMemorialPage.css";
 
 /* ======================================================
    EDIT MEMORIAL PAGE
@@ -22,10 +18,12 @@ export default function EditMemorialPage() {
     deathDate: "",
     epitaph: "",
     isPublic: false,
-    plan: "FREE",
   });
 
   const [imageUrl, setImageUrl] = useState(null);
+
+  const [epitaphLimit, setEpitaphLimit] = useState(100);
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
@@ -33,7 +31,7 @@ export default function EditMemorialPage() {
   const [dirty, setDirty] = useState(false);
 
   /* =========================
-     LOAD MEMORIAL (BY ID)
+     LOAD MEMORIAL
      ========================= */
   useEffect(() => {
     async function load() {
@@ -47,12 +45,14 @@ export default function EditMemorialPage() {
             ? memorial.deathDate.slice(0, 10)
             : "",
           epitaph: memorial.epitaph || "",
-          isPublic: memorial.isPublic,
-          plan: memorial.plan || "FREE",
+          isPublic: memorial.isPublic ?? false,
         });
 
         setImageUrl(memorial.imageUrl || null);
-      } catch (err) {
+
+        // limite epitaffio → dal backend (fallback safe)
+        setEpitaphLimit(memorial._limits?.maxEpitaphChars ?? 100);
+      } catch {
         setError("Errore nel caricamento del memoriale");
       } finally {
         setLoading(false);
@@ -63,13 +63,7 @@ export default function EditMemorialPage() {
   }, [id]);
 
   /* =========================
-     PLAN LIMITS
-     ========================= */
-  const epitaphLimit =
-    PLAN_LIMITS[form.plan]?.maxEpitaph ?? 100;
-
-  /* =========================
-     DIRTY STATE WARNING
+     DIRTY WARNING
      ========================= */
   useEffect(() => {
     function handleBeforeUnload(e) {
@@ -80,10 +74,7 @@ export default function EditMemorialPage() {
 
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () =>
-      window.removeEventListener(
-        "beforeunload",
-        handleBeforeUnload
-      );
+      window.removeEventListener("beforeunload", handleBeforeUnload);
   }, [dirty]);
 
   /* =========================
@@ -126,12 +117,10 @@ export default function EditMemorialPage() {
       setDirty(false);
 
       setTimeout(() => {
-        navigate("/dashboard");
-      }, 1200);
+        navigate("/memorials");
+      }, 1000);
     } catch (err) {
-      setError(
-        err.message || "Errore durante il salvataggio"
-      );
+      setError(err?.message || "Errore durante il salvataggio");
       setSaving(false);
     }
   }
@@ -140,11 +129,7 @@ export default function EditMemorialPage() {
      STATES
      ========================= */
   if (loading) {
-    return (
-      <p className="form-loading">
-        Caricamento memoriale…
-      </p>
-    );
+    return <p className="form-loading">Caricamento memoriale…</p>;
   }
 
   if (error) {
@@ -158,10 +143,7 @@ export default function EditMemorialPage() {
     <div className="create-memorial-container">
       <h1>Modifica memoriale</h1>
 
-      <form
-        className="create-memorial-form"
-        onSubmit={handleSubmit}
-      >
+      <form className="create-memorial-form" onSubmit={handleSubmit}>
         {/* IMMAGINE */}
         <PetImageUpload
           onUpload={setImageUrl}
@@ -212,7 +194,7 @@ export default function EditMemorialPage() {
             disabled={saving}
           />
           <div className="epitaph-meta">
-            {form.epitaph.length} / {epitaphLimit}
+            {form.epitaph.length} / {epitaphLimit} caratteri
           </div>
         </div>
 
@@ -238,9 +220,7 @@ export default function EditMemorialPage() {
           disabled={saving}
           className={saving ? "loading" : ""}
         >
-          {saving
-            ? "Salvataggio in corso… ⏳"
-            : "Salva modifiche"}
+          {saving ? "Salvataggio in corso…" : "Salva modifiche"}
         </button>
       </form>
     </div>

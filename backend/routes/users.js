@@ -8,19 +8,28 @@ const router = express.Router();
 // GET /api/users/me
 router.get("/me", authenticateToken, async (req, res) => {
   try {
-    const plan = normalizePlan(req.user.plan);
+    // 🔑 carica SEMPRE l'utente dal DB
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.userId },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: "Utente non trovato" });
+    }
+
+    const plan = normalizePlan(user.plan);
     const limits = PLAN_LIMITS[plan];
     const price = PLAN_PRICES[plan];
 
     const memorialCount = await prisma.memorial.count({
-      where: { userId: req.user.userId },
+      where: { userId: user.id },
     });
 
     res.json({
-      id: req.user.userId,
-      email: req.user.email,
+      id: user.id,
+      email: user.email,
       plan,
-      emailVerified: req.user.emailVerified,
+      emailVerified: user.emailVerified,
       price,
       limits,
       usage: {

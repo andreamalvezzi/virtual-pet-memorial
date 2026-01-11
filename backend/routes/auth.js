@@ -22,13 +22,17 @@ router.post("/login", async (req, res) => {
     where: { email: String(email).trim().toLowerCase() },
   });
 
-  if (!user) return res.status(401).json({ error: "Credenziali non valide" });
+  if (!user) {
+    return res.status(401).json({ error: "Credenziali non valide" });
+  }
 
   const passwordOk = await bcrypt.compare(password, user.password);
-  if (!passwordOk) return res.status(401).json({ error: "Credenziali non valide" });
+  if (!passwordOk) {
+    return res.status(401).json({ error: "Credenziali non valide" });
+  }
 
   const token = jwt.sign(
-    { userId: user.id, role: user.role },
+    { userId: user.id },
     process.env.JWT_SECRET,
     { expiresIn: "1h" }
   );
@@ -40,7 +44,6 @@ router.post("/login", async (req, res) => {
       email: user.email,
       plan: user.plan,
       emailVerified: user.emailVerified,
-      role: user.role,
     },
   });
 });
@@ -63,7 +66,9 @@ router.post("/register", async (req, res) => {
     }
 
     if (String(password).length < 6) {
-      return res.status(400).json({ error: "La password deve avere almeno 6 caratteri" });
+      return res
+        .status(400)
+        .json({ error: "La password deve avere almeno 6 caratteri" });
     }
 
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -73,15 +78,13 @@ router.post("/register", async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // token verify (dev ora, email provider poi)
     const verifyToken = crypto.randomBytes(24).toString("hex");
-    const verifyExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24h
+    const verifyExpiry = new Date(Date.now() + 1000 * 60 * 60 * 24);
 
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
-        role: "USER",
         plan: "FREE",
         emailVerified: false,
         emailVerifyToken: verifyToken,
@@ -89,16 +92,16 @@ router.post("/register", async (req, res) => {
       },
     });
 
-    // URL di verifica (per ora lo restituiamo in risposta, poi lo invieremo via email)
-    const baseUrl = process.env.FRONTEND_BASE_URL || "http://localhost:5173";
-    const verifyUrl = `${baseUrl}/verify-email?token=${verifyToken}`;
+    const baseUrl =
+      process.env.FRONTEND_BASE_URL || "http://localhost:5173";
+    const verifyUrl = `${baseUrl}/#/verify-email?token=${verifyToken}`;
 
     res.status(201).json({
       id: user.id,
       email: user.email,
       emailVerified: user.emailVerified,
       plan: user.plan,
-      verifyUrl, // DEV: in futuro verrà inviato via mail
+      verifyUrl,
     });
   } catch (err) {
     console.error("REGISTER ERROR:", err);
@@ -112,7 +115,11 @@ router.post("/register", async (req, res) => {
 router.get("/verify", async (req, res) => {
   try {
     const token = String(req.query.token || "");
-    if (!token) return res.status(400).json({ error: "Token mancante" });
+    console.log("🔍 VERIFY TOKEN RECEIVED:", token);
+
+    if (!token) {
+      return res.status(400).json({ error: "Token mancante" });
+    }
 
     const user = await prisma.user.findFirst({
       where: {
@@ -121,7 +128,11 @@ router.get("/verify", async (req, res) => {
       },
     });
 
-    if (!user) return res.status(400).json({ error: "Token non valido o scaduto" });
+    console.log("🔍 VERIFY USER FOUND:", user);
+
+    if (!user) {
+      return res.status(400).json({ error: "Token non valido o scaduto" });
+    }
 
     await prisma.user.update({
       where: { id: user.id },
@@ -132,11 +143,14 @@ router.get("/verify", async (req, res) => {
       },
     });
 
+    console.log("✅ EMAIL VERIFIED FOR USER ID:", user.id);
+
     res.json({ message: "Email verificata con successo" });
   } catch (err) {
     console.error("VERIFY ERROR:", err);
     res.status(500).json({ error: "Errore interno del server" });
   }
 });
+
 
 export default router;

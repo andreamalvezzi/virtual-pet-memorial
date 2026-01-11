@@ -1,3 +1,5 @@
+// backend/utils/limits.js
+
 export const PLAN = {
   FREE: "FREE",
   MEDIUM: "MEDIUM",
@@ -13,37 +15,48 @@ export const PLAN_PRICES = {
 export const PLAN_LIMITS = {
   FREE: {
     maxMemorials: 1,
-    maxImagesPerMemorial: 1, // totale immagini (cover inclusa)
-    maxVideosPerMemorial: 0,
-    maxEpitaphWords: 100,
+
+    // immagini
+    maxGalleryImages: 0, // ❌ NO gallery
+    maxVideos: 0,
+
+    // epitaffio (CARATTERI, per ora)
+    maxEpitaphChars: 100,
+
     allowedGraveTier: PLAN.FREE,
   },
+
   MEDIUM: {
     maxMemorials: 3,
-    maxImagesPerMemorial: 5,
-    maxVideosPerMemorial: 0,
-    maxEpitaphWords: 300,
+
+    maxGalleryImages: 5,
+    maxVideos: 0,
+
+    maxEpitaphChars: 300,
+
     allowedGraveTier: PLAN.MEDIUM,
   },
+
   PLUS: {
     maxMemorials: 6,
-    maxImagesPerMemorial: 10,
-    maxVideosPerMemorial: 3,
-    maxEpitaphWords: 1000,
+
+    maxGalleryImages: 10,
+    maxVideos: 3,
+
+    maxEpitaphChars: 1000,
+
     allowedGraveTier: PLAN.PLUS,
   },
 };
 
 export function normalizePlan(plan) {
-  const p = String(plan || "FREE").toUpperCase();
-  if (p === "MEDIUM" || p === "PLUS") return p;
-  return "FREE";
+  const p = String(plan || PLAN.FREE).toUpperCase();
+  return PLAN_LIMITS[p] ? p : PLAN.FREE;
 }
 
-export function countWords(text) {
-  if (!text) return 0;
-  return String(text)
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean).length;
+export function clampText(text, maxChars) {
+  if (!text) return "";
+  return String(text).length > maxChars
+    ? String(text).slice(0, maxChars)
+    : String(text);
 }

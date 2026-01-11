@@ -13,24 +13,31 @@ export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
+      // ✅ LOGIN → otteniamo SOLO il token
       const data = await loginApi(email, password);
-      login(data.token, data.user);
-    } catch {
-      setError("Credenziali non valide");
-    } finally {
+
+      // ✅ salviamo SOLO il token
+      login(data.token);
+      } catch (err) {
+        if (err.response?.status === 403) {
+          setError("Devi verificare l’email prima di accedere");
+        } else {
+          setError("Credenziali non valide");
+        }
+      } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard/memorials/new");
+      navigate("/dashboard", { replace: true});
     }
   }, [isAuthenticated, navigate]);
 
@@ -42,9 +49,7 @@ export default function LoginPage() {
         Accedi per gestire i memoriali dei tuoi pet
       </p>
 
-      {error && (
-        <p className="auth-error">{error}</p>
-      )}
+      {error && <p className="auth-error">{error}</p>}
 
       <form className="auth-form" onSubmit={handleSubmit}>
         <input

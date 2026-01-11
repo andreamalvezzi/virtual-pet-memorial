@@ -8,11 +8,6 @@ import GalleryImageUpload from "../components/GalleryImageUpload";
 import PlanInfoTooltip from "../components/PlanInfoTooltip";
 import "./NewMemorialPage.css";
 
-function countWords(text) {
-  if (!text) return 0;
-  return String(text).trim().split(/\s+/).filter(Boolean).length;
-}
-
 export default function NewMemorialPage() {
   const navigate = useNavigate();
 
@@ -35,43 +30,72 @@ export default function NewMemorialPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load account info (plan, limits, verified)
+  /* =========================
+     LOAD ACCOUNT INFO
+     ========================= */
   useEffect(() => {
     async function load() {
+     setLoadingMe(true);
       try {
         const data = await getMe();
         setMe(data);
-      } catch {
-        setMe(null);
-      } finally {
-        setLoadingMe(false);
+     } catch {
+       setMe(null);
+     } finally {
+       setLoadingMe(false);
       }
     }
+
     load();
   }, []);
+
+  useEffect(() => {
+    if (me && me.emailVerified) {
+      // account aggiornato correttamente
+      setError(null);
+    }
+  }, [me]);
+
+
 
   const limits = me?.limits;
   const plan = me?.plan;
 
-  const epitaphWords = useMemo(() => countWords(form.epitaph), [form.epitaph]);
-  const epitaphLimit = limits?.maxEpitaphWords ?? 100;
+  /* =========================
+     EPITAPH (CHAR COUNT)
+     ========================= */
+  const epitaphCount = useMemo(
+    () => form.epitaph.length,
+    [form.epitaph]
+  );
+
+  const epitaphLimit = limits?.maxEpitaphWords ?? 100; // ora = caratteri
+
   const maxImagesTotal = limits?.maxImagesPerMemorial ?? 1;
   const maxVideos = limits?.maxVideosPerMemorial ?? 0;
 
   const coverCount = imageUrl ? 1 : 0;
   const maxGalleryRemaining = Math.max(maxImagesTotal - coverCount, 0);
 
+  /* =========================
+     HANDLERS
+     ========================= */
   function handleChange(e) {
     if (loading) return;
     const { name, value, type, checked } = e.target;
 
     if (name === "epitaph") {
-      // UX: taglio “morbido” per parole (non perfetto al 100%, ma evita sforamenti)
-      setForm((prev) => ({ ...prev, epitaph: value }));
+      setForm((prev) => ({
+        ...prev,
+        epitaph: value.slice(0, epitaphLimit),
+      }));
       return;
     }
 
-    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   }
 
   function handleVideoChange(index, value) {
@@ -97,18 +121,27 @@ export default function NewMemorialPage() {
       return;
     }
 
-    if (epitaphWords > epitaphLimit) {
-      setError(`Epitaffio troppo lungo: max ${epitaphLimit} parole per il piano ${plan}.`);
+    if (epitaphCount > epitaphLimit) {
+      setError(
+        `Epitaffio troppo lungo: max ${epitaphLimit} caratteri per il piano ${plan}.`
+      );
       return;
     }
 
-    const totalImages = (imageUrl ? 1 : 0) + (galleryImages?.length || 0);
+    const totalImages =
+      (imageUrl ? 1 : 0) + (galleryImages?.length || 0);
+
     if (totalImages > maxImagesTotal) {
-      setError(`Troppe immagini: max ${maxImagesTotal} per memoriale (cover inclusa).`);
+      setError(
+        `Troppe immagini: max ${maxImagesTotal} per memoriale (cover inclusa).`
+      );
       return;
     }
 
-    const videosClean = videoUrls.map((v) => v.trim()).filter(Boolean);
+    const videosClean = videoUrls
+      .map((v) => v.trim())
+      .filter(Boolean);
+
     if (videosClean.length > maxVideos) {
       setError(`Troppi video: max ${maxVideos} per memoriale.`);
       return;
@@ -131,31 +164,45 @@ export default function NewMemorialPage() {
 
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
-      setError(err?.message || "Errore durante la creazione del memoriale.");
+      setError(
+        err?.message || "Errore durante la creazione del memoriale."
+      );
       setLoading(false);
     }
   }
 
+  /* =========================
+     STATES
+     ========================= */
   if (loadingMe) {
     return <p className="dashboard-loading">Caricamento…</p>;
   }
 
   if (!me) {
-    return <p className="dashboard-error">Impossibile caricare i dati account. Fai login e riprova.</p>;
+    return (
+      <p className="dashboard-error">
+        Impossibile caricare i dati account. Fai login e riprova.
+      </p>
+    );
   }
 
   const planTitle =
-    plan === "FREE" ? "Piano FREE – 0€" :
-    plan === "MEDIUM" ? "Piano MEDIUM – 2,99€ / memoriale" :
-    "Piano PLUS – 5,99€ / memoriale";
+    plan === "FREE"
+      ? "Piano FREE – 0€"
+      : plan === "MEDIUM"
+      ? "Piano MEDIUM – 2,99€ / memoriale"
+      : "Piano PLUS – 5,99€ / memoriale";
 
   const planText =
     plan === "FREE"
-      ? "1 memoriale, 1 foto (cover), lapide standard, epitaffio fino a 100 parole."
+      ? "1 memoriale, 1 foto (cover), lapide standard, epitaffio fino a 100 caratteri."
       : plan === "MEDIUM"
-      ? "Fino a 3 memoriali, 5 immagini per memoriale (cover inclusa), 6 lapidi, epitaffio fino a 300 parole."
-      : "Fino a 6 memoriali, 10 immagini per memoriale (cover inclusa), 3 video, tutte le lapidi, epitaffio fino a 1000 parole.";
+      ? "Fino a 3 memoriali, 5 immagini per memoriale, 6 lapidi, epitaffio fino a 300 caratteri."
+      : "Fino a 6 memoriali, 10 immagini per memoriale, 3 video, tutte le lapidi, epitaffio fino a 1000 caratteri.";
 
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <div className="create-memorial-container" aria-busy={loading}>
       <Helmet>
@@ -222,22 +269,27 @@ export default function NewMemorialPage() {
             disabled={loading}
           />
           <div className="epitaph-meta">
-            {epitaphWords} / {epitaphLimit} parole
+            {epitaphCount} / {epitaphLimit} caratteri
           </div>
         </div>
 
         {/* GALLERIA */}
-        <section className={`form-group ${maxGalleryRemaining === 0 ? "locked" : ""}`}>
+        <section
+          className={`form-group ${
+            maxGalleryRemaining === 0 ? "locked" : ""
+          }`}
+        >
           <label>
             Galleria immagini
             <PlanInfoTooltip title={planTitle}>
-              Immagini totali per memoriale (cover inclusa): {maxImagesTotal}.
+              Immagini totali per memoriale (cover inclusa):{" "}
+              {maxImagesTotal}.
             </PlanInfoTooltip>
           </label>
 
           {maxGalleryRemaining === 0 ? (
             <p className="locked-text">
-              Non puoi aggiungere immagini extra con il tuo piano (cover inclusa nel limite).
+              Non puoi aggiungere immagini extra con il tuo piano.
             </p>
           ) : (
             <GalleryImageUpload
@@ -249,7 +301,9 @@ export default function NewMemorialPage() {
         </section>
 
         {/* VIDEO */}
-        <section className={`form-group ${maxVideos === 0 ? "locked" : ""}`}>
+        <section
+          className={`form-group ${maxVideos === 0 ? "locked" : ""}`}
+        >
           <label>Video</label>
 
           {maxVideos === 0 ? (
@@ -261,14 +315,16 @@ export default function NewMemorialPage() {
                 type="url"
                 value={url}
                 placeholder="Link video"
-                onChange={(e) => handleVideoChange(i, e.target.value)}
+                onChange={(e) =>
+                  handleVideoChange(i, e.target.value)
+                }
                 disabled={loading}
               />
             ))
           )}
         </section>
 
-        {/* LAPIDE (per ora scegli chiave, poi la renderizzi con cards) */}
+        {/* LAPIDE */}
         <div className="form-group">
           <label>Stile lapide (test)</label>
           <input
@@ -276,9 +332,11 @@ export default function NewMemorialPage() {
             value={form.graveStyleKey}
             onChange={handleChange}
             disabled={loading}
-            placeholder="classic / heart / angel ..."
           />
-          <small>Per ora è un input di test: poi lo trasformiamo in selettore con card.</small>
+          <small>
+            Per ora è un input di test: poi lo trasformiamo in
+            selettore con card.
+          </small>
         </div>
 
         <div className="form-checkbox">
@@ -294,7 +352,10 @@ export default function NewMemorialPage() {
 
         {error && <p className="form-error">{error}</p>}
 
-        <button type="submit" disabled={loading || !me.emailVerified}>
+        <button
+          type="submit"
+          disabled={loading || !me.emailVerified}
+        >
           {loading ? "Creazione in corso…" : "Crea memoriale"}
         </button>
       </form>
