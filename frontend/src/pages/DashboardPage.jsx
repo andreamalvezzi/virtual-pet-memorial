@@ -72,16 +72,42 @@ export default function DashboardPage() {
 
       <header className="dashboard-header">
         <h1>La tua dashboard</h1>
-        <p>Questo è il tuo spazio personale, dove custodire i ricordi dei tuoi pet.</p>
+        <p>Questo è il tuo spazio personale, 
+          <br />
+            un luogo intimo dove preservare e celebrare
+          <br />
+            i ricordi dei tuoi animali, e trasformarli in memoria vivente.
+        </p>
       </header>
 
       {/* BOX PIANO */}
       {me && (
         <div className="dashboard-planbox">
-          <strong>
-            Piano: {plan}
-            <PlanInfoTooltip title={planTitle}>{planText}</PlanInfoTooltip>
+
+        <strong className="dashboard-planline">
+          Piano:
+        <span className="plan-tag active">
+          FREE
+          <PlanInfoTooltip title="Piano FREE – 0€">
+            1 memoriale, 1 foto, lapide standard, epitaffio breve.
+          </PlanInfoTooltip>
+        </span>
+
+          <span className="plan-tag">
+            PLUS
+            <PlanInfoTooltip title="Piano Plus">
+              Più memoriali, più immagini e maggiori possibilità di personalizzazione.
+            </PlanInfoTooltip>
+          </span>
+
+          <span className="plan-tag">
+            PREMIUM
+            <PlanInfoTooltip title="Piano Premium">
+              Tutte le funzionalità disponibili per custodire ogni ricordo senza limiti.
+            </PlanInfoTooltip>
+            </span>
           </strong>
+
           <div>
             Memoriali: {used} / {maxMemorials}
           </div>
@@ -90,8 +116,8 @@ export default function DashboardPage() {
               ⚠️ Email non verificata: non puoi creare memoriali finché non verifichi.
             </div>
           )}
-        </div>
-      )}
+          </div>
+        )}
 
       <div className="dashboard-cta">
         <Link

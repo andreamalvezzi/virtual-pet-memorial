@@ -9,8 +9,11 @@
 }
 
 .dashboard-header p {
-  color: #b6b0a8;
+  color: #7a746c;     /* ⬅ più scuro e caldo */
+  font-size: 1rem;
+  line-height: 1.5;
 }
+
 
 .dashboard-cta {
   margin-bottom: 2.5rem;
@@ -24,11 +27,14 @@
   color: #1f1f1f;
   font-weight: 600;
   text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .dashboard-button:hover {
-  background: #e8e2d9;
+  background: #e6dfd4;  /* ⬅ leggermente più caldo */
+  color: #1a1a1a;       /* ⬅ fissiamo il contrasto */
 }
+
 
 /* EMPTY STATE */
 
@@ -87,3 +93,35 @@
 .dashboard-error {
   text-align: center;
 }
+
+.dashboard-planline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+/* Tag piano base */
+.plan-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color:  #9a948c;          /* ⬅ più contrasto rispetto a prima */
+}
+
+/* Piano attivo (FREE) */
+.plan-tag.active {
+  color:  #9a948c;          /* ⬅ molto più scuro */
+  font-weight: 800;        /* ⬅ stacco immediato */
+  background: rgba(255, 255, 255, 0.06); /* ⬅ alone morbido */
+  padding: 0.15rem 0.45rem;
+  border-radius: 999px;
+}
+
+/* Icona info */
+.plan-tag .planinfo-icon {
+  color: #3b82f6;          /* ⬅ blu più visibile */
+}
+
