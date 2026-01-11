@@ -107,3 +107,30 @@
 .memorial-card:active {
   transform: translateY(-2px);
 }
+
+.memorial-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Icone piano */
+.plan-icon {
+  font-size: 0.9rem;
+  line-height: 1;
+}
+
+/* FREE */
+.plan-icon.free {
+  color: #2ecc71; /* verde */
+}
+
+/* PLUS */
+.plan-icon.plus {
+  color: #f1c40f; /* giallo caldo */
+}
+
+/* PREMIUM */
+.plan-icon.premium {
+  color: #3498db; /* blu diamante */
+}

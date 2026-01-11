@@ -1,6 +1,30 @@
 import { Link } from "react-router-dom";
 import "./MemorialCard.css";
 
+function PlanIcon({ plan }) {
+  if (plan === "PREMIUM") {
+    return (
+      <span className="plan-icon premium" title="Piano Premium">
+        💎
+      </span>
+    );
+  }
+
+  if (plan === "PLUS") {
+    return (
+      <span className="plan-icon plus" title="Piano Plus">
+        😊
+      </span>
+    );
+  }
+
+  return (
+    <span className="plan-icon free" title="Piano Free">
+      ●
+    </span>
+  );
+}
+
 export default function MemorialCard({ memorial }) {
   return (
     <Link
@@ -40,7 +64,10 @@ export default function MemorialCard({ memorial }) {
 
         {/* TESTO */}
         <div className="memorial-card-content">
-          <h3>{memorial.petName}</h3>
+          <h3 className="memorial-title">
+            {memorial.petName}
+            <PlanIcon plan={memorial.plan} />
+          </h3>
 
           <p className="species">
             {memorial.species}

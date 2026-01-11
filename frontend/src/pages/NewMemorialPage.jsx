@@ -164,10 +164,26 @@ export default function NewMemorialPage() {
 
       navigate(`/memorials/${memorial.slug}`);
     } catch (err) {
-      setError(
-        err?.message || "Errore durante la creazione del memoriale."
+  const msg = err?.message || "";
+
+  if (
+    msg.includes("limite") ||
+    msg.includes("FREE") ||
+    msg.includes("memoriali")
+  ) {
+    setError(
+      "⚠️ Il tuo piano FREE consente un solo memoriale.\n\n" +
+      "Se desideri creare altri spazi per ricordare i tuoi animali, " +
+      "i piani Plus e Premium ti permettono di custodire più ricordi " +
+      "e arricchirli nel tempo."
       );
-      setLoading(false);
+    } else {
+      setError(
+        "Errore durante la creazione del memoriale. Riprova più tardi."
+      );
+    }
+
+    setLoading(false);
     }
   }
 
