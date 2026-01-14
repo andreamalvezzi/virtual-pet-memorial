@@ -25,6 +25,9 @@ import VerifyEmailPage from "./pages/VerifyEmailPage";
 
 import VerifiedRoute from "./components/VerifiedRoute";
 
+import PlansPage from "./pages/PlansPage.jsx";
+
+
 function App() {
   const SITE_URL =
     import.meta.env.VITE_SITE_URL ||
@@ -99,6 +102,9 @@ function App() {
           <Routes>
             {/* HOME PUBBLICA */}
             <Route path="/home" element={<HomePage />} />
+
+            {/* PIANI */}
+            <Route path="/piani" element={<PlansPage />} />
 
             {/* REDIRECT ROOT */}
             <Route index element={<Navigate to="/welcome" replace />} />
