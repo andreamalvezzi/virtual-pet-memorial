@@ -115,7 +115,7 @@
 .plan-tag.active {
   color:  #9a948c;          /* ⬅ molto più scuro */
   font-weight: 800;        /* ⬅ stacco immediato */
-  background: rgba(255, 255, 255, 0.06); /* ⬅ alone morbido */
+  background: rgba(255, 255, 255, 0.171); /* ⬅ alone morbido */
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
 }

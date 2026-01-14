@@ -1,20 +1,35 @@
 .navbar {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  gap: 1.2rem;
+  padding: 0.9rem 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   margin-bottom: 2rem;
 }
 
 .navbar-brand {
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #f5f2ee;
 }
 
 /* LINKS */
 
 .navbar a {
   text-decoration: none;
+  color: #d8d2c9;
+  font-size: 0.9rem;
+}
+
+.navbar a:hover {
+  color: #ffffff;
+}
+
+/* LINK SECONDARIO (Piani) */
+
+.navbar-link-secondary {
+  font-size: 0.85rem;
+  color: #bfb8ae;
 }
 
 /* RIGHT SIDE */
@@ -26,11 +41,27 @@
   gap: 1rem;
 }
 
-/* USER */
+/* USER EMAIL */
 
 .navbar-user {
   font-size: 0.85rem;
-  color: #b6b0a8;
+  color: #d1cbc2;   /* ⬅ più leggibile */
+  font-weight: 500;
+}
+
+/* WARNING EMAIL NON VERIFICATA */
+
+.navbar-warning {
+  font-size: 0.8rem;
+  color: #f59e0b; /* ambra caldo */
+  font-weight: 600;
+}
+
+/* CTA REGISTRA */
+
+.navbar-cta {
+  font-weight: 700;
+  color: #ffffff;
 }
 
 /* LOGOUT */
@@ -38,7 +69,7 @@
 .navbar-logout {
   background: none;
   border: none;
-  color: #d16b6b;
+  color: #ef8a8a;
   cursor: pointer;
   font-size: 0.85rem;
 }

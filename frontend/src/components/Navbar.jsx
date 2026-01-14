@@ -14,6 +14,9 @@ export default function Navbar() {
       <Link to="/home" className="navbar-brand">
         Virtual Pet Memorial
       </Link>
+      <Link to="/piani" className="navbar-link-secondary">
+        Piani
+      </Link>
 
       <div className="navbar-links">
         {/* =========================
@@ -77,3 +80,4 @@ export default function Navbar() {
     </nav>
   );
 }
+
