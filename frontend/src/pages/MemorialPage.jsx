@@ -7,20 +7,13 @@ import MemorialSkeleton from "../components/MemorialSkeleton.jsx";
 import "./MemorialPage.css";
 
 /* ======================================================
-   MEMORIAL PAGE — G4
+   MEMORIAL PAGE
    ====================================================== */
 
 export default function MemorialPage() {
   const { slug } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const handleBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-      } else {
-      navigate("/home");
-    }
-  };
 
   const [memorial, setMemorial] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -29,6 +22,17 @@ export default function MemorialPage() {
   const SITE_URL =
     import.meta.env.VITE_SITE_URL ||
     "https://virtual-pet-memorial-frontend.onrender.com";
+
+  /* =========================
+     NAVIGATION
+     ========================= */
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/home");
+    }
+  };
 
   /* =========================
      FETCH
@@ -44,6 +48,23 @@ export default function MemorialPage() {
   }, [slug]);
 
   /* =========================
+     SPECIES → DESCRIZIONE UMANA
+     ========================= */
+  const speciesDescriptionMap = {
+    dog: "Compagno fedele",
+    cat: "Amico silenzioso",
+    bird: "Piccola presenza luminosa",
+    rabbit: "Dolce compagno",
+    fish: "Presenza tranquilla",
+    other: "Compagno di vita",
+  };
+
+  const speciesLabel =
+    memorial?.species &&
+    (speciesDescriptionMap[memorial.species] ||
+      "Compagno di vita");
+
+  /* =========================
      SEO
      ========================= */
   const title = memorial
@@ -52,7 +73,7 @@ export default function MemorialPage() {
 
   const description = memorial?.epitaph
     ? memorial.epitaph.slice(0, 155)
-    : "Memoriale per animali domestici";
+    : "Memoriale dedicato a un animale che ha fatto parte della nostra vita.";
 
   const ogImage = memorial?.imageUrl
     ? memorial.imageUrl.replace(
@@ -64,7 +85,6 @@ export default function MemorialPage() {
   const canonicalUrl = `${SITE_URL}/#/memorials/${slug}`;
 
   const graveStyle = memorial?.graveStyle || "classic";
-
 
   /* =========================
      RENDER
@@ -97,13 +117,15 @@ export default function MemorialPage() {
 
       {!loading && memorial && (
         <>
+          {/* NAV */}
           <nav className="memorial-nav">
             <button onClick={handleBack}>
-              ← Torna indietro
+              ← Torna ai memoriali
             </button>
             {user && <Link to="/dashboard">Dashboard</Link>}
           </nav>
 
+          {/* CONTENUTO */}
           <article
             className={`memorial-container plan-${
               memorial.plan?.toLowerCase() || "free"
@@ -118,23 +140,27 @@ export default function MemorialPage() {
                 )}
                 alt={`Foto di ${memorial.petName}`}
                 className="memorial-image"
+                loading="eager"
               />
             )}
 
+            {/* TITOLO */}
             <h1 className="memorial-title">
               🪦 {memorial.petName}
             </h1>
 
+            {/* META */}
             <p className="memorial-meta">
-              {memorial.species} ·{" "}
+              {speciesLabel} ·{" "}
               {new Date(memorial.deathDate).toLocaleDateString(
                 "it-IT"
               )}
             </p>
 
+            {/* EPITAFFIO */}
             {memorial.epitaph && (
               <blockquote className="memorial-epitaph">
-                “{memorial.epitaph}”
+                {memorial.epitaph}
               </blockquote>
             )}
 
@@ -148,7 +174,7 @@ export default function MemorialPage() {
                       <img
                         key={i}
                         src={url}
-                        alt={`Galleria ${i + 1}`}
+                        alt={`Ricordo ${i + 1}`}
                         loading="lazy"
                       />
                     ))}
@@ -175,6 +201,7 @@ export default function MemorialPage() {
                 </section>
               )}
 
+            {/* FOOTER */}
             <footer className="memorial-footer">
               Un ricordo che resta nel tempo
             </footer>

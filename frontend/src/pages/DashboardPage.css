@@ -12,8 +12,16 @@
   color: #7a746c;     /* ⬅ più scuro e caldo */
   font-size: 1rem;
   line-height: 1.5;
+  max-width: 640px;
+  margin-top: 0.4rem;
 }
 
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #f3f4f6;
+  margin-bottom: 0.6rem;
+}
 
 .dashboard-cta {
   margin-bottom: 2.5rem;
@@ -23,7 +31,7 @@
   display: inline-block;
   padding: 0.7rem 1.4rem;
   border-radius: 999px;
-  background: #f5f2ee;
+  background: #e6dfd4;
   color: #1f1f1f;
   font-weight: 600;
   text-decoration: none;
@@ -31,7 +39,7 @@
 }
 
 .dashboard-button:hover {
-  background: #e6dfd4;  /* ⬅ leggermente più caldo */
+  background: #d8d0c4;  /* ⬅ leggermente più caldo */
   color: #1a1a1a;       /* ⬅ fissiamo il contrasto */
 }
 
@@ -44,6 +52,7 @@
   border: 1px dashed rgba(255, 255, 255, 0.15);
   border-radius: 16px;
   text-align: center;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .dashboard-empty p {
@@ -99,6 +108,9 @@
   flex-wrap: wrap;
   gap: 0.8rem;
   align-items: center;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
 }
 
 /* Tag piano base */
@@ -114,7 +126,7 @@
 /* Piano attivo (FREE) */
 .plan-tag.active {
   color:  #9a948c;          /* ⬅ molto più scuro */
-  font-weight: 800;        /* ⬅ stacco immediato */
+  font-weight: 700;        /* ⬅ stacco immediato */
   background: rgba(255, 255, 255, 0.171); /* ⬅ alone morbido */
   padding: 0.15rem 0.45rem;
   border-radius: 999px;
@@ -123,5 +135,6 @@
 /* Icona info */
 .plan-tag .planinfo-icon {
   color: #3b82f6;          /* ⬅ blu più visibile */
+  opacity: 0.7;
 }
 

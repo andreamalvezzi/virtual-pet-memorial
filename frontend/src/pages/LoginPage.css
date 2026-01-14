@@ -2,7 +2,7 @@
   max-width: 420px;
   margin: 5rem auto;
   padding: 3rem 2.5rem;
-  background: #faf8f6;
+  background: #fdfaf7;
   border-radius: 20px;
   box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18);
   text-align: center;
@@ -10,11 +10,14 @@
 
 .auth-container h1 {
   margin-bottom: 0.5rem;
+  color: #1f2937;      
+  font-weight: 600;
 }
 
 .auth-subtitle {
   margin-bottom: 2rem;
-  color: #6f6b66;
+  color: #4b5563;      /* più contrasto */
+  font-size: 0.95rem;
 }
 
 .auth-form {
@@ -43,6 +46,17 @@
 .auth-footer {
   margin-top: 2rem;
   font-size: 0.9rem;
+  color: #6b7280;
+}
+
+.auth-footer a {
+  color: #374151;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.auth-footer a:hover {
+  text-decoration: underline;
 }
 
 .auth-success {

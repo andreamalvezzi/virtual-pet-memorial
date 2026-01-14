@@ -26,6 +26,18 @@ function PlanIcon({ plan }) {
 }
 
 export default function MemorialCard({ memorial }) {
+  const speciesDescriptionMap = {
+    dog: "Compagno fedele",
+    cat: "Amico silenzioso",
+    bird: "Piccola presenza luminosa",
+    rabbit: "Dolce compagno",
+    fish: "Presenza tranquilla",
+    other: "Compagno di vita",
+  };
+
+  const speciesLabel =
+    speciesDescriptionMap[memorial.species] ?? "Compagno di vita";
+
   return (
     <Link
       to={`/memorials/${memorial.slug}`}
@@ -57,7 +69,7 @@ export default function MemorialCard({ memorial }) {
             />
           ) : (
             <div className="memorial-card-placeholder">
-              Nessuna immagine
+              Un ricordo senza immagine
             </div>
           )}
         </div>
@@ -69,13 +81,11 @@ export default function MemorialCard({ memorial }) {
             <PlanIcon plan={memorial.plan} />
           </h3>
 
-          <p className="species">
-            {memorial.species}
-          </p>
+          <p className="species">{speciesLabel}</p>
 
           <p className="date">
             Creato il{" "}
-            {new Date(memorial.createdAt).toLocaleDateString()}
+            {new Date(memorial.createdAt).toLocaleDateString("it-IT")}
           </p>
         </div>
       </article>

@@ -109,7 +109,7 @@ export default function DashboardPage() {
           </strong>
 
           <div>
-            Memoriali: {used} / {maxMemorials}
+            I tuoi memoriali: {used} / {maxMemorials}
           </div>
           {!me.emailVerified && (
             <div className="dashboard-planwarn">

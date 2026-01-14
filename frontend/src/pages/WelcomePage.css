@@ -102,3 +102,15 @@
   font-size: 1.2rem;
   margin-bottom: 1rem;
 }
+
+/* CTA SECONDARIA – SALTA */
+
+.welcome-actions .button.secondary {
+  opacity: 0.3;
+  font-size: 1rem;
+  background: transparent;
+}
+
+.welcome-actions .button.secondary:hover {
+  opacity: 1;
+}

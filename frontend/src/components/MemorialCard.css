@@ -16,7 +16,7 @@
 .memorial-card {
   background: #faf8f6;
   border-radius: 18px;
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.035);
   overflow: hidden;
   height: 100%;
 
@@ -29,8 +29,8 @@
 /* HOVER */
 
 .memorial-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+  transform: translateY(-2px);
+  box-shadow: 0 15px 34px rgba(0, 0, 0, 0.16);
 }
 
 /* FOCUS (accessibilità tastiera) */
@@ -73,8 +73,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8a8681;
-  font-size: 0.9rem;
+  color: #9a948e;
+  font-size: 0.85rem;
+  font-style: italic;
 }
 
 /* ======================================================
@@ -86,6 +87,7 @@
 }
 
 .memorial-card-content h3 {
+  text-transform: capitalize;
   margin: 0 0 0.4rem;
   font-size: 1.15rem;
   color: #2b2b2b;
@@ -93,15 +95,16 @@
 
 .memorial-card-content .species {
   margin: 0;
+  font-style: italic;
   font-size: 0.9rem;
-  color: #5f5b56;
+  color: #6b6862;
 }
 
 .memorial-card-content .date {
   margin-top: 0.6rem;
   font-size: 0.8rem;
   color: #7d7872;
-  min-height: 96px;
+  min-height: 2.5em;
 }
 
 .memorial-card:active {
@@ -111,7 +114,8 @@
 .memorial-title {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: center;   /* ⬅ centra il blocco */
+  gap: 0.5rem;
 }
 
 /* Icone piano */
