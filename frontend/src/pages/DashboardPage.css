@@ -143,4 +143,30 @@
   cursor: not-allowed;
 }
 
+.account-danger-zone {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.danger-text {
+  font-size: 0.9rem;
+  color: #7a746c;
+  margin-bottom: 0.8rem;
+}
+
+.danger-button {
+  background: transparent;
+  color: #a03a3a;
+  border: 1px solid #e0b4b4;
+  padding: 0.6rem 1.2rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.danger-button:hover {
+  background: #f8eaea;
+}
+
+
 

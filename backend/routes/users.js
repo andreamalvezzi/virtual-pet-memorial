@@ -42,4 +42,30 @@ router.get("/me", authenticateToken, async (req, res) => {
   }
 });
 
+// DELETE /api/users/me
+// Elimina definitivamente account + memoriali (GDPR)
+router.delete("/me", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    await prisma.$transaction([
+      prisma.memorial.deleteMany({
+        where: { userId },
+      }),
+      prisma.user.delete({
+        where: { id: userId },
+      }),
+    ]);
+
+    // GDPR: nessun contenuto restituito
+    return res.status(204).send();
+  } catch (err) {
+    console.error("DELETE ACCOUNT ERROR:", err);
+    return res
+      .status(500)
+      .json({ error: "Errore durante l’eliminazione dell’account" });
+  }
+});
+
+
 export default router;

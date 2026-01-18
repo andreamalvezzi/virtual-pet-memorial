@@ -2,22 +2,27 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { getMyMemorials, deleteMemorial } from "../api/memorials";
-import { getMe } from "../api/users";
+import { getMe, deleteMe } from "../api/users";
 import PlanInfoTooltip from "../components/PlanInfoTooltip";
 import MemorialCard from "../components/MemorialCard";
 import "./DashboardPage.css";
 
 export default function DashboardPage() {
   const [me, setMe] = useState(null);
-
   const [memorials, setMemorials] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  /* =========================
+     LOAD DATA
+     ========================= */
   useEffect(() => {
     async function loadAll() {
       try {
-        const [meData, memData] = await Promise.all([getMe(), getMyMemorials()]);
+        const [meData, memData] = await Promise.all([
+          getMe(),
+          getMyMemorials(),
+        ]);
         setMe(meData);
         setMemorials(memData);
       } catch {
@@ -29,8 +34,13 @@ export default function DashboardPage() {
     loadAll();
   }, []);
 
+  /* =========================
+     DELETE MEMORIAL
+     ========================= */
   async function handleDelete(id) {
-    const confirmed = window.confirm("Sei sicuro di voler eliminare questo memoriale?");
+    const confirmed = window.confirm(
+      "Sei sicuro di voler eliminare questo memoriale?"
+    );
     if (!confirmed) return;
 
     try {
@@ -41,10 +51,36 @@ export default function DashboardPage() {
     }
   }
 
+  /* =========================
+     DELETE ACCOUNT
+     ========================= */
+  async function handleDeleteAccount() {
+    const confirmed = window.confirm(
+      "⚠️ Questa operazione eliminerà definitivamente il tuo account e tutti i memoriali.\n\n" +
+        "Questa azione non può essere annullata.\n\n" +
+        "Vuoi procedere?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await deleteMe();
+      localStorage.removeItem("token");
+      window.location.href = "/#/welcome";
+    } catch (err) {
+      alert(err.message);
+    }
+  }
+
+  /* =========================
+     STATES
+     ========================= */
   if (loading) return <p className="dashboard-loading">Caricamento…</p>;
   if (error) return <p className="dashboard-error">{error}</p>;
-  
 
+  /* =========================
+     RENDER
+     ========================= */
   return (
     <div className="dashboard-container">
       <Helmet>
@@ -57,18 +93,18 @@ export default function DashboardPage() {
 
       <header className="dashboard-header">
         <h1>La tua dashboard</h1>
-        <p>Questo è il tuo spazio personale, 
+        <p>
+          Questo è il tuo spazio personale,
           <br />
-            un luogo intimo dove preservare e celebrare
+          un luogo intimo dove preservare e celebrare
           <br />
-            i ricordi dei tuoi animali, e trasformarli in memoria vivente.
+          i ricordi dei tuoi animali, e trasformarli in memoria vivente.
         </p>
       </header>
 
-            {/* STATO FUNZIONALITÀ */}
+      {/* STATO FUNZIONALITÀ */}
       {me && (
         <div className="dashboard-planbox">
-
           <strong className="dashboard-planline">
             Funzionalità attive:
             <span className="plan-tag active">
@@ -89,22 +125,21 @@ export default function DashboardPage() {
           </strong>
 
           <div>
-            I tuoi memoriali: {memorials.length} / {me?.limits?.maxMemorials ?? 1}
+            I tuoi memoriali: {memorials.length} /{" "}
+            {me?.limits?.maxMemorials ?? 1}
           </div>
 
           {!me.emailVerified && (
             <div className="dashboard-planwarn">
-              ⚠️ Email non verificata: non puoi creare memoriali finché non verifichi.
+              ⚠️ Email non verificata: non puoi creare memoriali finché non
+              verifichi.
             </div>
           )}
         </div>
       )}
 
       <div className="dashboard-cta">
-        <Link
-          to="/dashboard/memorials/new"
-          className="dashboard-button"
-        >
+        <Link to="/dashboard/memorials/new" className="dashboard-button">
           ➕ Crea nuovo memoriale
         </Link>
       </div>
@@ -113,8 +148,9 @@ export default function DashboardPage() {
         <div className="dashboard-empty">
           <h2>🐾 Il tuo spazio è pronto</h2>
           <p>
-            Qui troverai i memoriali dedicati ai tuoi animali. Puoi iniziare creando il primo,
-            aggiungendo una foto e un pensiero che resti nel tempo.
+            Qui troverai i memoriali dedicati ai tuoi animali. Puoi iniziare
+            creando il primo, aggiungendo una foto e un pensiero che resti nel
+            tempo.
           </p>
 
           <Link to="/dashboard/memorials/new" className="dashboard-button">
@@ -146,6 +182,23 @@ export default function DashboardPage() {
           ))}
         </div>
       )}
+
+      {/* DANGER ZONE */}
+      <section className="account-danger-zone">
+        <h3>Impostazioni account</h3>
+
+        <p className="danger-text">
+          Puoi eliminare definitivamente il tuo account e tutti i memoriali
+          associati.
+        </p>
+
+        <button
+          className="danger-button"
+          onClick={handleDeleteAccount}
+        >
+          Elimina account
+        </button>
+      </section>
     </div>
   );
 }
