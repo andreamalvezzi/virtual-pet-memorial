@@ -8,6 +8,18 @@ import GalleryImageUpload from "../components/GalleryImageUpload";
 import PlanInfoTooltip from "../components/PlanInfoTooltip";
 import "./NewMemorialPage.css";
 
+import graveStandard from "../assets/graves/grave-standard.png";
+import graveClassic from "../assets/graves/grave-classic.png";
+import graveModern from "../assets/graves/grave-modern.png";
+import graveNature from "../assets/graves/grave-nature.png";
+import graveCelestial from "../assets/graves/grave-celestial.png";
+import graveNight from "../assets/graves/grave-night.png";
+import graveMonument from "../assets/graves/grave-monument.png";
+import graveFlower from "../assets/graves/grave-flower.png";
+import graveCandle from "../assets/graves/grave-candle.png";
+import graveEternal from "../assets/graves/grave-eternal.png";
+
+
 export default function NewMemorialPage() {
   const navigate = useNavigate();
 
@@ -166,17 +178,12 @@ export default function NewMemorialPage() {
     } catch (err) {
   const msg = err?.message || "";
 
-  if (
-    msg.includes("limite") ||
-    msg.includes("FREE") ||
-    msg.includes("memoriali")
-  ) {
+  if (msg.includes("limite") || msg.includes("memoriali")) {
     setError(
-      "⚠️ Il tuo piano FREE consente un solo memoriale.\n\n" +
-      "Se desideri creare altri spazi per ricordare i tuoi animali, " +
-      "i piani Plus e Premium ti permettono di custodire più ricordi " +
-      "e arricchirli nel tempo."
-      );
+      "⚠️ Al momento è possibile creare un solo memoriale con le funzionalità di base.\n\n" +
+      "Se desideri creare altri spazi o utilizzare funzionalità avanzate, " +
+      "puoi contattarci per maggiori informazioni."
+    );
     } else {
       setError(
         "Errore durante la creazione del memoriale. Riprova più tardi."
@@ -202,20 +209,6 @@ export default function NewMemorialPage() {
     );
   }
 
-  const planTitle =
-    plan === "FREE"
-      ? "Piano FREE – 0€"
-      : plan === "MEDIUM"
-      ? "Piano MEDIUM – 2,99€ / memoriale"
-      : "Piano PLUS – 5,99€ / memoriale";
-
-  const planText =
-    plan === "FREE"
-      ? "1 memoriale, 1 foto (cover), lapide standard, epitaffio fino a 100 caratteri."
-      : plan === "MEDIUM"
-      ? "Fino a 3 memoriali, 5 immagini per memoriale, 6 lapidi, epitaffio fino a 300 caratteri."
-      : "Fino a 6 memoriali, 10 immagini per memoriale, 3 video, tutte le lapidi, epitaffio fino a 1000 caratteri.";
-
   /* =========================
      RENDER
      ========================= */
@@ -227,8 +220,11 @@ export default function NewMemorialPage() {
 
       <h1>
         Crea un memoriale
-        <PlanInfoTooltip title={planTitle}>
-          {planText}
+        <PlanInfoTooltip title="Funzionalità di base">
+          La creazione del memoriale include un’immagine di copertina,
+          lapide standard ed epitaffio breve.
+          <br />
+          Alcune funzionalità avanzate sono attualmente in sviluppo.
         </PlanInfoTooltip>
       </h1>
 
@@ -289,41 +285,35 @@ export default function NewMemorialPage() {
           </div>
         </div>
 
-        {/* GALLERIA */}
-        <section
-          className={`form-group ${
-            maxGalleryRemaining === 0 ? "locked" : ""
-          }`}
-        >
+        {/* GALLERIA IMMAGINI */}
+        <section className="form-group locked">
           <label>
             Galleria immagini
-            <PlanInfoTooltip title={planTitle}>
-              Immagini totali per memoriale (cover inclusa):{" "}
-              {maxImagesTotal}.
+            <PlanInfoTooltip title="Funzionalità avanzata">
+              La galleria immagini è una funzionalità attualmente
+              in fase di sviluppo.
             </PlanInfoTooltip>
-          </label>
+            </label>
 
-          {maxGalleryRemaining === 0 ? (
-            <p className="locked-text">
-              Non puoi aggiungere immagini extra con il tuo piano.
+             <p className="locked-text">
+              Questa funzionalità non è ancora disponibile.
             </p>
-          ) : (
-            <GalleryImageUpload
-              maxImages={maxGalleryRemaining}
-              onChange={setGalleryImages}
-              disabled={loading}
-            />
-          )}
         </section>
 
         {/* VIDEO */}
         <section
           className={`form-group ${maxVideos === 0 ? "locked" : ""}`}
         >
-          <label>Video</label>
+          <label>
+            Video
+            <PlanInfoTooltip title="Funzionalità avanzata">
+              I video commemorativi saranno 
+              disponibili in futuro.              
+            </PlanInfoTooltip>            
+          </label>
 
           {maxVideos === 0 ? (
-            <p className="locked-text">Disponibile con Plus</p>
+            <p className="locked-text">Questa funzionalità non è ancora disponibile.</p>
           ) : (
             videoUrls.slice(0, maxVideos).map((url, i) => (
               <input
@@ -342,19 +332,72 @@ export default function NewMemorialPage() {
 
         {/* LAPIDE */}
         <div className="form-group">
-          <label>Stile lapide (test)</label>
-          <input
-            name="graveStyleKey"
-            value={form.graveStyleKey}
-            onChange={handleChange}
-            disabled={loading}
-          />
-          <small>
-            Per ora è un input di test: poi lo trasformiamo in
-            selettore con card.
-          </small>
+          <label>
+            Stile lapide
+            <PlanInfoTooltip title="Funzionalità di base">
+              Al momento è disponibile la lapide standard.
+              Gli altri stili sono funzionalità avanzate in sviluppo.
+            </PlanInfoTooltip>
+          </label>
+
+          <div className="grave-grid">
+            <div className="grave-card selected">
+              <img src={graveStandard} alt="Lapide standard" />
+              <span>Standard</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveClassic} alt="Lapide classica" />
+              <span>Classica</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveModern} alt="Lapide moderna" />
+              <span>Moderna</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveNature} alt="Lapide naturale" />
+              <span>Naturale</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveCelestial} alt="Lapide celeste" />
+              <span>Celeste</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveNight} alt="Lapide notturna" />
+              <span>Notturna</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveMonument} alt="Lapide monumentale" />
+              <span>Monumentale</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveFlower} alt="Lapide memoriale" />
+              <span>Memoriale</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveCandle} alt="Lapide ricordo" />
+              <span>Ricordo</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveEternal} alt="Lapide eterna" />
+              <span>Eterna</span>
+            </div>
+          </div>
+
+          <p className="locked-text">
+            Gli stili avanzati saranno disponibili in futuro.
+          </p>
         </div>
 
+        {/* VISIBILITÀ */}
         <div className="form-checkbox">
           <input
             type="checkbox"

@@ -43,22 +43,7 @@ export default function DashboardPage() {
 
   if (loading) return <p className="dashboard-loading">Caricamento…</p>;
   if (error) return <p className="dashboard-error">{error}</p>;
-
-  const plan = me?.plan || "FREE";
-  const maxMemorials = me?.limits?.maxMemorials ?? 1;
-  const used = me?.usage?.memorialsUsed ?? memorials.length;
-
-  const planTitle =
-    plan === "FREE" ? "Piano FREE – 0€" :
-    plan === "MEDIUM" ? "Piano MEDIUM – 2,99€ / memoriale" :
-    "Piano PLUS – 5,99€ / memoriale";
-
-  const planText =
-    plan === "FREE"
-      ? "1 memoriale, 1 foto, lapide standard, 100 parole."
-      : plan === "MEDIUM"
-      ? "3 memoriali, 5 immagini, 6 lapidi, 300 parole."
-      : "6 memoriali, 10 immagini, 3 video, tutte le lapidi, 1000 parole.";
+  
 
   return (
     <div className="dashboard-container">
@@ -80,44 +65,40 @@ export default function DashboardPage() {
         </p>
       </header>
 
-      {/* BOX PIANO */}
+            {/* STATO FUNZIONALITÀ */}
       {me && (
         <div className="dashboard-planbox">
 
-        <strong className="dashboard-planline">
-          Piano:
-        <span className="plan-tag active">
-          FREE
-          <PlanInfoTooltip title="Piano FREE – 0€">
-            1 memoriale, 1 foto, lapide standard, epitaffio breve.
-          </PlanInfoTooltip>
-        </span>
+          <strong className="dashboard-planline">
+            Funzionalità attive:
+            <span className="plan-tag active">
+              Base
+              <PlanInfoTooltip title="Funzionalità di base">
+                Creazione memoriale, immagine di copertina,
+                lapide standard ed epitaffio breve.
+              </PlanInfoTooltip>
+            </span>
 
-          <span className="plan-tag">
-            PLUS
-            <PlanInfoTooltip title="Piano Plus">
-              Più memoriali, più immagini e maggiori possibilità di personalizzazione.
-            </PlanInfoTooltip>
-          </span>
-
-          <span className="plan-tag">
-            PREMIUM
-            <PlanInfoTooltip title="Piano Premium">
-              Tutte le funzionalità disponibili per custodire ogni ricordo senza limiti.
-            </PlanInfoTooltip>
+            <span className="plan-tag muted">
+              Avanzate
+              <PlanInfoTooltip title="Funzionalità avanzate">
+                Galleria immagini, lapidi personalizzate,
+                epitaffio esteso e altre opzioni in sviluppo.
+              </PlanInfoTooltip>
             </span>
           </strong>
 
           <div>
-            I tuoi memoriali: {used} / {maxMemorials}
+            I tuoi memoriali: {memorials.length} / {me?.limits?.maxMemorials ?? 1}
           </div>
+
           {!me.emailVerified && (
             <div className="dashboard-planwarn">
               ⚠️ Email non verificata: non puoi creare memoriali finché non verifichi.
             </div>
           )}
-          </div>
-        )}
+        </div>
+      )}
 
       <div className="dashboard-cta">
         <Link

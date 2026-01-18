@@ -138,3 +138,9 @@
   opacity: 0.7;
 }
 
+.plan-tag.muted {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+

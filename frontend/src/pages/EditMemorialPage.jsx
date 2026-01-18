@@ -4,6 +4,20 @@ import { updateMemorial, getMemorialById } from "../api/memorials";
 import PetImageUpload from "../components/PetImageUpload";
 import "./NewMemorialPage.css";
 
+import PlanInfoTooltip from "../components/PlanInfoTooltip";
+
+import graveStandard from "../assets/graves/grave-standard.png";
+import graveClassic from "../assets/graves/grave-classic.png";
+import graveModern from "../assets/graves/grave-modern.png";
+import graveNature from "../assets/graves/grave-nature.png";
+import graveCelestial from "../assets/graves/grave-celestial.png";
+import graveNight from "../assets/graves/grave-night.png";
+import graveMonument from "../assets/graves/grave-monument.png";
+import graveFlower from "../assets/graves/grave-flower.png";
+import graveCandle from "../assets/graves/grave-candle.png";
+import graveEternal from "../assets/graves/grave-eternal.png";
+
+
 /* ======================================================
    EDIT MEMORIAL PAGE
    ====================================================== */
@@ -198,6 +212,103 @@ export default function EditMemorialPage() {
           </div>
         </div>
 
+        {/* ===== GALLERIA IMMAGINI ===== */}
+        <section className="form-group locked">
+          <label>
+            Galleria immagini
+            <PlanInfoTooltip title="Funzionalità avanzata">
+              La galleria immagini è una funzionalità attualmente
+              in fase di sviluppo.
+            </PlanInfoTooltip>
+          </label>
+
+          <p className="locked-text">
+            Questa funzionalità non è ancora disponibile.
+          </p>
+        </section>
+
+        {/* ===== VIDEO ===== */}
+        <section className="form-group locked">
+          <label>
+            Video
+            <PlanInfoTooltip title="Funzionalità avanzata">
+              I video commemorativi saranno disponibili in futuro.
+            </PlanInfoTooltip>
+          </label>
+
+          <p className="locked-text">
+            Funzionalità avanzata non ancora disponibile.
+          </p>
+        </section>
+
+        {/* ===== STILE LAPIDE ===== */}
+        <div className="form-group">
+          <label>
+            Stile lapide
+            <PlanInfoTooltip title="Funzionalità di base">
+              Al momento è disponibile la lapide standard.
+              Gli altri stili sono funzionalità avanzate in sviluppo.
+            </PlanInfoTooltip>
+          </label>
+
+          <div className="grave-grid">
+            <div className="grave-card selected">
+              <img src={graveStandard} alt="Lapide standard" />
+              <span>Standard</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveClassic} alt="Lapide classica" />
+              <span>Classica</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveModern} alt="Lapide moderna" />
+              <span>Moderna</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveNature} alt="Lapide naturale" />
+              <span>Naturale</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveCelestial} alt="Lapide celeste" />
+              <span>Celeste</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveNight} alt="Lapide notturna" />
+              <span>Notturna</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveMonument} alt="Lapide monumentale" />
+              <span>Monumentale</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveFlower} alt="Lapide memoriale" />
+              <span>Memoriale</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveCandle} alt="Lapide ricordo" />
+              <span>Ricordo</span>
+            </div>
+
+            <div className="grave-card locked">
+              <img src={graveEternal} alt="Lapide eterna" />
+              <span>Eterna</span>
+            </div>
+          </div>
+
+          <p className="locked-text">
+            Gli stili avanzati saranno disponibili in futuro.
+          </p>
+        </div>
+
+        {/* ===== VISIBILITÀ ===== */}
         <div className="form-checkbox">
           <input
             type="checkbox"
@@ -207,7 +318,7 @@ export default function EditMemorialPage() {
             disabled={saving}
           />
           <span>Memoriale pubblico</span>
-        </div>
+        </div>        
 
         {success && (
           <p className="form-success">

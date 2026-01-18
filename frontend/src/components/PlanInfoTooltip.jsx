@@ -25,3 +25,4 @@ export default function PlanInfoTooltip({ title, children }) {
     </span>
   );
 }
+

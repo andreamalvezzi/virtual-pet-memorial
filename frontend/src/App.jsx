@@ -27,6 +27,11 @@ import VerifiedRoute from "./components/VerifiedRoute";
 
 import PlansPage from "./pages/PlansPage.jsx";
 
+import Footer from "./components/Footer";
+import PrivacyPage from "./pages/PrivacyPage";
+import CookiePolicyPage from "./pages/CookiePolicyPage";
+import ContactPage from "./pages/ContactPage";
+import CookieBanner from "./components/CookieBanner";
 
 function App() {
   const SITE_URL =
@@ -96,6 +101,9 @@ function App() {
       {/* ================= NAVBAR ================= */}
       <Navbar />
 
+      {/* ================= COOKIE BANNER ================= */}
+      <CookieBanner />
+
       {/* ================= CONTENUTO PRINCIPALE ================= */}
       <main id="main-content" tabIndex="-1">
         <div className="page-transition">
@@ -154,9 +162,16 @@ function App() {
 
             {/* 404 */}
             <Route path="*" element={<NotFoundPage />} />
+
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/cookie-policy" element={<CookiePolicyPage />} />
+            <Route path="/contatti" element={<ContactPage />} />
+
           </Routes>
         </div>
       </main>
+      {/* ================= FOOTER ================= */}
+      <Footer />
     </>
   );
 }

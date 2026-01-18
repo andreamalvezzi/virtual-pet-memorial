@@ -1,125 +1,98 @@
 import { Helmet } from "react-helmet-async";
-import PlanInfoTooltip from "../components/PlanInfoTooltip";
+import { Link } from "react-router-dom";
 import "./PlansPage.css";
 
 export default function PlansPage() {
   return (
     <div className="plans-container">
       <Helmet>
-        <title>Piani – Virtual Pet Memorial</title>
+        <title>Funzionalità – Virtual Pet Memorial</title>
         <meta
           name="description"
-          content="Scopri i piani disponibili per creare e custodire memoriali dedicati ai tuoi animali."
+          content="Scopri le funzionalità disponibili per creare e custodire un memoriale digitale dedicato al tuo animale."
         />
       </Helmet>
 
       {/* HEADER */}
       <header className="plans-header">
-        <h1>I nostri piani</h1>
+        <h1>Funzionalità del Memoriale</h1>
         <p>
-          Un modo semplice e flessibile per scegliere come custodire
-          i ricordi dei tuoi animali, oggi e in futuro.
+          Virtual Pet Memorial è un progetto personale e indipendente,
+          pensato per offrire uno spazio semplice e rispettoso dove
+          custodire il ricordo dei propri animali.
         </p>
       </header>
 
-      {/* GRID PIANI */}
+      {/* GRID */}
       <section className="plans-grid">
-        {/* FREE */}
+        {/* BASE */}
         <article className="plan-card active">
-          <h2>
-            FREE
-            <PlanInfoTooltip title="Piano FREE – 0€">
-              Il piano base per iniziare a creare un memoriale e
-              custodire un primo ricordo.
-            </PlanInfoTooltip>
-          </h2>
-
-          <div className="plan-price">0€</div>
+          <h2>Funzionalità di base</h2>
 
           <p className="plan-description">
-            Ideale per creare un primo spazio commemorativo in modo
-            semplice e immediato.
+            Disponibili gratuitamente per tutti gli utenti.
           </p>
 
           <ul className="plan-features">
-            <li>1 memoriale</li>
-            <li>1 immagine (cover)</li>
+            <li>Creazione di un memoriale</li>
+            <li>1 immagine di copertina</li>
             <li>Lapide standard</li>
-            <li>Epitaffio fino a 100 caratteri</li>
+            <li>Epitaffio breve</li>
             <li>Memoriale pubblico o privato</li>
           </ul>
 
           <div className="plan-status">
-            Piano attivo
+            Attive
           </div>
         </article>
 
-        {/* PLUS */}
-        <article className="plan-card">
-          <h2>
-            PLUS
-            <PlanInfoTooltip title="Piano Plus – 2,99€">
-              Pensato per chi desidera più spazio e maggiori
-              possibilità di personalizzazione.
-            </PlanInfoTooltip>
-          </h2>
-
-          <div className="plan-price">2,99€</div>
+        {/* AVANZATE */}
+        <article className="plan-card muted">
+          <h2>Funzionalità avanzate</h2>
 
           <p className="plan-description">
-            Una soluzione intermedia per chi vuole dedicare più
-            spazio ai propri ricordi.
+            Funzionalità attualmente in fase sperimentale.
           </p>
 
           <ul className="plan-features">
-            <li>Fino a 3 memoriali</li>
-            <li>Più immagini per memoriale</li>
-            <li>Più stili di lapide</li>
-            <li>Epitaffio più esteso</li>
-          </ul>
-
-          <div className="plan-status muted">
-            Disponibile prossimamente
-          </div>
-        </article>
-
-        {/* PREMIUM */}
-        <article className="plan-card">
-          <h2>
-            PREMIUM
-            <PlanInfoTooltip title="Piano Premium – 5,99€">
-              Il piano più completo per custodire ogni ricordo
-              senza limiti.
-            </PlanInfoTooltip>
-          </h2>
-
-          <div className="plan-price">5,99€</div>
-
-          <p className="plan-description">
-            Pensato per chi desidera raccogliere e preservare
-            ogni ricordo in modo completo.
-          </p>
-
-          <ul className="plan-features">
-            <li>Fino a 6 memoriali</li>
-            <li>Galleria completa di immagini</li>
-            <li>Video commemorativi</li>
-            <li>Tutti gli stili di lapide</li>
+            <li>Galleria immagini</li>
+            <li>Stili di lapide personalizzati</li>
             <li>Epitaffio esteso</li>
+            <li>Memoriale privato avanzato</li>
           </ul>
 
           <div className="plan-status muted">
-            Disponibile prossimamente
+            In sviluppo
           </div>
+        </article>
+
+        {/* SOSTEGNO */}
+        <article className="plan-card">
+          <h2>Sostieni il progetto</h2>
+
+          <p className="plan-description">
+            Se desideri supportare lo sviluppo del progetto o
+            ricevere maggiori informazioni sulle funzionalità
+            sperimentali, puoi contattarci.
+          </p>
+
+          <p className="plan-description">
+            Il sostegno avviene esclusivamente tramite
+            contributi volontari.
+          </p>
+
+          <Link to="/contatti" className="plan-cta">
+            Contattaci
+          </Link>
         </article>
       </section>
 
       {/* NOTA FINALE */}
       <footer className="plans-note">
         <p>
-          ℹ️ Al momento è possibile creare memoriali solo con il piano FREE.
-          I piani Plus e Premium saranno disponibili in futuro per offrire
-          maggiori possibilità di personalizzazione.
+          ℹ️ Le funzionalità avanzate non sono attualmente
+          attive per tutti gli utenti e vengono abilitate
+          solo su richiesta, in forma sperimentale.
         </p>
       </footer>
     </div>

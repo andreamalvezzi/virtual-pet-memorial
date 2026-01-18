@@ -214,8 +214,21 @@
 
 .form-group.locked {
   opacity: 0.55;
+}
+
+.form-group.locked input,
+.form-group.locked textarea,
+.form-group.locked button,
+.form-group.locked .gallery-preview,
+.form-group.locked .gallery-upload,
+.form-group.locked .gallery-dropzone {
   pointer-events: none;
 }
+
+.form-group.locked .planinfo {
+  pointer-events: auto;
+}
+
 
 .locked-text {
   font-size: 0.85rem;
@@ -248,19 +261,25 @@
 
 .grave-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 0.9rem;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 1.4rem;
   width: 100%;
 }
 
 .grave-card {
-  padding: 1rem;
+  padding: 1.1rem;
   border-radius: 14px;
   border: 1px solid #d6d3cf;
   background: #ffffff;
   cursor: pointer;
   text-align: center;
+  color :#100e0e;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.grave-card img {
+  max-height: 90px;
+  margin-bottom: 0.6rem;
 }
 
 .grave-card:hover {
